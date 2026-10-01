@@ -10,3 +10,12 @@
    a {
         color: #1a5276;
    }
+
+   header {
+    background-color: #5992b6;
+    padding: 16px;
+}
+
+header a {
+    color: white;
+}
