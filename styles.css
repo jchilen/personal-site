@@ -34,12 +34,12 @@ nav {
 }
 
 .card-list {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;
 }
 
 .card {
     border: 5px solid #5992b6;
     padding: 5px;
-    flex: 1;
 }
