@@ -7,6 +7,11 @@ body {
     background-color: #fafafa;
 }
 
+body.dark-mode {
+    background-color: #444444;
+    color: #fafafa
+}
+
 a {
     color: #1a5276;
 }
@@ -17,7 +22,10 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-direction: column;
+}
+
+body.dark-mode header {
+    background-color: #0f3b57;
 }
 
 header a {
@@ -43,4 +51,10 @@ nav {
 .card {
     border: 5px solid #5992b6;
     padding: 5px;
+}
+
+@media (max-width: 600px) {
+    header {
+        flex-direction: column;
+    }
 }
