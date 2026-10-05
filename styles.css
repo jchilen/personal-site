@@ -48,6 +48,10 @@ nav {
     gap: 20px;
 }
 
+body.dark-mode main a {
+    color: #ebebeb;
+}
+
 .card {
     border: 5px solid #5992b6;
     padding: 5px;
