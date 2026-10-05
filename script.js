@@ -1,9 +1,7 @@
 const toggleButton = document.querySelector("#theme-toggle");
 
-const savedTheme = localStorage.getItem("theme");
-
-if (localStorage.getItem("theme") === "dark") {
-    document.body.classList.add("dark-mode");
+if (document.body.classList.contains("dark-mode")) {
+    toggleButton.textContent = "Light Mode";
 }
 
 toggleButton.addEventListener("click", function () {
@@ -11,7 +9,9 @@ toggleButton.addEventListener("click", function () {
 
     if (isDark) {
         localStorage.setItem("theme", "dark");
+        toggleButton.textContent = "Light Mode";
     } else {
         localStorage.setItem("theme", "light");
+        toggleButton.textContent = "Dark Mode";
     }
 });
