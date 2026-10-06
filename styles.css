@@ -14,6 +14,10 @@ body {
     line-height: 1.6;
     color: var(--font-color);
     background-color: var(--background-color);
+    margin: 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 body.dark-mode {
@@ -64,4 +68,18 @@ nav {
     header {
         flex-direction: column;
     }
+}
+
+footer {
+    display: flex;
+    justify-content: end;
+    background-color: var(--primary-color);
+    padding: 16px;
+    align-items: center;
+    line-height: 1.6;
+}
+
+main {
+    margin: 8px;
+    flex: 1;
 }
