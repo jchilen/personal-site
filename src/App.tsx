@@ -2,20 +2,13 @@ import { useState } from 'react'
 import heroImg from './assets/hero.png'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
-import './App.css'
+import Header from './components/Header'
+import Footer from './components/Footer'
 
 function App() {
   return (
     <>
-      <header>
-        <a href="/">Joe Chilen // IceNine</a>
-        <nav>
-          <a href="/">Home</a>
-          <a href="/about">About Me</a>
-          <a href="/projects">Projects</a>
-          <a href="/articles">Articles</a>
-        </nav>
-      </header>
+      <Header />
 
       <main>
         <h1>Hi, I'm Joe</h1>
@@ -37,7 +30,7 @@ function App() {
         </section>
       </main>
 
-      <footer>Joe Chilen // IceNine {new Date().getFullYear()}</footer>
+      <Footer />
     </>
   )
 }
