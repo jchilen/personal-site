@@ -4,6 +4,7 @@ import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import Header from './components/Header'
 import Footer from './components/Footer'
+import Hero from './components/Hero'
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Header />
 
       <main>
+        <Hero />
         <h1>Hi, I'm Joe</h1>
         <p>This is a homepage that shows you what is on my site.</p>
 
