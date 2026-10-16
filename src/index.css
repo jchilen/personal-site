@@ -3,6 +3,7 @@
 :root {
   --bg: #0a0f1c;
   --surface: #111a2d;
+  --surface-glass: rgba(17, 26, 45, 0.55);
   --text: #dbe4f0;
   --muted: #8a9bb5;
   --accent: #6ea8dc;
@@ -39,8 +40,6 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  --surface-glass: rgba(17, 26, 45, 0.55);
-
 }
 
 main {
@@ -167,15 +166,6 @@ html {
   font-size: 0.7rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  transition: color 0.2s;
-}
-
-.category-button:hover {
-  color: var(--category-color);
-}
-
-.category-button {
-  /* ...keep your existing properties, and change the transition to: */
   transition: color 0.2s, transform 0.2s;
 }
 
