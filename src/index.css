@@ -169,7 +169,12 @@ html {
   transition: color 0.2s, transform 0.2s;
 }
 
-.category-button:hover {
+.category-button:hover:not(.no-hover) {
+  color: var(--category-color);
+  transform: scale(1.3);
+}
+
+.category-button.is-selected {
   color: var(--category-color);
   transform: scale(1.3);
 }
