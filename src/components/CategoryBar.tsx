@@ -13,7 +13,7 @@ function CategoryBar() {
             className="category-button"
             style={{ '--category-color': category.color } as CSSProperties}
           >
-            <Icon />
+            <Icon size={30} strokeWidth={1.0} />
             {category.label}
           </button>
         )

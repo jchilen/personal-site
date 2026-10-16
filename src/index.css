@@ -20,6 +20,7 @@ body.light-mode {
   --muted: #6b7a90;
   --accent: #1f3f73;
   --border: #b8c4d6;
+  --surface-glass: rgba(241, 244, 249, 0.55);
 }
 
 * {
@@ -38,6 +39,8 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  --surface-glass: rgba(17, 26, 45, 0.55);
+
 }
 
 main {
@@ -125,8 +128,9 @@ html {
   text-decoration: none;
   padding: 10px 22px;
   border: 1px solid var(--border);
-  border-radius: 999px;
-  background-color: var(--surface);
+  border-radius: 15px;
+  background-color: var(--surface-glass);
+  backdrop-filter: blur(12px);
   transition: border-color 0.2s, color 0.2s;
   text-transform: uppercase;
   letter-spacing: 0.15em;
@@ -140,9 +144,10 @@ html {
 .category-bar {
   display: flex;
   gap: 4px;
-  padding: 8px;
+  padding: 4px;
   margin-top: 40px;
-  background-color: var(--surface);
+  background-color: var(--surface-glass);
+  backdrop-filter: blur(12px);
   border: 1px solid var(--border);
   border-radius: 20px;
 }
@@ -162,10 +167,19 @@ html {
   font-size: 0.7rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  transition: color 0.2s, background-color 0.2s;
+  transition: color 0.2s;
 }
 
 .category-button:hover {
   color: var(--category-color);
-  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.category-button {
+  /* ...keep your existing properties, and change the transition to: */
+  transition: color 0.2s, transform 0.2s;
+}
+
+.category-button:hover {
+  color: var(--category-color);
+  transform: scale(1.3);
 }
