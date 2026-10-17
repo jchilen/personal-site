@@ -1,5 +1,6 @@
 import { useState, type CSSProperties } from 'react'
 import { categories } from '../data/categories'
+import ProjectCard from './ProjectCard'
 
 function CategoryBar() {
     const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -41,14 +42,24 @@ function CategoryBar() {
             </button>
             )
         })}
+
         </nav>
-        {selectedCategory && (
-            <div className="card-list">
-                {selectedCategory.items.map((item) => {
-                    return <p key={item.title}>{item.title}</p>
-                })}
-            </div>
-    )}
+
+        <div className="card-area">
+            {selectedCategory && (
+                <div className="card-list" key={selectedCategory.id}>
+                    {selectedCategory.items.map((item) => {
+                        return (
+                            <ProjectCard
+                                key={item.title}
+                                item={item}
+                                color={selectedCategory.color}
+                            />
+                        )
+                    })}
+                </div>
+            )}
+        </div>
     </>
     )
 }
