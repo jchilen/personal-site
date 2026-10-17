@@ -8,6 +8,7 @@
   --muted: #8a9bb5;
   --accent: #6ea8dc;
   --border: #22314a;
+  --glow-color: #6ea8dc;
 
   --font-sans: 'Geist', system-ui, sans-serif;
   --font-mono: 'Geist Mono', ui-monospace, monospace;
@@ -22,6 +23,7 @@ body.light-mode {
   --accent: #1f3f73;
   --border: #b8c4d6;
   --surface-glass: rgba(241, 244, 249, 0.55);
+  --glow-color: #1f2a3d;
 }
 
 * {
@@ -201,6 +203,8 @@ html {
 
 .project-card {
   width: min(240px, 100%);
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -216,8 +220,54 @@ html {
   animation: card-in 0.35s ease-out both;
 }
 
-.project-card:hover {
-  border-color: var(--card-color);
+.project-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.project-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    350px circle at var(--mouse-x) var(--mouse-y),
+    color-mix(in srgb, var(--glow-color) 8%, transparent),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.card-area:hover .project-card::after {
+  opacity: 1;
+}
+
+.project-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  z-index: 2;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(
+    300px circle at var(--mouse-x) var(--mouse-y),
+    var(--card-color),
+    transparent
+  );
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.card-area:hover .project-card::before {
+  opacity: 1;
 }
 
 .project-card-header {
@@ -255,6 +305,8 @@ html {
   justify-content: center;
   align-items: flex-start;
   width: 100%;
-  min-height: 272px;
-  margin-top: 32px;
+  min-height: 544px;
+  padding-top: 32px;
+  padding-bottom: 240px;
+  margin-bottom: -240px;
 }

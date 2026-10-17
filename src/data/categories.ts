@@ -56,8 +56,8 @@ export const categories: Category[] = [
     color: '#e8615a',
     items: [
       {
-        title: 'Frame Survivability Analysis',
-        description: 'Which Lancer frames can take the most punishment, by the numbers.',
+        title: 'Frame Survivability',
+        description: 'Which Lancer frames can take the most punishment.',
         href: '/lancer/survivability',
         icon: ShieldCog,
       },
@@ -70,7 +70,7 @@ export const categories: Category[] = [
     color: '#5fd3b0',
     items: [
       {
-        title: 'Your Article Title',
+        title: 'Improving Efficiently',
         description: 'A one-line summary of what the article is about.',
         href: '/articles/your-article',
         icon: ChartNoAxesCombined,

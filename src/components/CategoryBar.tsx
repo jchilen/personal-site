@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from 'react'
+import { useState, type CSSProperties, type MouseEvent } from 'react'
 import { categories } from '../data/categories'
 import ProjectCard from './ProjectCard'
 
@@ -6,6 +6,17 @@ function CategoryBar() {
     const [selectedId, setSelectedId] = useState<string | null>(null)
     const [hoverBlockedId, setHoverBlockedId] = useState<string | null>(null)
     const selectedCategory = categories.find((category) => category.id === selectedId)
+
+    function handleMouseMove(event: MouseEvent<HTMLDivElement>) {
+        const cards = event.currentTarget.querySelectorAll<HTMLElement>('.project-card')
+
+        cards.forEach((card) => {
+            const rect = card.getBoundingClientRect()
+            card.style.setProperty('--mouse-x', `${event.clientX - rect.left}px`)
+            card.style.setProperty('--mouse-y', `${event.clientY - rect.top}px`)
+        })
+    }
+
     return (
         <>
         <nav className="category-bar" aria-label="Site sections">
@@ -45,7 +56,7 @@ function CategoryBar() {
 
         </nav>
 
-        <div className="card-area">
+        <div className="card-area" onMouseMove={handleMouseMove}>
             {selectedCategory && (
                 <div className="card-list" key={selectedCategory.id}>
                     {selectedCategory.items.map((item) => {
