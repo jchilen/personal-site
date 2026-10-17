@@ -4,7 +4,9 @@ import { categories } from '../data/categories'
 function CategoryBar() {
     const [selectedId, setSelectedId] = useState<string | null>(null)
     const [hoverBlockedId, setHoverBlockedId] = useState<string | null>(null)
+    const selectedCategory = categories.find((category) => category.id === selectedId)
     return (
+        <>
         <nav className="category-bar" aria-label="Site sections">
         {categories.map((category) => {
             const Icon = category.icon
@@ -40,6 +42,14 @@ function CategoryBar() {
             )
         })}
         </nav>
+        {selectedCategory && (
+            <div className="card-list">
+                {selectedCategory.items.map((item) => {
+                    return <p key={item.title}>{item.title}</p>
+                })}
+            </div>
+    )}
+    </>
     )
 }
 
