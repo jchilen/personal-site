@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import { Link } from 'react-router'
 import { ArrowUpRight } from 'lucide-react'
 import type { CardItem } from '../data/categories'
 
@@ -11,8 +12,8 @@ function ProjectCard({ item, color }: ProjectCardProps) {
   const Icon = item.icon
 
   return (
-    <a
-      href={item.href}
+    <Link
+      to={item.href}
       className="project-card"
       style={{ '--card-color': color } as CSSProperties}
     >
@@ -22,7 +23,7 @@ function ProjectCard({ item, color }: ProjectCardProps) {
         <ArrowUpRight size={18} className="project-card-arrow" />
       </div>
       <p>{item.description}</p>
-    </a>
+    </Link>
   )
 }
 
