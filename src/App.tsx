@@ -1,5 +1,6 @@
 import Footer from './components/Footer'
 import Hero from './components/Hero'
+import CategoryBar from './components/CategoryBar'
 
 function App() {
   return (
@@ -7,6 +8,12 @@ function App() {
 
       <main>
         <Hero />
+        <CategoryBar />
+          <nav className="pill-nav">
+            <a className="pill" href="#about">About</a>
+            <a className="pill" href="#experience">Experience</a>
+            <a className="pill" href="#contact">Contact</a>
+          </nav>
         <section id="about" className="page-section">
           <p className="eyebrow">About</p>
           <p>A few paragraphs about who you are and what you do.</p>

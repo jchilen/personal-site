@@ -1,4 +1,4 @@
-import { useState, type CSSProperties, type MouseEvent } from 'react'
+import { useRef, useState, type CSSProperties, type MouseEvent } from 'react'
 import { categories } from '../data/categories'
 import ProjectCard from './ProjectCard'
 
@@ -7,6 +7,18 @@ function CategoryBar() {
     const [hoverBlockedId, setHoverBlockedId] = useState<string | null>(null)
     const [displayedId, setDisplayedId] = useState<string | null>(null)
     const [isLeaving, setIsLeaving] = useState(false)
+    
+    const cardAreaRef = useRef<HTMLDivElement>(null)
+
+    function scrollToCards() {
+        const cardArea = cardAreaRef.current
+        if (!cardArea) return
+
+        if (cardArea.getBoundingClientRect().top < 76) {
+            cardArea.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+    }
+
     const displayedCategory = categories.find((category) => category.id === displayedId)
 
     function selectCategory(nextId: string | null) {
@@ -69,6 +81,7 @@ function CategoryBar() {
                         setHoverBlockedId(category.id)
                     } else {
                         selectCategory(category.id)
+                        scrollToCards()
                     }
                 }}
                 onMouseLeave={() => setHoverBlockedId(null)}
@@ -81,7 +94,7 @@ function CategoryBar() {
 
         </nav>
 
-        <div className="card-area" onMouseMove={handleMouseMove}>
+        <div className="card-area" ref={cardAreaRef} onMouseMove={handleMouseMove}>
             {displayedCategory && (
                 <div
                     className={'card-list' + (isLeaving ? ' is-leaving' : '')}

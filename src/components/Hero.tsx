@@ -1,5 +1,4 @@
 import avatar from '../assets/icenine_avatar.png'
-import CategoryBar from './CategoryBar.tsx'
 
 function Hero() {
   return (
@@ -7,12 +6,7 @@ function Hero() {
       <img src={avatar} className="avatar" alt="IceNine // Joe Chilen"/>
       <p className="eyebrow">Software Developer</p>
       <h1>Joe Chilen</h1>
-      <CategoryBar />
-      <nav className="pill-nav">
-        <a className="pill" href="#about">About</a>
-        <a className="pill" href="#experience">Experience</a>
-        <a className="pill" href="#contact">Contact</a>
-      </nav>
+      
     </section>
   )
 }
