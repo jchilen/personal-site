@@ -201,6 +201,21 @@ html {
   }
 }
 
+@keyframes card-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+.card-list.is-leaving .project-card {
+  animation: card-out 0.25s ease-in both;
+}
+
 .project-card {
   width: min(240px, 100%);
   position: relative;

@@ -5,7 +5,25 @@ import ProjectCard from './ProjectCard'
 function CategoryBar() {
     const [selectedId, setSelectedId] = useState<string | null>(null)
     const [hoverBlockedId, setHoverBlockedId] = useState<string | null>(null)
-    const selectedCategory = categories.find((category) => category.id === selectedId)
+    const [displayedId, setDisplayedId] = useState<string | null>(null)
+    const [isLeaving, setIsLeaving] = useState(false)
+    const displayedCategory = categories.find((category) => category.id === displayedId)
+
+    function selectCategory(nextId: string | null) {
+    setSelectedId(nextId)
+
+    if (!displayedCategory || displayedCategory.items.length === 0) {
+        // Nothing (or no cards) on screen: show the new selection right away
+        setDisplayedId(nextId)
+        setIsLeaving(false)
+    } else if (nextId === displayedId) {
+        // Clicked back to what's on screen mid-exit: cancel the exit
+        setIsLeaving(false)
+    } else {
+        // Different cards on screen: animate them out first
+        setIsLeaving(true)
+    }
+}
 
     function handleMouseMove(event: MouseEvent<HTMLDivElement>) {
         const cards = event.currentTarget.querySelectorAll<HTMLElement>('.project-card')
@@ -40,10 +58,10 @@ function CategoryBar() {
                 style={{ '--category-color': category.color } as CSSProperties}
                 onClick={() => {
                     if (isSelected) {
-                        setSelectedId(null)
+                        selectCategory(null)
                         setHoverBlockedId(category.id)
                     } else {
-                        setSelectedId(category.id)
+                        selectCategory(category.id)
                     }
                 }}
                 onMouseLeave={() => setHoverBlockedId(null)}
@@ -57,14 +75,23 @@ function CategoryBar() {
         </nav>
 
         <div className="card-area" onMouseMove={handleMouseMove}>
-            {selectedCategory && (
-                <div className="card-list" key={selectedCategory.id}>
-                    {selectedCategory.items.map((item) => {
+            {displayedCategory && (
+                <div
+                    className={'card-list' + (isLeaving ? ' is-leaving' : '')}
+                    key={displayedCategory.id}
+                    onAnimationEnd={() => {
+                        if (isLeaving) {
+                            setDisplayedId(selectedId)
+                            setIsLeaving(false)
+                        }
+                    }}
+                >
+                    {displayedCategory.items.map((item) => {
                         return (
                             <ProjectCard
                                 key={item.title}
                                 item={item}
-                                color={selectedCategory.color}
+                                color={displayedCategory.color}
                             />
                         )
                     })}
