@@ -172,17 +172,19 @@ html {
   font-size: 0.7rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  transition: color 0.2s, transform 0.2s;
+  transition: color 0.2s, transform 0.2s, margin 0.2s;
 }
 
 .category-button:hover:not(.no-hover) {
   color: var(--category-color);
   transform: scale(1.3);
+  margin: 0 12px;
 }
 
 .category-button.is-selected {
   color: var(--category-color);
   transform: scale(1.3);
+  margin: 0 12px;
 }
 
 .card-list {
