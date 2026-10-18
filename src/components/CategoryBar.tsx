@@ -57,6 +57,13 @@ function CategoryBar() {
                 className={buttonClass}
                 style={{ '--category-color': category.color } as CSSProperties}
                 onClick={() => {
+                    if (category.scrollsToTop) {
+                        window.scrollTo({ top: 0, behavior: 'smooth' })
+                        selectCategory(null)
+                        setHoverBlockedId(category.id)
+                        return
+                    }
+
                     if (isSelected) {
                         selectCategory(null)
                         setHoverBlockedId(category.id)

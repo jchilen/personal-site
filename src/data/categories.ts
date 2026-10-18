@@ -13,6 +13,7 @@ export type Category = {
   icon: LucideIcon
   color: string
   items: CardItem[]
+  scrollsToTop?: boolean
 }
 
 export const categories: Category[] = [
@@ -22,6 +23,7 @@ export const categories: Category[] = [
     icon: House,
     color: '#7cc4f4',
     items: [],
+    scrollsToTop: true,
   },
   {
     id: 'tools',
