@@ -1,4 +1,5 @@
-import { useRef, useState, type CSSProperties, type MouseEvent } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react'
+import { useNavigate } from 'react-router'
 import { categories } from '../data/categories'
 import ProjectCard from './ProjectCard'
 
@@ -13,6 +14,8 @@ function CategoryBar({ floating = false }: CategoryBarProps) {
     const [isLeaving, setIsLeaving] = useState(false)
     
     const cardAreaRef = useRef<HTMLDivElement>(null)
+    const navigate = useNavigate()
+    const dockRef = useRef<HTMLDivElement>(null)
 
     function scrollToCards() {
         const cardArea = cardAreaRef.current
@@ -26,20 +29,33 @@ function CategoryBar({ floating = false }: CategoryBarProps) {
     const displayedCategory = categories.find((category) => category.id === displayedId)
 
     function selectCategory(nextId: string | null) {
-    setSelectedId(nextId)
+        setSelectedId(nextId)
 
-    if (!displayedCategory || displayedCategory.items.length === 0) {
-        // Nothing (or no cards) on screen: show the new selection right away
-        setDisplayedId(nextId)
-        setIsLeaving(false)
-    } else if (nextId === displayedId) {
-        // Clicked back to what's on screen mid-exit: cancel the exit
-        setIsLeaving(false)
-    } else {
-        // Different cards on screen: animate them out first
-        setIsLeaving(true)
+        if (!displayedCategory || displayedCategory.items.length === 0) {
+            // Nothing (or no cards) on screen: show the new selection right away
+            setDisplayedId(nextId)
+            setIsLeaving(false)
+        } else if (nextId === displayedId) {
+            // Clicked back to what's on screen mid-exit: cancel the exit
+            setIsLeaving(false)
+        } else {
+            // Different cards on screen: animate them out first
+            setIsLeaving(true)
+        }
     }
-}
+
+    useEffect(() => {
+        if (!floating || selectedId === null) return
+
+        function handleClickOutside(event: Event) {
+            if (!dockRef.current?.contains(event.target as Node)) {
+                selectCategory(null)
+            }
+        }
+
+        document.addEventListener('click', handleClickOutside)
+        return () => document.removeEventListener('click', handleClickOutside)
+    })
 
     function handleMouseMove(event: MouseEvent<HTMLDivElement>) {
         const cards = event.currentTarget.querySelectorAll<HTMLElement>('.project-card')
@@ -52,7 +68,7 @@ function CategoryBar({ floating = false }: CategoryBarProps) {
     }
 
     return (
-        <div className={floating ? 'category-dock is-floating' : 'category-dock'}>
+        <div ref={dockRef} className={floating ? 'category-dock is-floating' : 'category-dock'}>
         <nav className="category-bar" aria-label="Site sections">
         {categories.map((category) => {
             const Icon = category.icon
@@ -74,6 +90,10 @@ function CategoryBar({ floating = false }: CategoryBarProps) {
                 style={{ '--category-color': category.color } as CSSProperties}
                 onClick={() => {
                     if (category.scrollsToTop) {
+                        if (floating) {
+                            navigate('/')
+                            return
+                        }
                         window.scrollTo({ top: 0, behavior: 'smooth' })
                         selectCategory(null)
                         setHoverBlockedId(category.id)

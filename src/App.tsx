@@ -12,11 +12,11 @@ function App() {
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [pathname])
-  
+
   return (
     <>
 
-      <main>
+      <main key={pathname}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/tools/safe-lead-calculator" element={<SafeLeadPage />} />
