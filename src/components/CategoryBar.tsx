@@ -2,7 +2,11 @@ import { useRef, useState, type CSSProperties, type MouseEvent } from 'react'
 import { categories } from '../data/categories'
 import ProjectCard from './ProjectCard'
 
-function CategoryBar() {
+type CategoryBarProps = {
+    floating?: boolean
+}
+
+function CategoryBar({ floating = false }: CategoryBarProps) {
     const [selectedId, setSelectedId] = useState<string | null>(null)
     const [hoverBlockedId, setHoverBlockedId] = useState<string | null>(null)
     const [displayedId, setDisplayedId] = useState<string | null>(null)
@@ -48,7 +52,7 @@ function CategoryBar() {
     }
 
     return (
-        <>
+        <div className={floating ? 'category-dock is-floating' : 'category-dock'}>
         <nav className="category-bar" aria-label="Site sections">
         {categories.map((category) => {
             const Icon = category.icon
@@ -118,7 +122,7 @@ function CategoryBar() {
                 </div>
             )}
         </div>
-    </>
+    </div>
     )
 }
 

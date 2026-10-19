@@ -192,7 +192,8 @@ html {
   flex-wrap: wrap;
   justify-content: center;
   gap: 16px;
-  width: 100%;
+  width: fit-content;
+  max-width: 100%;
   max-width: 752px;
 }
 
@@ -334,11 +335,63 @@ html {
 }
 
 .tool-page {
-  padding: 120px 0 64px;
+  padding: 48px 0 64px;
   text-align: center;
 }
 
 .tool-page h1 {
   font-size: clamp(2rem, 5vw, 3rem);
   margin: 8px 0 16px;
+}
+
+/* Home page: the wrapper is invisible to layout */
+.category-dock {
+  display: contents;
+}
+
+/* Other pages: the whole dock floats near the top */
+.category-dock.is-floating {
+  display: block;
+  position: sticky;
+  top: 16px;
+  z-index: 10;
+  width: fit-content;
+  margin: 24px auto 0;
+}
+
+.category-dock.is-floating .category-bar {
+  margin: 0;
+}
+
+/* The card area becomes a panel hanging below the bar */
+.category-dock.is-floating .card-area {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(786px, calc(100vw - 32px));
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  pointer-events: none;
+}
+
+.category-dock.is-floating .card-list {
+  max-width: none;
+  padding: 16px;
+  background-color: var(--surface-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  pointer-events: auto;
+  animation: card-in 0.35s ease-out both;
+}
+
+.category-dock.is-floating .project-card {
+  width: 240px;
+}
+
+.category-dock.is-floating .card-list.is-leaving {
+  animation: card-out 0.25s ease-in both;
 }
