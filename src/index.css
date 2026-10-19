@@ -395,3 +395,49 @@ html {
 .category-dock.is-floating .card-list.is-leaving {
   animation: card-out 0.25s ease-in both;
 }
+
+/* Safe Lead calculator */
+.tool-intro {
+  color: var(--muted);
+  margin: 0;
+}
+
+.safe-lead {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  max-width: 752px;
+  margin: 40px auto 0;
+  text-align: left;
+}
+
+.safe-lead-panel {
+  padding: 24px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+}
+
+.safe-lead-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.tool-credit {
+  margin-top: 24px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.tool-credit a {
+  color: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .safe-lead {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
