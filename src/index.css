@@ -1,29 +1,37 @@
 @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&display=swap');
 
 :root {
-  --bg: #0a0f1c;
-  --surface: #111a2d;
-  --surface-glass: rgba(17, 26, 45, 0.55);
-  --text: #dbe4f0;
-  --muted: #8a9bb5;
-  --accent: #6ea8dc;
-  --border: #22314a;
-  --glow-color: #6ea8dc;
+  color-scheme: light dark;
+
+  --bg: light-dark(#DEE3EF, #031422);
+  --surface: light-dark(#F1F4FA, #0C223E);
+  --surface-glass: light-dark(rgba(241, 244, 250, 0.6), rgba(12, 34, 62, 0.6));
+  --border: light-dark(#C6CFE3, #1E3A5F);
+  --text: light-dark(#031422, #FFFFFF);
+  --muted: light-dark(#465E9E, #9AA6B5);
+  --accent: light-dark(#465E9E, #C4BA40);
+  --gold: #AD9742;
+  --gold-light: #C4BA40;
+  --glow-color: light-dark(#AD9742, #C4BA40);
+  --safe: light-dark(#1B6B50, #5FD3B0);
+  --unsafe: light-dark(#B3261E, #F07F6F);
+
+  --cat-home: light-dark(#3B5394, #8EA7E0);
+  --cat-tools: light-dark(#8A5A00, #F0B04A);
+  --cat-lancer: light-dark(#A3262E, #EF6B6B);
+  --cat-articles: light-dark(#116A73, #5CC8D2);
 
   --font-sans: 'Geist', system-ui, sans-serif;
   --font-mono: 'Geist Mono', ui-monospace, monospace;
   --font-serif: 'Newsreader', Georgia, serif;
 }
 
-body.light-mode {
-  --bg: #e4e9f1;
-  --surface: #f1f4f9;
-  --text: #0f1a2b;
-  --muted: #6b7a90;
-  --accent: #1f3f73;
-  --border: #b8c4d6;
-  --surface-glass: rgba(241, 244, 249, 0.55);
-  --glow-color: #1f2a3d;
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
 }
 
 * {
@@ -87,7 +95,7 @@ a {
   border-radius: 50%;
   object-fit: cover;
   border: 4px solid var(--bg);
-  box-shadow: 0 0 0 3px var(--accent);
+  box-shadow: 0 0 0 3px var(--gold);
   margin-bottom: 24px;
 }
 
@@ -98,6 +106,37 @@ footer {
   text-align: center;
   padding: 32px 16px;
   border-top: 1px solid var(--border);
+}
+
+.theme-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background-color: var(--surface-glass);
+  backdrop-filter: blur(12px);
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.theme-toggle:hover {
+  color: var(--accent);
+  border-color: var(--gold);
+}
+
+@media (max-width: 640px) {
+  .theme-toggle {
+    top: auto;
+    bottom: 16px;
+  }
 }
 
 html {
@@ -383,7 +422,7 @@ html {
   backdrop-filter: blur(12px);
   border: 1px solid var(--border);
   border-radius: 20px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 16px 40px light-dark(rgba(3, 20, 34, 0.12), rgba(0, 0, 0, 0.35));
   pointer-events: auto;
   animation: card-in 0.35s ease-out both;
 }
@@ -404,7 +443,7 @@ html {
 
 .safe-lead {
   display: grid;
-  --tool-color: #ffb347;
+  --tool-color: var(--cat-tools);
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   max-width: 752px;
@@ -573,11 +612,11 @@ html {
 }
 
 .safe-lead-ring.is-safe {
-  --ring-color: #5fd3b0;
+  --ring-color: var(--safe);
 }
 
 .safe-lead-ring.is-unsafe {
-  --ring-color: #e8615a;
+  --ring-color: var(--unsafe);
 }
 
 .safe-lead-ring svg {

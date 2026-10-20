@@ -21,7 +21,7 @@ export const categories: Category[] = [
     id: 'home',
     label: 'Home',
     icon: House,
-    color: '#7cc4f4',
+    color: 'var(--cat-home)',
     items: [],
     scrollsToTop: true,
   },
@@ -29,7 +29,7 @@ export const categories: Category[] = [
     id: 'tools',
     label: 'Tools',
     icon: Wrench,
-    color: '#ffb347',
+    color: 'var(--cat-tools)',
     items: [
       {
         title: 'Confidence Calculator',
@@ -55,7 +55,7 @@ export const categories: Category[] = [
     id: 'lancer',
     label: 'Lancer',
     icon: Dices,
-    color: '#e8615a',
+    color: 'var(--cat-lancer)',
     items: [
       {
         title: 'Frame Survivability',
@@ -69,7 +69,7 @@ export const categories: Category[] = [
     id: 'articles',
     label: 'Articles',
     icon: Newspaper,
-    color: '#5fd3b0',
+    color: 'var(--cat-articles)',
     items: [
       {
         title: 'Improving Efficiently',

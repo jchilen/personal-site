@@ -1,4 +1,5 @@
 import Footer from './components/Footer'
+import ThemeToggle from './components/ThemeToggle'
 import { useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router'
 import HomePage from './pages/HomePage'
@@ -15,7 +16,7 @@ function App() {
 
   return (
     <>
-
+      <ThemeToggle />
       <main key={pathname}>
         <Routes>
           <Route path="/" element={<HomePage />} />
