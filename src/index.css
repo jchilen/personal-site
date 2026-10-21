@@ -1,81 +1,81 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
-@import "@fontsource-variable/figtree";
-@import "@fontsource-variable/oxanium";
-@import "@fontsource-variable/newsreader/opsz.css";
-@import "@fontsource-variable/newsreader/opsz-italic.css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+@import '@fontsource-variable/figtree';
+@import '@fontsource-variable/oxanium';
+@import '@fontsource-variable/newsreader/opsz.css';
+@import '@fontsource-variable/newsreader/opsz-italic.css';
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
   color-scheme: light;
 
-  --background: #DEE3EF;
+  --background: #dee3ef;
   --foreground: #031422;
-  --card: #F1F4FA;
+  --card: #f1f4fa;
   --card-foreground: #031422;
-  --popover: #F1F4FA;
+  --popover: #f1f4fa;
   --popover-foreground: #031422;
-  --primary: #AD9742;
+  --primary: #ad9742;
   --primary-foreground: #031422;
-  --secondary: #C6CFE3;
+  --secondary: #c6cfe3;
   --secondary-foreground: #031422;
-  --muted: #C6CFE3;
-  --muted-foreground: #465E9E;
-  --accent: #C6CFE3;
+  --muted: #c6cfe3;
+  --muted-foreground: #465e9e;
+  --accent: #c6cfe3;
   --accent-foreground: #031422;
-  --destructive: #B3261E;
-  --border: #C6CFE3;
-  --input: #C6CFE3;
-  --ring: #AD9742;
+  --destructive: #b3261e;
+  --border: #c6cfe3;
+  --input: #c6cfe3;
+  --ring: #ad9742;
   --radius: 0.625rem;
 
-  --brand: #465E9E;
+  --brand: #465e9e;
   --surface-glass: rgba(241, 244, 250, 0.6);
-  --gold: #AD9742;
-  --gold-light: #C4BA40;
-  --glow-color: #AD9742;
-  --safe: #1B6B50;
-  --unsafe: #B3261E;
+  --gold: #ad9742;
+  --gold-light: #c4ba40;
+  --glow-color: #ad9742;
+  --safe: #1b6b50;
+  --unsafe: #b3261e;
 
-  --cat-home: #3B5394;
-  --cat-tools: #8A5A00;
-  --cat-lancer: #A3262E;
-  --cat-articles: #116A73;
+  --cat-home: #3b5394;
+  --cat-tools: #8a5a00;
+  --cat-lancer: #a3262e;
+  --cat-articles: #116a73;
 }
 
 .dark {
   color-scheme: dark;
 
   --background: #031422;
-  --foreground: #FFFFFF;
-  --card: #0C223E;
-  --card-foreground: #FFFFFF;
-  --popover: #0C223E;
-  --popover-foreground: #FFFFFF;
-  --primary: #C4BA40;
-  --secondary: #1E3A5F;
-  --secondary-foreground: #FFFFFF;
-  --muted: #1E3A5F;
-  --muted-foreground: #9AA6B5;
-  --accent: #1E3A5F;
-  --accent-foreground: #FFFFFF;
-  --destructive: #F07F6F;
-  --border: #1E3A5F;
-  --input: #1E3A5F;
-  --ring: #C4BA40;
+  --foreground: #ffffff;
+  --card: #0c223e;
+  --card-foreground: #ffffff;
+  --popover: #0c223e;
+  --popover-foreground: #ffffff;
+  --primary: #c4ba40;
+  --secondary: #1e3a5f;
+  --secondary-foreground: #ffffff;
+  --muted: #1e3a5f;
+  --muted-foreground: #9aa6b5;
+  --accent: #1e3a5f;
+  --accent-foreground: #ffffff;
+  --destructive: #f07f6f;
+  --border: #1e3a5f;
+  --input: #1e3a5f;
+  --ring: #c4ba40;
 
-  --brand: #C4BA40;
+  --brand: #c4ba40;
   --surface-glass: rgba(12, 34, 62, 0.6);
-  --glow-color: #C4BA40;
-  --safe: #5FD3B0;
-  --unsafe: #F07F6F;
+  --glow-color: #c4ba40;
+  --safe: #5fd3b0;
+  --unsafe: #f07f6f;
 
-  --cat-home: #8EA7E0;
-  --cat-tools: #F0B04A;
-  --cat-lancer: #EF6B6B;
-  --cat-articles: #5CC8D2;
+  --cat-home: #8ea7e0;
+  --cat-tools: #f0b04a;
+  --cat-lancer: #ef6b6b;
+  --cat-articles: #5cc8d2;
 }
 
 * {
@@ -184,7 +184,9 @@ html {
   border-radius: 15px;
   background-color: var(--surface-glass);
   backdrop-filter: blur(12px);
-  transition: border-color 0.2s, color 0.2s;
+  transition:
+    border-color 0.2s,
+    color 0.2s;
   text-transform: uppercase;
   letter-spacing: 0.15em;
 }
@@ -224,7 +226,10 @@ html {
   font-size: 0.7rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  transition: color 0.2s, transform 0.2s, margin 0.2s;
+  transition:
+    color 0.2s,
+    transform 0.2s,
+    margin 0.2s;
 }
 
 .category-button:hover:not(.no-hover) {
@@ -567,7 +572,10 @@ html {
   font: inherit;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s, background-color 0.15s;
+  transition:
+    border-color 0.15s,
+    color 0.15s,
+    background-color 0.15s;
 }
 
 .toggle-button.is-active {
@@ -653,7 +661,10 @@ html {
 .ring-progress {
   stroke: var(--ring-color);
   stroke-linecap: round;
-  transition: stroke-dashoffset 0.6s ease, stroke 0.3s, opacity 0.3s;
+  transition:
+    stroke-dashoffset 0.6s ease,
+    stroke 0.3s,
+    opacity 0.3s;
 }
 
 .ring-progress.is-hidden {
@@ -753,7 +764,8 @@ html {
   body {
     @apply bg-background text-foreground;
   }
-  button:not(:disabled), [role="button"]:not(:disabled) {
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
     cursor: pointer;
   }
   html {

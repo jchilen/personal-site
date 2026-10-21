@@ -15,7 +15,7 @@ export function calculateSafeLead(
 ): SafeLeadResult {
   // Step 1: Start with points ahead, subtract 3,
   //         adjust +/- 0.5 for possession
-  const rawValue = (pointsAhead - 3) + (possession === 'leading' ? 0.5 : -0.5)
+  const rawValue = pointsAhead - 3 + (possession === 'leading' ? 0.5 : -0.5)
 
   // Step 2: If the result is negative, treat it as 0
   const clampedValue = Math.max(0, rawValue)

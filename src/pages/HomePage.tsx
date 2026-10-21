@@ -7,17 +7,23 @@ function HomePage() {
       <main>
         <Hero />
         <CategoryBar />
-          <nav className="pill-nav">
-            <a className="pill" href="#about">About</a>
-            <a className="pill" href="#experience">Experience</a>
-            <a className="pill" href="#contact">Contact</a>
-          </nav>
+        <nav className="pill-nav">
+          <a className="pill" href="#about">
+            About
+          </a>
+          <a className="pill" href="#experience">
+            Experience
+          </a>
+          <a className="pill" href="#contact">
+            Contact
+          </a>
+        </nav>
         <section id="about" className="page-section">
           <p className="eyebrow">About</p>
           <p>A few paragraphs about who you are and what you do.</p>
         </section>
 
-       <section id="experience" className="page-section">
+        <section id="experience" className="page-section">
           <p className="eyebrow">Experience</p>
           <p>Work history, skills, and the tools you use.</p>
         </section>

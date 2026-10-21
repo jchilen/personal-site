@@ -1,4 +1,15 @@
-import { House, Wrench, Dices, Newspaper, SquareRadical, Podium, ShieldCog, ChartNoAxesCombined, GraduationCap, type LucideIcon} from 'lucide-react'
+import {
+  House,
+  Wrench,
+  Dices,
+  Newspaper,
+  SquareRadical,
+  Podium,
+  ShieldCog,
+  ChartNoAxesCombined,
+  GraduationCap,
+  type LucideIcon,
+} from 'lucide-react'
 
 export type CardItem = {
   title: string
@@ -33,19 +44,22 @@ export const categories: Category[] = [
     items: [
       {
         title: 'Confidence Calculator',
-        description: 'Find out how lucky or unlucky you were in a given game of chance.',
+        description:
+          'Find out how lucky or unlucky you were in a given game of chance.',
         href: '/tools/confidence-calculator',
         icon: SquareRadical,
       },
       {
         title: 'Reverse Borda Poll',
-        description: 'Set up a ranked-choice poll to find the option everyone can live with.',
+        description:
+          'Set up a ranked-choice poll to find the option everyone can live with.',
         href: '/tools/reverse-borda',
         icon: Podium,
       },
       {
         title: 'CBB: Is the Lead Safe?',
-        description: "Find out if a college basketball game is effectively over, using Bill James' Safe Lead Formula.",
+        description:
+          "Find out if a college basketball game is effectively over, using Bill James' Safe Lead Formula.",
         href: '/tools/safe-lead-calculator',
         icon: GraduationCap,
       },
