@@ -8,9 +8,13 @@
     <script>
       try {
         const saved = localStorage.getItem('theme')
-        if (saved === 'light' || saved === 'dark') {
-          document.documentElement.dataset.theme = saved
-        }
+        const theme =
+          saved === 'light' || saved === 'dark'
+            ? saved
+            : matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light'
+        document.documentElement.classList.add(theme)
       } catch {}
     </script>
   </head>
