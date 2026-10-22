@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 export function Hero() {
   return (
     <section className="flex flex-col items-center pt-24 text-center">
-      <Avatar className="mb-8 size-28 rounded-none outline-2 outline-offset-4 outline-primary">
+      <Avatar className="mb-8 size-28 rounded-none outline-2 outline-offset-4 outline-primary after:hidden">
         <AvatarImage
           src={avatar}
           alt="IceNine avatar"
