@@ -114,31 +114,6 @@ main {
   margin: 0;
 }
 
-.hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 96px 0 0;
-}
-
-.hero h1 {
-  font-size: clamp(2.5rem, 6vw, 4rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin: 8px 0 0;
-}
-
-.avatar {
-  width: 112px;
-  height: 112px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 4px solid var(--background);
-  box-shadow: 0 0 0 3px var(--gold);
-  margin-bottom: 24px;
-}
-
 html {
   scroll-behavior: smooth;
 }
@@ -707,6 +682,7 @@ html {
   --font-sans: 'Figtree Variable', sans-serif;
   --font-heading: 'Oxanium Variable', sans-serif;
   --font-serif: 'Newsreader Variable', Georgia, serif;
+  --tracking-eyebrow: 0.3em;
   --color-brand: var(--brand);
   --color-surface-glass: var(--surface-glass);
   --color-gold: var(--gold);

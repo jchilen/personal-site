@@ -1,4 +1,4 @@
-import Hero from '../components/Hero'
+import { Hero } from '@/components/hero'
 import CategoryBar from '../components/CategoryBar'
 
 function HomePage() {
