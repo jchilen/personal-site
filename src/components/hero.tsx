@@ -5,8 +5,14 @@ export function Hero() {
   return (
     <section className="flex flex-col items-center pt-24 text-center">
       <Avatar className="mb-8 size-28 rounded-none outline-2 outline-offset-4 outline-primary">
-        <AvatarImage src={avatar} alt="IceNine avatar" className="rounded-none" />
-        <AvatarFallback className="rounded-none font-heading text-2xl">JC</AvatarFallback>
+        <AvatarImage
+          src={avatar}
+          alt="IceNine avatar"
+          className="rounded-none"
+        />
+        <AvatarFallback className="rounded-none font-heading text-2xl">
+          JC
+        </AvatarFallback>
       </Avatar>
 
       <p className="font-heading text-xs font-semibold tracking-eyebrow text-foreground uppercase dark:text-primary">

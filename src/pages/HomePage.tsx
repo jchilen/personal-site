@@ -1,5 +1,5 @@
 import { Hero } from '@/components/hero'
-import CategoryBar from '../components/CategoryBar'
+import { CategoryBar } from '@/components/category-bar'
 
 function HomePage() {
   return (

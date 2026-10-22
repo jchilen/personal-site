@@ -1,4 +1,4 @@
-import { Moon, Sun } from 'lucide-react'
+import { IconMoon, IconSun } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import { useTheme } from '@/hooks/use-theme'
 
@@ -17,7 +17,7 @@ export function ModeToggle({ className }: { className?: string }) {
       className={className}
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
     >
-      {isDark ? <Sun /> : <Moon />}
+      {isDark ? <IconSun /> : <IconMoon />}
       {isDark ? 'Light Mode' : 'Dark Mode'}
     </Button>
   )

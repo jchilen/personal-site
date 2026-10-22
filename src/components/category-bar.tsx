@@ -1,21 +1,27 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-  type MouseEvent,
-} from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react'
 import { useNavigate } from 'react-router'
-import { categories } from '../data/categories'
+import { cn } from 'cn'
+import { categories } from '@/data/categories'
+import { toggleVariants } from '@/components/ui/toggle'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import ProjectCard from './ProjectCard'
 
 type CategoryBarProps = {
   floating?: boolean
 }
 
-function CategoryBar({ floating = false }: CategoryBarProps) {
+// Shared by the Home button and the category toggles so all four match
+const itemClass = cn(
+  'corner-brackets h-auto flex-col gap-1.5 px-4 py-2.5 font-heading text-muted-foreground',
+  'hover:bg-transparent hover:text-(--category-color)',
+  'data-[state=on]:bg-transparent data-[state=on]:text-(--category-color)',
+)
+
+const homeCategory = categories.find((category) => category.scrollsToTop)
+const sectionCategories = categories.filter((category) => !category.scrollsToTop)
+
+export function CategoryBar({ floating = false }: CategoryBarProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [hoverBlockedId, setHoverBlockedId] = useState<string | null>(null)
   const [displayedId, setDisplayedId] = useState<string | null>(null)
   const [isLeaving, setIsLeaving] = useState(false)
 
@@ -81,52 +87,60 @@ function CategoryBar({ floating = false }: CategoryBarProps) {
       ref={dockRef}
       className={floating ? 'category-dock is-floating' : 'category-dock'}
     >
-      <nav className="category-bar" aria-label="Site sections">
-        {categories.map((category) => {
-          const Icon = category.icon
-          const isSelected = selectedId === category.id
-          const isHoverBlocked = hoverBlockedId === category.id
+            <nav
+        aria-label="Site sections"
+        className={cn(
+          'flex w-fit gap-2 border bg-card p-1',
+          !floating && 'sticky top-4 z-10 mx-auto mt-10',
+        )}
+      >
+        {homeCategory && (
+          <button
+            type="button"
+            className={cn(toggleVariants(), itemClass)}
+            style={{ '--category-color': homeCategory.color } as CSSProperties}
+            onClick={() => {
+              if (floating) {
+                navigate('/')
+                return
+              }
+              window.scrollTo({ top: 0, behavior: 'smooth' })
+              selectCategory(null)
+            }}
+          >
+            <homeCategory.icon className="size-7 stroke-[1.25]" />
+            {homeCategory.label}
+          </button>
+        )}
 
-          let buttonClass = 'category-button'
-          if (isSelected) {
-            buttonClass += ' is-selected'
-          }
-          if (isHoverBlocked) {
-            buttonClass += ' no-hover'
-          }
-          return (
-            <button
-              key={category.id}
-              type="button"
-              className={buttonClass}
-              style={{ '--category-color': category.color } as CSSProperties}
-              onClick={() => {
-                if (category.scrollsToTop) {
-                  if (floating) {
-                    navigate('/')
-                    return
-                  }
-                  window.scrollTo({ top: 0, behavior: 'smooth' })
-                  selectCategory(null)
-                  setHoverBlockedId(category.id)
-                  return
-                }
-
-                if (isSelected) {
-                  selectCategory(null)
-                  setHoverBlockedId(category.id)
-                } else {
-                  selectCategory(category.id)
-                  scrollToCards()
-                }
-              }}
-              onMouseLeave={() => setHoverBlockedId(null)}
-            >
-              <Icon size={30} strokeWidth={1.0} />
-              {category.label}
-            </button>
-          )
-        })}
+        <ToggleGroup
+          type="single"
+          aria-label="Project categories"
+          value={selectedId ?? ''}
+          onValueChange={(value) => {
+            if (!value) {
+              selectCategory(null)
+              return
+            }
+            selectCategory(value)
+            scrollToCards()
+          }}
+        >
+          {sectionCategories.map((category) => {
+            const Icon = category.icon
+            return (
+              <ToggleGroupItem
+                key={category.id}
+                value={category.id}
+                className={itemClass}
+                style={{ '--category-color': category.color } as CSSProperties}
+              >
+                <Icon className="size-7 stroke-[1.25]" />
+                {category.label}
+              </ToggleGroupItem>
+            )
+          })}
+        </ToggleGroup>
       </nav>
 
       <div
@@ -160,5 +174,3 @@ function CategoryBar({ floating = false }: CategoryBarProps) {
     </div>
   )
 }
-
-export default CategoryBar

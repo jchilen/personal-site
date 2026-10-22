@@ -1,4 +1,4 @@
-import CategoryBar from '../components/CategoryBar'
+import { CategoryBar } from '@/components/category-bar'
 import SafeLeadRing from '../components/SafeLeadRing'
 import { useState } from 'react'
 import { Minus, Plus } from 'lucide-react'
