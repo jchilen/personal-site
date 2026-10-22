@@ -1,4 +1,4 @@
-import Footer from './components/Footer'
+import { Footer } from '@/components/footer'
 import { ModeToggle } from '@/components/mode-toggle'
 import { useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router'
@@ -15,7 +15,7 @@ function App() {
 
   return (
     <>
-      <ModeToggle />
+      <ModeToggle className="fixed top-4 right-4 z-20 max-sm:hidden" />
       <main key={pathname}>
         <Routes>
           <Route path="/" element={<HomePage />} />
