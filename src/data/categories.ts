@@ -7,7 +7,11 @@ import {
   IconSquareRoot,
   IconTool,
 } from '@tabler/icons-react'
-import { ChartLineUpIcon, CourtBasketballIcon, RankingIcon } from '@phosphor-icons/react'
+import {
+  ChartLineUpIcon,
+  CourtBasketballIcon,
+  RankingIcon,
+} from '@phosphor-icons/react'
 
 export type IconComponent = ComponentType<{ className?: string }>
 
@@ -24,6 +28,7 @@ export type Category = {
   icon: IconComponent
   color: string
   items: CardItem[]
+  actionLabel?: string
   scrollsToTop?: boolean
 }
 
@@ -41,6 +46,7 @@ export const categories: Category[] = [
     label: 'Tools',
     icon: IconTool,
     color: 'var(--cat-tools)',
+    actionLabel: 'Open tool',
     items: [
       {
         title: 'Confidence Calculator',
@@ -70,6 +76,7 @@ export const categories: Category[] = [
     label: 'Lancer',
     icon: IconIcosahedron,
     color: 'var(--cat-lancer)',
+    actionLabel: 'Open analytics',
     items: [
       {
         title: 'Frame Survivability',
@@ -84,6 +91,7 @@ export const categories: Category[] = [
     label: 'Articles',
     icon: IconNews,
     color: 'var(--cat-articles)',
+    actionLabel: 'Read article',
     items: [
       {
         title: 'Improving Efficiently',

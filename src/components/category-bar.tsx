@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { useNavigate } from 'react-router'
 import { cn } from 'cn'
 import { categories } from '@/data/categories'
 import { toggleVariants } from '@/components/ui/toggle'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import ProjectCard from './ProjectCard'
+import { ProjectCard } from '@/components/project-card'
 
 type CategoryBarProps = {
   floating?: boolean
@@ -18,7 +18,9 @@ const itemClass = cn(
 )
 
 const homeCategory = categories.find((category) => category.scrollsToTop)
-const sectionCategories = categories.filter((category) => !category.scrollsToTop)
+const sectionCategories = categories.filter(
+  (category) => !category.scrollsToTop,
+)
 
 export function CategoryBar({ floating = false }: CategoryBarProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -45,7 +47,9 @@ export function CategoryBar({ floating = false }: CategoryBarProps) {
   function selectCategory(nextId: string | null) {
     setSelectedId(nextId)
 
-    if (!displayedCategory || displayedCategory.items.length === 0) {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    if (!displayedCategory || displayedCategory.items.length === 0 || prefersReducedMotion) {
       // Nothing (or no cards) on screen: show the new selection right away
       setDisplayedId(nextId)
       setIsLeaving(false)
@@ -71,23 +75,12 @@ export function CategoryBar({ floating = false }: CategoryBarProps) {
     return () => document.removeEventListener('click', handleClickOutside)
   })
 
-  function handleMouseMove(event: MouseEvent<HTMLDivElement>) {
-    const cards =
-      event.currentTarget.querySelectorAll<HTMLElement>('.project-card')
-
-    cards.forEach((card) => {
-      const rect = card.getBoundingClientRect()
-      card.style.setProperty('--mouse-x', `${event.clientX - rect.left}px`)
-      card.style.setProperty('--mouse-y', `${event.clientY - rect.top}px`)
-    })
-  }
-
   return (
     <div
       ref={dockRef}
-      className={floating ? 'category-dock is-floating' : 'category-dock'}
+      className={cn(floating ? 'sticky top-4 z-10 mx-auto mt-6 w-fit' : 'contents')}
     >
-            <nav
+      <nav
         aria-label="Site sections"
         className={cn(
           'flex w-fit gap-2 border bg-card p-1',
@@ -144,14 +137,22 @@ export function CategoryBar({ floating = false }: CategoryBarProps) {
       </nav>
 
       <div
-        className="card-area"
         ref={cardAreaRef}
-        onMouseMove={handleMouseMove}
+        className={cn(
+          'flex justify-center',
+          floating
+            ? 'pointer-events-none absolute top-full left-1/2 mt-3 w-max max-w-[calc(100vw-2rem)] -translate-x-1/2'
+            : 'min-h-72 scroll-mt-20 pt-8',
+        )}
       >
         {displayedCategory && (
           <div
-            className={'card-list' + (isLeaving ? ' is-leaving' : '')}
             key={displayedCategory.id}
+            className={cn(
+              'flex max-w-188 flex-wrap justify-center gap-4',
+              floating && 'pointer-events-auto corner-frame bg-background p-4',
+            )}
+            style={{ '--category-color': displayedCategory.color } as CSSProperties}
             onAnimationEnd={() => {
               if (isLeaving) {
                 setDisplayedId(selectedId)
@@ -159,15 +160,17 @@ export function CategoryBar({ floating = false }: CategoryBarProps) {
               }
             }}
           >
-            {displayedCategory.items.map((item) => {
-              return (
-                <ProjectCard
-                  key={item.title}
-                  item={item}
-                  color={displayedCategory.color}
-                />
-              )
-            })}
+            {displayedCategory.items.map((item, index) => (
+              <ProjectCard
+                key={item.title}
+                item={item}
+                color={displayedCategory.color}
+                label={displayedCategory.label}
+                actionLabel={displayedCategory.actionLabel ?? 'Open'}
+                index={index}
+                isLeaving={isLeaving}
+              />
+            ))}
           </div>
         )}
       </div>
