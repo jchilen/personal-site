@@ -518,33 +518,6 @@ main {
   }
 }
 
-/* Four category-colored corners framing a panel (the floating card panel) */
-@utility corner-frame {
-  --frame-color: var(--category-color, currentColor);
-  --frame-size: 0.875rem;
-
-  background-image:
-    linear-gradient(var(--frame-color), var(--frame-color)),
-    linear-gradient(var(--frame-color), var(--frame-color)),
-    linear-gradient(var(--frame-color), var(--frame-color)),
-    linear-gradient(var(--frame-color), var(--frame-color)),
-    linear-gradient(var(--frame-color), var(--frame-color)),
-    linear-gradient(var(--frame-color), var(--frame-color)),
-    linear-gradient(var(--frame-color), var(--frame-color)),
-    linear-gradient(var(--frame-color), var(--frame-color));
-  background-repeat: no-repeat;
-  background-size:
-    var(--frame-size) 2px, 2px var(--frame-size),
-    var(--frame-size) 2px, 2px var(--frame-size),
-    var(--frame-size) 2px, 2px var(--frame-size),
-    var(--frame-size) 2px, 2px var(--frame-size);
-  background-position:
-    top left, top left,
-    top right, top right,
-    bottom left, bottom left,
-    bottom right, bottom right;
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;

@@ -139,7 +139,7 @@ export function CategoryBar({ floating = false }: CategoryBarProps) {
       <div
         ref={cardAreaRef}
         className={cn(
-          'flex items-start justify-center',
+                    'flex items-start justify-center',
           floating
             ? 'pointer-events-none absolute top-full left-1/2 mt-3 w-max max-w-[calc(100vw-2rem)] -translate-x-1/2'
             : 'min-h-[50svh] scroll-mt-20 pt-8',
@@ -149,8 +149,8 @@ export function CategoryBar({ floating = false }: CategoryBarProps) {
           <div
             key={displayedCategory.id}
             className={cn(
-              'flex max-w-188 flex-wrap justify-center gap-4',
-              floating && 'pointer-events-auto corner-frame bg-background p-4',
+              floating &&
+                'pointer-events-auto relative border border-l-0 bg-muted py-4 pr-4 pl-10',
             )}
             style={{ '--category-color': displayedCategory.color } as CSSProperties}
             onAnimationEnd={() => {
@@ -160,17 +160,36 @@ export function CategoryBar({ floating = false }: CategoryBarProps) {
               }
             }}
           >
-            {displayedCategory.items.map((item, index) => (
-              <ProjectCard
-                key={item.title}
-                item={item}
-                color={displayedCategory.color}
-                label={displayedCategory.label}
-                actionLabel={displayedCategory.actionLabel ?? 'Open'}
-                index={index}
-                isLeaving={isLeaving}
-              />
-            ))}
+            {floating && (
+              <div
+                aria-hidden="true"
+                className="absolute -inset-y-px left-0 flex w-6 items-center justify-center bg-(--category-color)"
+              >
+                <span className="rotate-180 font-heading text-xs font-semibold tracking-eyebrow text-background uppercase [writing-mode:vertical-rl]">
+                  {displayedCategory.label}
+                </span>
+              </div>
+            )}
+
+            {/* Up to 3 cards share one row; 4 or more go 2 per row (an odd last card centers) */}
+            <div
+              className={cn(
+                'flex flex-wrap justify-center gap-4',
+                displayedCategory.items.length >= 4 && 'max-w-124',
+              )}
+            >
+              {displayedCategory.items.map((item, index) => (
+                <ProjectCard
+                  key={item.title}
+                  item={item}
+                  color={displayedCategory.color}
+                  label={displayedCategory.label}
+                  actionLabel={displayedCategory.actionLabel ?? 'Open'}
+                  index={index}
+                  isLeaving={isLeaving}
+                />
+              ))}
+            </div>
           </div>
         )}
       </div>
