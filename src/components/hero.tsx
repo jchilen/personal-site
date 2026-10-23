@@ -1,5 +1,6 @@
 import avatar from '@/assets/icenine_avatar.png'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Eyebrow } from '@/components/eyebrow'
 
 export function Hero() {
   return (
@@ -15,9 +16,9 @@ export function Hero() {
         </AvatarFallback>
       </Avatar>
 
-      <p className="font-heading text-xs font-semibold tracking-eyebrow text-foreground uppercase dark:text-primary">
+      <Eyebrow className="font-semibold text-foreground dark:text-primary">
         Software Developer
-      </p>
+      </Eyebrow>
       <span aria-hidden="true" className="mt-2 h-0.5 w-8 bg-primary" />
 
       <h1 className="mt-4 font-heading text-4xl font-semibold tracking-widest uppercase sm:text-6xl">

@@ -139,10 +139,10 @@ export function CategoryBar({ floating = false }: CategoryBarProps) {
       <div
         ref={cardAreaRef}
         className={cn(
-          'flex justify-center',
+          'flex items-start justify-center',
           floating
             ? 'pointer-events-none absolute top-full left-1/2 mt-3 w-max max-w-[calc(100vw-2rem)] -translate-x-1/2'
-            : 'min-h-72 scroll-mt-20 pt-8',
+            : 'min-h-[50svh] scroll-mt-20 pt-8',
         )}
       >
         {displayedCategory && (
