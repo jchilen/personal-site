@@ -39,7 +39,7 @@ export function SafeLeadPage() {
     return (
         <ToolLayout
             eyebrow="Tools"
-            title="CBB: Is the Lead Safe?"
+            title="Is the Lead Safe?"
             intro="Find out if a college basketball game is effectively over."
         >
             <MethodologyLayout

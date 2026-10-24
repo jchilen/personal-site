@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 export function ComingSoonPage() {
     return (
         <>
+            <title>Coming soon // IceNine</title>
             <CategoryBar floating />
             <section className="flex flex-col items-center pt-24 pb-16 text-center">
                 <Eyebrow>Coming soon</Eyebrow>

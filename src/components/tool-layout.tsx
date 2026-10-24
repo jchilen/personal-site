@@ -17,6 +17,7 @@ export function ToolLayout({
 }: ToolLayoutProps) {
     return (
         <>
+            <title>{`${title} // IceNine`}</title>
             <CategoryBar floating />
             <section className="pt-12 pb-16">
                 <header className="flex flex-col items-center text-center">

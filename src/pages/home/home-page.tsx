@@ -34,6 +34,7 @@ function HomeSection({ id, title, children }: HomeSectionProps) {
 export function HomePage() {
     return (
         <>
+            <title>IceNine</title>
             <Hero />
             <CategoryBar />
 
