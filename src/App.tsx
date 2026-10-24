@@ -1,33 +1,38 @@
-import Footer from './components/Footer'
-import ThemeToggle from './components/ThemeToggle'
+import { Footer } from '@/components/footer'
+import { ModeToggle } from '@/components/mode-toggle'
 import { useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router'
-import HomePage from './pages/HomePage'
-import SafeLeadPage from './pages/SafeLeadPage'
-import ComingSoonPage from './pages/ComingSoonPage'
+import { HomePage } from '@/pages/home/home-page'
+import { SafeLeadPage } from '@/features/safe-lead/safe-lead-page'
+import { ComingSoonPage } from '@/pages/coming-soon-page'
 
 function App() {
-  
-  const { pathname } = useLocation()
+    const { pathname } = useLocation()
 
-  useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [pathname])
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [pathname])
 
-  return (
-    <>
-      <ThemeToggle />
-      <main key={pathname}>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/tools/safe-lead-calculator" element={<SafeLeadPage />} />
-          <Route path="*" element={<ComingSoonPage />} />
-        </Routes>
-      </main>
+    return (
+        <div className="flex min-h-svh flex-col">
+            <ModeToggle className="fixed top-4 right-4 z-20 max-sm:hidden" />
+            <main
+                key={pathname}
+                className="mx-auto w-full max-w-280 flex-1 px-6"
+            >
+                <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route
+                        path="/tools/safe-lead-calculator"
+                        element={<SafeLeadPage />}
+                    />
+                    <Route path="*" element={<ComingSoonPage />} />
+                </Routes>
+            </main>
 
-      <Footer />
-    </>
-  )
+            <Footer />
+        </div>
+    )
 }
 
 export default App
