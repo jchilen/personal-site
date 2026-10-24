@@ -32,7 +32,12 @@ type ComparisonBarProps = {
   fillClass: string
 }
 
-function ComparisonBar({ label, value, percent, fillClass }: ComparisonBarProps) {
+function ComparisonBar({
+  label,
+  value,
+  percent,
+  fillClass,
+}: ComparisonBarProps) {
   return (
     <div>
       <div className="flex justify-between font-heading text-xs tracking-eyebrow text-muted-foreground uppercase">
@@ -60,11 +65,21 @@ export function SafeLeadOutput({
   secondsLeft,
 }: SafeLeadOutputProps) {
   const longest = result ? Math.max(result.threshold, secondsLeft) : 0
-  const holdsPercent = result && longest > 0 ? (result.threshold / longest) * 100 : 0
+  const holdsPercent =
+    result && longest > 0 ? (result.threshold / longest) * 100 : 0
   const timePercent = result && longest > 0 ? (secondsLeft / longest) * 100 : 0
 
-  const verdict = status === 'empty' ? 'Enter inputs' : status === 'safe' ? 'Lead is' : 'Not safe'
-  const readout = !result ? '—' : result.isSafe ? 'Safe' : `${result.safePercent}%`
+  const verdict =
+    status === 'empty'
+      ? 'Enter inputs'
+      : status === 'safe'
+        ? 'Lead is'
+        : 'Not safe'
+  const readout = !result
+    ? '—'
+    : result.isSafe
+      ? 'Safe'
+      : `${result.safePercent}%`
 
   return (
     <Card size="sm" className="border shadow-none ring-0" aria-live="polite">
@@ -79,7 +94,9 @@ export function SafeLeadOutput({
           >
             {verdict}
           </p>
-          <p className="font-heading text-4xl font-bold tracking-wider uppercase">{readout}</p>
+          <p className="font-heading text-4xl font-bold tracking-wider uppercase">
+            {readout}
+          </p>
         </div>
 
         <div className="flex flex-col gap-3">
@@ -106,8 +123,9 @@ export function SafeLeadOutput({
                 {result.rawValue !== result.clampedValue && ' → 0'}
               </p>
               <p>
-                {result.clampedValue.toFixed(1)}² = {result.threshold.toFixed(2)}{' '}
-                {result.isSafe ? '>' : '≤'} {secondsLeft}s
+                {result.clampedValue.toFixed(1)}² ={' '}
+                {result.threshold.toFixed(2)} {result.isSafe ? '>' : '≤'}{' '}
+                {secondsLeft}s
               </p>
             </>
           )}

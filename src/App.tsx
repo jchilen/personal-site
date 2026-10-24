@@ -16,7 +16,7 @@ function App() {
   return (
     <div className="flex min-h-svh flex-col">
       <ModeToggle className="fixed top-4 right-4 z-20 max-sm:hidden" />
-        <main key={pathname} className="mx-auto w-full max-w-240 flex-1 px-6">
+      <main key={pathname} className="mx-auto w-full max-w-240 flex-1 px-6">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route

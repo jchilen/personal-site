@@ -9,7 +9,12 @@ type ToolLayoutProps = {
   children: ReactNode
 }
 
-export function ToolLayout({ eyebrow, title, intro, children }: ToolLayoutProps) {
+export function ToolLayout({
+  eyebrow,
+  title,
+  intro,
+  children,
+}: ToolLayoutProps) {
   return (
     <>
       <CategoryBar floating />
