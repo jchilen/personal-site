@@ -47,9 +47,15 @@ export function CategoryBar({ floating = false }: CategoryBarProps) {
   function selectCategory(nextId: string | null) {
     setSelectedId(nextId)
 
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches
 
-    if (!displayedCategory || displayedCategory.items.length === 0 || prefersReducedMotion) {
+    if (
+      !displayedCategory ||
+      displayedCategory.items.length === 0 ||
+      prefersReducedMotion
+    ) {
       // Nothing (or no cards) on screen: show the new selection right away
       setDisplayedId(nextId)
       setIsLeaving(false)
@@ -78,7 +84,9 @@ export function CategoryBar({ floating = false }: CategoryBarProps) {
   return (
     <div
       ref={dockRef}
-      className={cn(floating ? 'sticky top-4 z-10 mx-auto mt-6 w-fit' : 'contents')}
+      className={cn(
+        floating ? 'sticky top-4 z-10 mx-auto mt-6 w-fit' : 'contents',
+      )}
     >
       <nav
         aria-label="Site sections"
@@ -139,7 +147,7 @@ export function CategoryBar({ floating = false }: CategoryBarProps) {
       <div
         ref={cardAreaRef}
         className={cn(
-                    'flex items-start justify-center',
+          'flex items-start justify-center',
           floating
             ? 'pointer-events-none absolute top-full left-1/2 mt-3 w-max max-w-[calc(100vw-2rem)] -translate-x-1/2'
             : 'min-h-[50svh] scroll-mt-20 pt-8',
@@ -152,7 +160,9 @@ export function CategoryBar({ floating = false }: CategoryBarProps) {
               floating &&
                 'pointer-events-auto relative border border-l-0 bg-muted py-4 pr-4 pl-10',
             )}
-            style={{ '--category-color': displayedCategory.color } as CSSProperties}
+            style={
+              { '--category-color': displayedCategory.color } as CSSProperties
+            }
             onAnimationEnd={() => {
               if (isLeaving) {
                 setDisplayedId(selectedId)

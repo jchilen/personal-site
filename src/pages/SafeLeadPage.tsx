@@ -2,7 +2,7 @@ import { CategoryBar } from '@/components/category-bar'
 import SafeLeadRing from '../components/SafeLeadRing'
 import { useState } from 'react'
 import { Minus, Plus } from 'lucide-react'
-import { calculateSafeLead, type Possession } from '../utils/safeLead'
+import { calculateSafeLead, type Possession } from '@/features/safe-lead/safe-lead'
 
 // Turns whatever was typed into a whole number between 0 and max
 function clampInput(value: string, max: number) {

@@ -21,7 +21,14 @@ type ProjectCardProps = {
   isLeaving: boolean
 }
 
-export function ProjectCard({ item, color, label, actionLabel, index, isLeaving }: ProjectCardProps) {
+export function ProjectCard({
+  item,
+  color,
+  label,
+  actionLabel,
+  index,
+  isLeaving,
+}: ProjectCardProps) {
   const Icon = item.icon
   const number = String(index + 1).padStart(2, '0')
 
@@ -43,7 +50,9 @@ export function ProjectCard({ item, color, label, actionLabel, index, isLeaving 
           </div>
           <div className="flex items-center gap-3">
             <Icon className="size-8 shrink-0 stroke-[1.25] text-(--category-color)" />
-            <CardTitle className="text-base tracking-normal normal-case">{item.title}</CardTitle>
+            <CardTitle className="text-base tracking-normal normal-case">
+              {item.title}
+            </CardTitle>
           </div>
         </CardHeader>
 

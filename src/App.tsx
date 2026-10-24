@@ -2,9 +2,9 @@ import { Footer } from '@/components/footer'
 import { ModeToggle } from '@/components/mode-toggle'
 import { useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router'
-import { HomePage } from '@/pages/HomePage'
+import { HomePage } from '@/pages/home/home-page'
 import SafeLeadPage from './pages/SafeLeadPage'
-import ComingSoonPage from './pages/ComingSoonPage'
+import { ComingSoonPage } from '@/pages/coming-soon-page'
 
 function App() {
   const { pathname } = useLocation()

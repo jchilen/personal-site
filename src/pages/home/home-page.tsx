@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { IconArrowDown } from '@tabler/icons-react'
-import { Hero } from '@/components/hero'
+import { Hero } from './hero'
 import { CategoryBar } from '@/components/category-bar'
 import { Eyebrow } from '@/components/eyebrow'
 import { Button } from '@/components/ui/button'
@@ -37,7 +37,10 @@ export function HomePage() {
       <Hero />
       <CategoryBar />
 
-      <nav aria-label="Page sections" className="flex flex-wrap justify-center gap-3 pt-6 pb-12">
+      <nav
+        aria-label="Page sections"
+        className="flex flex-wrap justify-center gap-3 pt-6 pb-12"
+      >
         {SECTIONS.map((section) => (
           <Button
             key={section.id}
