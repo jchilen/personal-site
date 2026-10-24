@@ -9,6 +9,8 @@ import { PanelHeader } from './panel-header'
 import { calculateSafeLead, type Possession } from './safe-lead'
 import { SafeLeadOutput } from './safe-lead-output'
 import { useNumberField } from './use-number-field'
+import { MethodologyLayout } from '@/components/methodology-layout'
+import { SafeLeadMethodology } from './safe-lead-methodology'
 
 const fieldLabelClass =
     'font-heading text-xs tracking-eyebrow text-muted-foreground uppercase'
@@ -39,7 +41,11 @@ export function SafeLeadPage() {
             title="CBB: Is the Lead Safe?"
             intro="Find out if a college basketball game is effectively over."
         >
-            <div className="mx-auto grid max-w-188 gap-4 md:grid-cols-2">
+            <MethodologyLayout
+                title="How the lead is measured"
+                methodology={<SafeLeadMethodology />}
+            >
+            <div className="grid gap-4 @xl:grid-cols-2">
                 <Card size="sm" className="border shadow-none ring-0">
                     <PanelHeader label="Input" number="01" />
                     <CardContent className="flex flex-col gap-5">
@@ -166,6 +172,7 @@ export function SafeLeadPage() {
                 </Button>{' '}
                 created by Bill James.
             </p>
+            </MethodologyLayout>
         </ToolLayout>
     )
 }
