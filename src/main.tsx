@@ -7,13 +7,13 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { IconContext } from '@phosphor-icons/react'
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <BrowserRouter>
-      <ThemeProvider defaultTheme="system" storageKey="theme">
-        <IconContext.Provider value={{ weight: 'light' }}>
-          <App />
-        </IconContext.Provider>
-      </ThemeProvider>
-    </BrowserRouter>
-  </StrictMode>,
+    <StrictMode>
+        <BrowserRouter>
+            <ThemeProvider defaultTheme="system" storageKey="theme">
+                <IconContext.Provider value={{ weight: 'light' }}>
+                    <App />
+                </IconContext.Provider>
+            </ThemeProvider>
+        </BrowserRouter>
+    </StrictMode>,
 )

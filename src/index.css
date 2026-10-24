@@ -9,218 +9,218 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  color-scheme: light;
+    color-scheme: light;
 
-  --background: #dee3ef;
-  --foreground: #031422;
-  --card: #f1f4fa;
-  --card-foreground: #031422;
-  --popover: #f1f4fa;
-  --popover-foreground: #031422;
-  --primary: #ad9742;
-  --primary-foreground: #031422;
-  --secondary: #c6cfe3;
-  --secondary-foreground: #031422;
-  --muted: #c6cfe3;
-  --muted-foreground: #465e9e;
-  --accent: #c6cfe3;
-  --accent-foreground: #031422;
-  --destructive: #b3261e;
-  --border: #c6cfe3;
-  --input: #c6cfe3;
-  --ring: #ad9742;
-  --radius: 0.625rem;
+    --background: #dee3ef;
+    --foreground: #031422;
+    --card: #f1f4fa;
+    --card-foreground: #031422;
+    --popover: #f1f4fa;
+    --popover-foreground: #031422;
+    --primary: #ad9742;
+    --primary-foreground: #031422;
+    --secondary: #c6cfe3;
+    --secondary-foreground: #031422;
+    --muted: #c6cfe3;
+    --muted-foreground: #465e9e;
+    --accent: #c6cfe3;
+    --accent-foreground: #031422;
+    --destructive: #b3261e;
+    --border: #c6cfe3;
+    --input: #c6cfe3;
+    --ring: #ad9742;
+    --radius: 0.625rem;
 
-  --brand: #465e9e;
-  --gold: #ad9742;
-  --gold-light: #c4ba40;
-  --safe: #1b6b50;
-  --unsafe: #b3261e;
+    --brand: #465e9e;
+    --gold: #ad9742;
+    --gold-light: #c4ba40;
+    --safe: #1b6b50;
+    --unsafe: #b3261e;
 
-  --cat-home: var(--foreground);
-  --cat-tools: #8a5a00;
-  --cat-lancer: #a3262e;
-  --cat-articles: #116a73;
+    --cat-home: var(--foreground);
+    --cat-tools: #8a5a00;
+    --cat-lancer: #a3262e;
+    --cat-articles: #116a73;
 }
 
 .dark {
-  color-scheme: dark;
+    color-scheme: dark;
 
-  --background: #031422;
-  --foreground: #ffffff;
-  --card: #0c223e;
-  --card-foreground: #ffffff;
-  --popover: #0c223e;
-  --popover-foreground: #ffffff;
-  --primary: #c4ba40;
-  --secondary: #1e3a5f;
-  --secondary-foreground: #ffffff;
-  --muted: #1e3a5f;
-  --muted-foreground: #9aa6b5;
-  --accent: #1e3a5f;
-  --accent-foreground: #ffffff;
-  --destructive: #f07f6f;
-  --border: #1e3a5f;
-  --input: #1e3a5f;
-  --ring: #c4ba40;
+    --background: #031422;
+    --foreground: #ffffff;
+    --card: #0c223e;
+    --card-foreground: #ffffff;
+    --popover: #0c223e;
+    --popover-foreground: #ffffff;
+    --primary: #c4ba40;
+    --secondary: #1e3a5f;
+    --secondary-foreground: #ffffff;
+    --muted: #1e3a5f;
+    --muted-foreground: #9aa6b5;
+    --accent: #1e3a5f;
+    --accent-foreground: #ffffff;
+    --destructive: #f07f6f;
+    --border: #1e3a5f;
+    --input: #1e3a5f;
+    --ring: #c4ba40;
 
-  --brand: #c4ba40;
-  --safe: #5fd3b0;
-  --unsafe: #f07f6f;
+    --brand: #c4ba40;
+    --safe: #5fd3b0;
+    --unsafe: #f07f6f;
 
-  --cat-tools: #f0b04a;
-  --cat-lancer: #ef6b6b;
-  --cat-articles: #5cc8d2;
+    --cat-tools: #f0b04a;
+    --cat-lancer: #ef6b6b;
+    --cat-articles: #5cc8d2;
 }
 
 @theme inline {
-  --font-sans: 'Figtree Variable', sans-serif;
-  --font-heading: 'Oxanium Variable', sans-serif;
-  --font-serif: 'Newsreader Variable', Georgia, serif;
-  --tracking-eyebrow: 0.3em;
-  --animate-scan-reveal: scan-reveal 350ms linear both;
-  --animate-scan-line: scan-line 350ms linear both;
+    --font-sans: 'Figtree Variable', sans-serif;
+    --font-heading: 'Oxanium Variable', sans-serif;
+    --font-serif: 'Newsreader Variable', Georgia, serif;
+    --tracking-eyebrow: 0.3em;
 
-  @keyframes scan-reveal {
-    from {
-      clip-path: inset(0 0 100% 0);
+    @keyframes scan-reveal {
+        from {
+            clip-path: inset(0 0 100% 0);
+        }
+        to {
+            clip-path: inset(0 0 -4px 0);
+        }
     }
-    to {
-      clip-path: inset(0 0 -4px 0);
-    }
-  }
 
-  @keyframes scan-line {
-    0% {
-      top: 0;
-      opacity: 1;
+    @keyframes scan-line {
+        0% {
+            top: 0;
+            opacity: 1;
+        }
+        90% {
+            opacity: 1;
+        }
+        100% {
+            top: 100%;
+            opacity: 0;
+        }
     }
-    90% {
-      opacity: 1;
-    }
-    100% {
-      top: 100%;
-      opacity: 0;
-    }
-  }
 
-  --animate-scan-conceal: scan-conceal 180ms linear both;
-  --animate-scan-line-out: scan-line-out 180ms linear both;
+    --animate-scan-conceal: scan-conceal 180ms linear both;
+    --animate-scan-line-out: scan-line-out 180ms linear both;
+    --animate-scan-reveal: scan-reveal 350ms linear both;
+    --animate-scan-line: scan-line 350ms linear both;
 
-  @keyframes scan-conceal {
-    from {
-      clip-path: inset(-4px 0 0 0);
+    @keyframes scan-conceal {
+        from {
+            clip-path: inset(-4px 0 0 0);
+        }
+        to {
+            clip-path: inset(100% 0 0 0);
+        }
     }
-    to {
-      clip-path: inset(100% 0 0 0);
-    }
-  }
 
-  @keyframes scan-line-out {
-    0% {
-      top: 0;
-      opacity: 1;
+    @keyframes scan-line-out {
+        0% {
+            top: 0;
+            opacity: 1;
+        }
+        90% {
+            opacity: 1;
+        }
+        100% {
+            top: 100%;
+            opacity: 0;
+        }
     }
-    90% {
-      opacity: 1;
-    }
-    100% {
-      top: 100%;
-      opacity: 0;
-    }
-  }
 
-  --color-brand: var(--brand);
-  --color-gold: var(--gold);
-  --color-gold-light: var(--gold-light);
-  --color-safe: var(--safe);
-  --color-unsafe: var(--unsafe);
-  --color-cat-home: var(--cat-home);
-  --color-cat-tools: var(--cat-tools);
-  --color-cat-lancer: var(--cat-lancer);
-  --color-cat-articles: var(--cat-articles);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --color-foreground: var(--foreground);
-  --color-background: var(--background);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+    --color-brand: var(--brand);
+    --color-gold: var(--gold);
+    --color-gold-light: var(--gold-light);
+    --color-safe: var(--safe);
+    --color-unsafe: var(--unsafe);
+    --color-cat-home: var(--cat-home);
+    --color-cat-tools: var(--cat-tools);
+    --color-cat-lancer: var(--cat-lancer);
+    --color-cat-articles: var(--cat-articles);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.4);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 /* Target-lock corners: faint on hover, solid when selected */
 @utility corner-brackets {
-  position: relative;
+    position: relative;
 
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    width: 0.5rem;
-    height: 0.5rem;
-    border-color: currentColor;
-    opacity: 0;
-    transition: opacity 150ms;
-    pointer-events: none;
-  }
+    &::before,
+    &::after {
+        content: '';
+        position: absolute;
+        width: 0.5rem;
+        height: 0.5rem;
+        border-color: currentColor;
+        opacity: 0;
+        transition: opacity 150ms;
+        pointer-events: none;
+    }
 
-  &::before {
-    top: 0.25rem;
-    left: 0.25rem;
-    border-top-width: 2px;
-    border-left-width: 2px;
-  }
+    &::before {
+        top: 0.25rem;
+        left: 0.25rem;
+        border-top-width: 2px;
+        border-left-width: 2px;
+    }
 
-  &::after {
-    right: 0.25rem;
-    bottom: 0.25rem;
-    border-right-width: 2px;
-    border-bottom-width: 2px;
-  }
+    &::after {
+        right: 0.25rem;
+        bottom: 0.25rem;
+        border-right-width: 2px;
+        border-bottom-width: 2px;
+    }
 
-  &:hover::before,
-  &:hover::after,
-  &:focus-visible::before,
-  &:focus-visible::after {
-    opacity: var(--brackets-hover-opacity, 0.4);
-  }
+    &:hover::before,
+    &:hover::after,
+    &:focus-visible::before,
+    &:focus-visible::after {
+        opacity: var(--brackets-hover-opacity, 0.4);
+    }
 
-  &[data-state='on']::before,
-  &[data-state='on']::after {
-    opacity: 1;
-  }
+    &[data-state='on']::before,
+    &[data-state='on']::after {
+        opacity: 1;
+    }
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background leading-relaxed text-foreground;
-  }
-  button:not(:disabled),
-  [role='button']:not(:disabled) {
-    cursor: pointer;
-  }
-  html {
-    @apply scroll-smooth font-sans motion-reduce:scroll-auto;
-  }
+    * {
+        @apply border-border outline-ring/50;
+    }
+    body {
+        @apply bg-background leading-relaxed text-foreground;
+    }
+    button:not(:disabled),
+    [role='button']:not(:disabled) {
+        cursor: pointer;
+    }
+    html {
+        @apply scroll-smooth font-sans motion-reduce:scroll-auto;
+    }
 }

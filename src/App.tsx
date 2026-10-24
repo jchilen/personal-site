@@ -7,29 +7,32 @@ import { SafeLeadPage } from '@/features/safe-lead/safe-lead-page'
 import { ComingSoonPage } from '@/pages/coming-soon-page'
 
 function App() {
-  const { pathname } = useLocation()
+    const { pathname } = useLocation()
 
-  useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [pathname])
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [pathname])
 
-  return (
-    <div className="flex min-h-svh flex-col">
-      <ModeToggle className="fixed top-4 right-4 z-20 max-sm:hidden" />
-      <main key={pathname} className="mx-auto w-full max-w-240 flex-1 px-6">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route
-            path="/tools/safe-lead-calculator"
-            element={<SafeLeadPage />}
-          />
-          <Route path="*" element={<ComingSoonPage />} />
-        </Routes>
-      </main>
+    return (
+        <div className="flex min-h-svh flex-col">
+            <ModeToggle className="fixed top-4 right-4 z-20 max-sm:hidden" />
+            <main
+                key={pathname}
+                className="mx-auto w-full max-w-240 flex-1 px-6"
+            >
+                <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route
+                        path="/tools/safe-lead-calculator"
+                        element={<SafeLeadPage />}
+                    />
+                    <Route path="*" element={<ComingSoonPage />} />
+                </Routes>
+            </main>
 
-      <Footer />
-    </div>
-  )
+            <Footer />
+        </div>
+    )
 }
 
 export default App
