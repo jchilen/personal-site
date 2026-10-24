@@ -42,7 +42,7 @@ export function MethodologyLayout({
             className={cn(
                 'grid transition-[grid-template-columns] duration-300 ease-out motion-reduce:transition-none',
                 isOpen
-                    ? 'lg:grid-cols-[minmax(0,1fr)_28rem]'
+                    ? 'lg:grid-cols-[minmax(0,1fr)_36rem]'
                     : 'lg:grid-cols-[minmax(0,1fr)_0rem]',
             )}
         >
@@ -60,7 +60,7 @@ export function MethodologyLayout({
             </div>
 
             {isOpen && (
-                <article className="mt-8 animate-in border-t-2 border-primary pt-6 duration-300 fade-in motion-reduce:animate-none lg:mt-12 lg:ml-8 lg:w-104 lg:border-t-0 lg:border-l-2 lg:pt-0 lg:pl-8">
+                <article className="mt-8 animate-in border-t-2 border-primary pt-6 duration-300 fade-in motion-reduce:animate-none lg:mt-12 lg:ml-8 lg:w-136 lg:border-t-0 lg:border-l-2 lg:pt-0 lg:pl-8">
                     <Eyebrow className="font-semibold text-foreground dark:text-primary">
                         Methodology
                     </Eyebrow>

@@ -18,7 +18,7 @@ function App() {
             <ModeToggle className="fixed top-4 right-4 z-20 max-sm:hidden" />
             <main
                 key={pathname}
-                className="mx-auto w-full max-w-240 flex-1 px-6"
+                className="mx-auto w-full max-w-280 flex-1 px-6"
             >
                 <Routes>
                     <Route path="/" element={<HomePage />} />
