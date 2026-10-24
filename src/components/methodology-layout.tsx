@@ -21,7 +21,7 @@ export function MethodologyLayout({
     const [isOpen, setIsOpen] = useState(false)
     const toolRef = useRef<HTMLDivElement>(null)
 
-        const toggle = (
+    const toggle = (
         <Button
             variant="framed"
             size="sm"

@@ -46,123 +46,123 @@ export function SafeLeadPage() {
                 title="How the lead is measured"
                 methodology={<SafeLeadMethodology />}
             >
-            <div className="grid gap-4 @xl:grid-cols-2">
-                <Card size="sm" className="border shadow-none ring-0">
-                    <PanelHeader label="Input" number="01" />
-                    <CardContent className="flex flex-col gap-5">
-                        <div className="grid grid-cols-[4.5rem_minmax(0,1fr)] items-center gap-3">
-                            <label
-                                htmlFor="points-ahead"
-                                className={fieldLabelClass}
-                            >
-                                Lead
-                            </label>
-                            <div className="flex items-center gap-2">
-                                <Button
-                                    variant="outline"
-                                    size="icon-sm"
-                                    aria-label="Decrease lead"
-                                    className="text-cat-tools"
-                                    onClick={() =>
-                                        lead.setNumber(lead.number - 1)
-                                    }
+                <div className="grid gap-4 @xl:grid-cols-2">
+                    <Card size="sm" className="border shadow-none ring-0">
+                        <PanelHeader label="Input" number="01" />
+                        <CardContent className="flex flex-col gap-5">
+                            <div className="grid grid-cols-[4.5rem_minmax(0,1fr)] items-center gap-3">
+                                <label
+                                    htmlFor="points-ahead"
+                                    className={fieldLabelClass}
                                 >
-                                    <IconMinus />
-                                </Button>
-                                <Input
-                                    id="points-ahead"
-                                    inputMode="numeric"
-                                    {...lead.inputProps}
-                                    className={numberInputClass}
-                                />
-                                <Button
-                                    variant="outline"
-                                    size="icon-sm"
-                                    aria-label="Increase lead"
-                                    className="text-cat-tools"
-                                    onClick={() =>
-                                        lead.setNumber(lead.number + 1)
-                                    }
-                                >
-                                    <IconPlus />
-                                </Button>
+                                    Lead
+                                </label>
+                                <div className="flex items-center gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="icon-sm"
+                                        aria-label="Decrease lead"
+                                        className="text-cat-tools"
+                                        onClick={() =>
+                                            lead.setNumber(lead.number - 1)
+                                        }
+                                    >
+                                        <IconMinus />
+                                    </Button>
+                                    <Input
+                                        id="points-ahead"
+                                        inputMode="numeric"
+                                        {...lead.inputProps}
+                                        className={numberInputClass}
+                                    />
+                                    <Button
+                                        variant="outline"
+                                        size="icon-sm"
+                                        aria-label="Increase lead"
+                                        className="text-cat-tools"
+                                        onClick={() =>
+                                            lead.setNumber(lead.number + 1)
+                                        }
+                                    >
+                                        <IconPlus />
+                                    </Button>
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="grid grid-cols-[4.5rem_minmax(0,1fr)] items-center gap-3">
-                            <span
-                                id="possession-label"
-                                className={fieldLabelClass}
-                            >
-                                Ball
-                            </span>
-                            <ToggleGroup
-                                type="single"
-                                aria-labelledby="possession-label"
-                                value={possession}
-                                onValueChange={(value) => {
-                                    if (value)
-                                        setPossession(value as Possession)
-                                }}
-                                className="grid w-full grid-cols-2 gap-2"
-                            >
-                                <ToggleGroupItem
-                                    value="leading"
-                                    className={possessionItemClass}
-                                >
-                                    Leading
-                                </ToggleGroupItem>
-                                <ToggleGroupItem
-                                    value="trailing"
-                                    className={possessionItemClass}
-                                >
-                                    Trailing
-                                </ToggleGroupItem>
-                            </ToggleGroup>
-                        </div>
-
-                        <div className="grid grid-cols-[4.5rem_minmax(0,1fr)] items-center gap-3">
-                            <span className={fieldLabelClass}>Clock</span>
-                            <div className="flex items-center gap-2">
-                                <Input
-                                    aria-label="Minutes"
-                                    inputMode="numeric"
-                                    {...minutes.inputProps}
-                                    className={numberInputClass}
-                                />
+                            <div className="grid grid-cols-[4.5rem_minmax(0,1fr)] items-center gap-3">
                                 <span
-                                    aria-hidden="true"
-                                    className="font-heading text-2xl font-semibold text-muted-foreground"
+                                    id="possession-label"
+                                    className={fieldLabelClass}
                                 >
-                                    :
+                                    Ball
                                 </span>
-                                <Input
-                                    aria-label="Seconds"
-                                    inputMode="numeric"
-                                    {...seconds.inputProps}
-                                    className={numberInputClass}
-                                />
+                                <ToggleGroup
+                                    type="single"
+                                    aria-labelledby="possession-label"
+                                    value={possession}
+                                    onValueChange={(value) => {
+                                        if (value)
+                                            setPossession(value as Possession)
+                                    }}
+                                    className="grid w-full grid-cols-2 gap-2"
+                                >
+                                    <ToggleGroupItem
+                                        value="leading"
+                                        className={possessionItemClass}
+                                    >
+                                        Leading
+                                    </ToggleGroupItem>
+                                    <ToggleGroupItem
+                                        value="trailing"
+                                        className={possessionItemClass}
+                                    >
+                                        Trailing
+                                    </ToggleGroupItem>
+                                </ToggleGroup>
                             </div>
-                        </div>
-                    </CardContent>
-                </Card>
 
-                <SafeLeadOutput
-                    result={result}
-                    status={status}
-                    pointsAhead={pointsAhead}
-                    possession={possession}
-                    secondsLeft={secondsLeft}
-                />
-            </div>
+                            <div className="grid grid-cols-[4.5rem_minmax(0,1fr)] items-center gap-3">
+                                <span className={fieldLabelClass}>Clock</span>
+                                <div className="flex items-center gap-2">
+                                    <Input
+                                        aria-label="Minutes"
+                                        inputMode="numeric"
+                                        {...minutes.inputProps}
+                                        className={numberInputClass}
+                                    />
+                                    <span
+                                        aria-hidden="true"
+                                        className="font-heading text-2xl font-semibold text-muted-foreground"
+                                    >
+                                        :
+                                    </span>
+                                    <Input
+                                        aria-label="Seconds"
+                                        inputMode="numeric"
+                                        {...seconds.inputProps}
+                                        className={numberInputClass}
+                                    />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
 
-            <p className="mt-6 text-center text-xs text-muted-foreground">
-                Uses the{' '}
-                <InlineLink href="https://www.slate.com/articles/sports/sports_nut/2008/03/the_lead_is_safe.single.html">
-                    Safe Lead Formula
-                </InlineLink>{' '}
-                created by Bill James.
-            </p>
+                    <SafeLeadOutput
+                        result={result}
+                        status={status}
+                        pointsAhead={pointsAhead}
+                        possession={possession}
+                        secondsLeft={secondsLeft}
+                    />
+                </div>
+
+                <p className="mt-6 text-center text-xs text-muted-foreground">
+                    Uses the{' '}
+                    <InlineLink href="https://www.slate.com/articles/sports/sports_nut/2008/03/the_lead_is_safe.single.html">
+                        Safe Lead Formula
+                    </InlineLink>{' '}
+                    created by Bill James.
+                </p>
             </MethodologyLayout>
         </ToolLayout>
     )
