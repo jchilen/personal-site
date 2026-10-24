@@ -14,17 +14,18 @@ function FooterLink({ label, href }: { label: string; href: string }) {
 }
 
 export function Footer() {
+    const year = new Date().getFullYear()
     return (
         <footer className="flex flex-col items-center gap-4 border-t px-4 py-8 font-heading text-xs tracking-widest text-muted-foreground uppercase">
+            <ModeToggle className="sm:hidden" />
             <div className="flex items-center gap-2 sm:gap-6">
                 <FooterLink label="GitHub" href="https://github.com/jchilen" />
-                <p>Joe Chilen // IceNine {new Date().getFullYear()}</p>
+                <p className="text-center">Joe Chilen // IceNine {year}</p>
                 <FooterLink
                     label="LinkedIn"
                     href="https://www.linkedin.com/in/your-profile"
                 />
             </div>
-            <ModeToggle className="sm:hidden" />
         </footer>
     )
 }

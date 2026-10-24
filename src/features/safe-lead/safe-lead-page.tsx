@@ -11,6 +11,7 @@ import { SafeLeadOutput } from './safe-lead-output'
 import { useNumberField } from './use-number-field'
 import { MethodologyLayout } from '@/components/methodology-layout'
 import { SafeLeadMethodology } from './safe-lead-methodology'
+import { InlineLink } from '@/components/inline-link'
 
 const fieldLabelClass =
     'font-heading text-xs tracking-eyebrow text-muted-foreground uppercase'
@@ -157,19 +158,9 @@ export function SafeLeadPage() {
 
             <p className="mt-6 text-center text-xs text-muted-foreground">
                 Uses the{' '}
-                <Button
-                    asChild
-                    variant="link"
-                    className="h-auto p-0 text-xs font-normal tracking-normal normal-case"
-                >
-                    <a
-                        href="https://www.slate.com/articles/sports/sports_nut/2008/03/the_lead_is_safe.single.html"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Safe Lead Formula
-                    </a>
-                </Button>{' '}
+                <InlineLink href="https://www.slate.com/articles/sports/sports_nut/2008/03/the_lead_is_safe.single.html">
+                    Safe Lead Formula
+                </InlineLink>{' '}
                 created by Bill James.
             </p>
             </MethodologyLayout>
