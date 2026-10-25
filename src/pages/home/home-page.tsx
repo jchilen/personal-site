@@ -1,6 +1,7 @@
 import { IconArrowDown } from '@tabler/icons-react'
 import { Hero } from './hero'
 import { HomeSection } from './home-section'
+import { ExperienceSection } from './experience-section'
 import { CategoryBar } from '@/components/category-bar'
 import { Button } from '@/components/ui/button'
 
@@ -41,14 +42,14 @@ export function HomePage() {
                 <p className="text-center text-lg">
                     I'm a software developer in Kansas City, moving from test
                     automation into full-time development. I enjoy analyzing
-                    systems and finding room for improvement, and I take pride
-                    in delivering quality work that helps the people around me
+                    systems and finding room for improvement, and I'm always  
+                    happy to deliver quality work that enables the people around me
                     do their best.
                 </p>
             </HomeSection>
 
             <HomeSection id="experience" number="02" title="Experience" wide>
-                <p>Experience cards go here.</p>
+                <ExperienceSection />
             </HomeSection>
 
             <HomeSection id="contact" number="03" title="Contact">

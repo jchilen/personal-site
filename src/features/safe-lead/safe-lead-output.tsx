@@ -1,6 +1,6 @@
 import { cn } from 'cn'
 import { Card, CardContent } from '@/components/ui/card'
-import { PanelHeader } from './panel-header'
+import { PanelHeader } from '@/components/panel-header'
 import type { Possession, SafeLeadResult } from './safe-lead'
 
 type Status = 'empty' | 'safe' | 'unsafe'
