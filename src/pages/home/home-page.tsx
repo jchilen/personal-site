@@ -2,6 +2,7 @@ import { IconArrowDown } from '@tabler/icons-react'
 import { Hero } from './hero'
 import { HomeSection } from './home-section'
 import { ExperienceSection } from './experience-section'
+import { ContactSection } from './contact-section'
 import { CategoryBar } from '@/components/category-bar'
 import { Button } from '@/components/ui/button'
 
@@ -53,7 +54,7 @@ export function HomePage() {
             </HomeSection>
 
             <HomeSection id="contact" number="03" title="Contact">
-                <p>Contact list goes here.</p>
+                <ContactSection />
             </HomeSection>
         </>
     )

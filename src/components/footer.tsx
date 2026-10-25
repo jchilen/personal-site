@@ -1,6 +1,7 @@
 import { IconArrowUpRight } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import { ModeToggle } from '@/components/mode-toggle'
+import { SOCIAL_LINKS } from '@/data/social-links'
 
 function FooterLink({ label, href }: { label: string; href: string }) {
     return (
@@ -19,11 +20,11 @@ export function Footer() {
         <footer className="flex flex-col items-center gap-4 border-t px-4 py-8 font-heading text-xs tracking-widest text-muted-foreground uppercase">
             <ModeToggle className="sm:hidden" />
             <div className="flex items-center gap-2 sm:gap-6">
-                <FooterLink label="GitHub" href="https://github.com/jchilen" />
+                <FooterLink label="GitHub" href={SOCIAL_LINKS.github.href} />
                 <p className="text-center">Joe Chilen // IceNine {year}</p>
                 <FooterLink
                     label="LinkedIn"
-                    href="https://www.linkedin.com/in/jchilen"
+                    href={SOCIAL_LINKS.linkedin.href}
                 />
             </div>
         </footer>
