@@ -9,7 +9,10 @@ export function SafeLeadMethodology() {
                     Bill James' original article
                 </InlineLink>
                 , I'll restate some of it here in case that page is ever lost or
-                goes down. This is a heuristic method, something practical that
+                goes down.
+            </p>
+            <p>
+                This is a heuristic method, something practical that
                 Bill James came up with by guessing at formulas and tweaking
                 over time based on results. Eventually he settled on something
                 he felt confident in:

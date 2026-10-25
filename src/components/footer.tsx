@@ -23,7 +23,7 @@ export function Footer() {
                 <p className="text-center">Joe Chilen // IceNine {year}</p>
                 <FooterLink
                     label="LinkedIn"
-                    href="https://www.linkedin.com/in/your-profile"
+                    href="https://www.linkedin.com/in/jchilen"
                 />
             </div>
         </footer>
