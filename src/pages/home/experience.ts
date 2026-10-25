@@ -1,7 +1,7 @@
 export const CAREER_STAGES = [
     { id: 'data', label: 'Data', detail: '2021–23' },
     { id: 'testing', label: 'Testing', detail: 'Since 2024' },
-    { id: 'pipeline', label: 'Pipeline', detail: '- (Current)' },
+    { id: 'pipeline', label: 'Pipeline', detail: '(Current)' },
     { id: 'development', label: 'Development', detail: '(Current)' },
 ] as const
 
