@@ -1,8 +1,7 @@
-import type { ReactNode } from 'react'
 import { IconArrowDown } from '@tabler/icons-react'
 import { Hero } from './hero'
+import { HomeSection } from './home-section'
 import { CategoryBar } from '@/components/category-bar'
-import { Eyebrow } from '@/components/eyebrow'
 import { Button } from '@/components/ui/button'
 
 const SECTIONS = [
@@ -10,26 +9,6 @@ const SECTIONS = [
     { id: 'experience', title: 'Experience' },
     { id: 'contact', title: 'Contact' },
 ]
-
-type HomeSectionProps = {
-    id: string
-    title: string
-    children: ReactNode
-}
-
-function HomeSection({ id, title, children }: HomeSectionProps) {
-    return (
-        <section id={id} className="scroll-mt-28 py-24">
-            <div className="flex flex-col items-center gap-2">
-                <Eyebrow asChild>
-                    <h2>{title}</h2>
-                </Eyebrow>
-                <span aria-hidden="true" className="h-0.5 w-6 bg-primary" />
-            </div>
-            <div className="mx-auto mt-8 max-w-prose">{children}</div>
-        </section>
-    )
-}
 
 export function HomePage() {
     return (
@@ -58,16 +37,22 @@ export function HomePage() {
                 ))}
             </nav>
 
-            <HomeSection id="about" title="About">
-                <p>A few paragraphs about who you are and what you do.</p>
+            <HomeSection id="about" number="01" title="About">
+                <p className="text-center text-lg">
+                    I'm a software developer in Kansas City, moving from test
+                    automation into full-time development. I enjoy analyzing
+                    systems and finding room for improvement, and I take pride
+                    in delivering quality work that helps the people around me
+                    do their best.
+                </p>
             </HomeSection>
 
-            <HomeSection id="experience" title="Experience">
-                <p>Work history, skills, and the tools you use.</p>
+            <HomeSection id="experience" number="02" title="Experience" wide>
+                <p>Experience cards go here.</p>
             </HomeSection>
 
-            <HomeSection id="contact" title="Contact">
-                <p>How people can reach you.</p>
+            <HomeSection id="contact" number="03" title="Contact">
+                <p>Contact list goes here.</p>
             </HomeSection>
         </>
     )
