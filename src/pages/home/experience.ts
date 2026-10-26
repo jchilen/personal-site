@@ -89,7 +89,7 @@ export const EXPERIENCE: ExperienceEntry[] = [
         highlights: [
             'React and TypeScript with Tailwind v4',
             'Interactive tools like the CBB safe-lead calculator',
-            'Deployed on Cloudflare Workers with automatic builds from GitHub and a custom domain',
+            'Deployed on Cloudflare Workers with automatic builds from GitHub',
         ],
         stack: ['React', 'TypeScript', 'Tailwind', 'Cloudflare'],
     },
