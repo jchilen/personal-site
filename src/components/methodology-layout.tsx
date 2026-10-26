@@ -3,6 +3,7 @@ import { IconArrowUp, IconMinus, IconPlus } from '@tabler/icons-react'
 
 import { Eyebrow } from '@/components/eyebrow'
 import { Button } from '@/components/ui/button'
+import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible'
 import { cn } from '@/lib/utils'
 
 type MethodologyLayoutProps = {
@@ -59,8 +60,9 @@ export function MethodologyLayout({
                 </div>
             </div>
 
-            {isOpen && (
-                <article className="mt-8 animate-in border-t-2 border-primary pt-6 duration-300 fade-in motion-reduce:animate-none lg:mt-12 lg:ml-8 lg:w-136 lg:border-t-0 lg:border-l-2 lg:pt-0 lg:pl-8">
+            <Collapsible open={isOpen}>
+                <CollapsibleContent asChild>
+                    <article className="mt-8 border-t-2 border-primary pt-6 duration-300 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=open]:animate-in data-[state=open]:fade-in motion-reduce:animate-none lg:mt-12 lg:ml-8 lg:w-136 lg:border-t-0 lg:border-l-2 lg:pt-0 lg:pl-8">
                     <Eyebrow className="font-semibold text-foreground dark:text-primary">
                         Methodology
                     </Eyebrow>
@@ -79,8 +81,9 @@ export function MethodologyLayout({
                         {backLabel}
                         <IconArrowUp data-icon="inline-end" />
                     </Button>
-                </article>
-            )}
+                                    </article>
+                </CollapsibleContent>
+            </Collapsible>
         </div>
     )
 }

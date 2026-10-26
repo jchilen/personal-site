@@ -30,6 +30,26 @@ export function SafeLeadMethodology() {
                     remaining, the lead is safe.
                 </li>
             </ol>
+            <figure className="border bg-card px-5 py-4">
+                <figcaption className="font-heading text-xs tracking-eyebrow text-muted-foreground uppercase">
+                    The formula
+                </figcaption>
+                <p className="mt-3 text-center font-heading text-2xl font-semibold tracking-wide">
+                    (L − 3 ± 0.5)<sup>2</sup> {'>'} T
+                </p>
+                <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-base">
+                    <dt className="font-heading font-semibold">L</dt>
+                    <dd>Points the leading team is ahead</dd>
+                    <dt className="font-heading font-semibold">±</dt>
+                    <dd>+0.5 if the leading team has the ball, −0.5 if not</dd>
+                    <dt className="font-heading font-semibold">T</dt>
+                    <dd>Seconds remaining</dd>
+                </dl>
+                <p className="mt-3 text-sm text-muted-foreground">
+                    If the part in parentheses comes out negative, treat it as
+                    0.
+                </p>
+            </figure>
             <p>
                 I would be remiss not to mention that, as Bill James points out
                 in his article, his editor did find one game - out of the

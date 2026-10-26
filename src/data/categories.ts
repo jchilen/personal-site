@@ -6,6 +6,8 @@ import {
     IconNews,
     IconSquareRoot,
     IconTool,
+    IconTargetArrow,
+    IconPuzzle,
 } from '@tabler/icons-react'
 import {
     ChartLineUpIcon,
@@ -20,6 +22,7 @@ export type CardItem = {
     description: string
     href: string
     icon: IconComponent
+    actionLabel?: string
 }
 
 export type Category = {
@@ -63,7 +66,7 @@ export const categories: Category[] = [
                 icon: RankingIcon,
             },
             {
-                title: 'CBB: Is the Lead Safe?',
+                title: 'Is the Lead Safe?',
                 description:
                     "Find out if a college basketball game is effectively over, using Bill James' Safe Lead Formula.",
                 href: '/tools/safe-lead-calculator',
@@ -84,6 +87,21 @@ export const categories: Category[] = [
                     'Which Lancer frames can take the most punishment.',
                 href: '/lancer/survivability',
                 icon: IconHeartPlus,
+            },
+            {
+                title: 'Chance-to-Hit Calculator',
+                description:
+                    'Find out your likelihood of hitting a given Lancer enemy.',
+                href: '/lancer/chance-to-hit',
+                icon: IconTargetArrow,
+            },
+            {
+                title: 'Foundry Modules, Content, & More',
+                description:
+                    'Links to my Foundry Modules, Lancer Content, and other utilities.',
+                href: '/lancer/links',
+                icon: IconPuzzle,
+                actionLabel: 'View links',
             },
         ],
     },

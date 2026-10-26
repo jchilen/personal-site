@@ -215,7 +215,9 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
                                     color={displayedCategory.color}
                                     label={displayedCategory.label}
                                     actionLabel={
-                                        displayedCategory.actionLabel ?? 'Open'
+                                        item.actionLabel ??
+                                        displayedCategory.actionLabel ??
+                                        'Open'
                                     }
                                     index={index}
                                     isLeaving={isLeaving}
