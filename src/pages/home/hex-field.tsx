@@ -1,5 +1,5 @@
 // @refresh reset
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { cn } from 'cn'
 
 import {
@@ -12,12 +12,13 @@ import {
 
 const HEX_SIZE = 16
 const RADIUS = 14
-const CHANGES_PER_SECOND = 12
+const CHANGES_PER_SECOND = 24
 
 // Each slot is a --hex-* color in index.css: Cyanotype in light mode, Blueprint in dark
 const SLOT_CLASSES = ['fill-hex-1', 'fill-hex-2', 'fill-hex-3', 'fill-hex-4']
 const SLOT_WEIGHTS = [4, 4, 3, 1.5]
 const TOTAL_WEIGHT = SLOT_WEIGHTS.reduce((sum, weight) => sum + weight, 0)
+const LOCKED_CLASS = 'fill-primary duration-0'
 
 // The outermost rings step down in opacity, so the grid fades out as a hexagon
 const RING_FADE = ['opacity-80', 'opacity-60', 'opacity-40', 'opacity-25', 'opacity-10']
@@ -46,6 +47,8 @@ const INITIAL_SLOTS = HEXES.map(randomSlot)
 
 export function HexField() {
     const [slots, setSlots] = useState(INITIAL_SLOTS)
+    const [locked, setLocked] = useState<Set<number>>(() => new Set())
+    const dragMode = useRef<'lock' | 'unlock' | null>(null)
 
     useEffect(() => {
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -63,6 +66,29 @@ export function HexField() {
         return () => clearInterval(interval)
     }, [])
 
+    useEffect(() => {
+        function endDrag() {
+            dragMode.current = null
+        }
+
+        window.addEventListener('pointerup', endDrag)
+        return () => window.removeEventListener('pointerup', endDrag)
+    }, [])
+
+    function setHexLocked(index: number, shouldLock: boolean) {
+        setLocked((previous) => {
+            if (previous.has(index) === shouldLock) return previous
+
+            const next = new Set(previous)
+            if (shouldLock) {
+                next.add(index)
+            } else {
+                next.delete(index)
+            }
+            return next
+        })
+    }
+
     return (
         <svg
             aria-hidden
@@ -75,10 +101,33 @@ export function HexField() {
                     key={index}
                     points={points}
                     className={cn(
-                        'stroke-foreground/25 transition-colors duration-1500 hover:fill-primary/70 hover:duration-0 dark:stroke-border',
-                        SLOT_CLASSES[slots[index]],
+                        'cursor-pointer stroke-foreground/25 transition-colors dark:stroke-border',
+                        locked.has(index)
+                            ? LOCKED_CLASS
+                            : [
+                                  'duration-1500 hover:fill-primary/70 hover:duration-0',
+                                  SLOT_CLASSES[slots[index]],
+                              ],
                         fadeClass,
                     )}
+                    onPointerDown={(event) => {
+                        if (event.pointerType !== 'mouse' || event.button !== 0) {
+                            return
+                        }
+                        event.preventDefault()
+                        const shouldLock = !locked.has(index)
+                        dragMode.current = shouldLock ? 'lock' : 'unlock'
+                        setHexLocked(index, shouldLock)
+                    }}
+                    onPointerEnter={() => {
+                        if (dragMode.current) {
+                            setHexLocked(index, dragMode.current === 'lock')
+                        }
+                    }}
+                    onPointerUp={(event) => {
+                        if (event.pointerType === 'mouse') return
+                        setHexLocked(index, !locked.has(index))
+                    }}
                 />
             ))}
         </svg>

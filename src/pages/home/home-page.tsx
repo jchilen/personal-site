@@ -6,6 +6,7 @@ import { ContactSection } from './contact-section'
 import { HexField } from './hex-field'
 import { CategoryBar } from '@/components/category-bar'
 import { Button } from '@/components/ui/button'
+import { useTheme } from '@/hooks/use-theme'
 
 const SECTIONS = [
     { id: 'about', title: 'About' },
@@ -14,12 +15,13 @@ const SECTIONS = [
 ]
 
 export function HomePage() {
+    const { theme } = useTheme()
     return (
         <>
             <title>IceNine</title>
             <div className="relative isolate">
             <Hero />
-            <CategoryBar idle={<HexField />} />
+            <CategoryBar idle={<HexField key={theme} />} />
             </div>
 
             <nav
