@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import {
+    useEffect,
+    useRef,
+    useState,
+    type CSSProperties,
+    type ReactNode,
+} from 'react'
 import { useNavigate } from 'react-router'
 import { cn } from 'cn'
 import { categories } from '@/data/categories'
@@ -8,6 +14,7 @@ import { ProjectCard } from '@/components/project-card'
 
 type CategoryBarProps = {
     floating?: boolean
+    idle?: ReactNode
 }
 
 // Shared by the Home button and the category toggles so all four match
@@ -22,7 +29,7 @@ const sectionCategories = categories.filter(
     (category) => !category.scrollsToTop,
 )
 
-export function CategoryBar({ floating = false }: CategoryBarProps) {
+export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
     const [selectedId, setSelectedId] = useState<string | null>(null)
     const [displayedId, setDisplayedId] = useState<string | null>(null)
     const [isLeaving, setIsLeaving] = useState(false)
@@ -161,6 +168,10 @@ export function CategoryBar({ floating = false }: CategoryBarProps) {
                         : 'min-h-[50svh] scroll-mt-20 pt-8',
                 )}
             >
+                {!floating &&
+                    (!displayedCategory ||
+                        displayedCategory.items.length === 0) &&
+                    idle}
                 {displayedCategory && (
                     <div
                         key={displayedCategory.id}

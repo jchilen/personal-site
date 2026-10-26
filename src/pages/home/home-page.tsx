@@ -3,6 +3,7 @@ import { Hero } from './hero'
 import { HomeSection } from './home-section'
 import { ExperienceSection } from './experience-section'
 import { ContactSection } from './contact-section'
+import { HexField } from './hex-field'
 import { CategoryBar } from '@/components/category-bar'
 import { Button } from '@/components/ui/button'
 
@@ -17,7 +18,7 @@ export function HomePage() {
         <>
             <title>IceNine</title>
             <Hero />
-            <CategoryBar />
+            <CategoryBar idle={<HexField />} />
 
             <nav
                 aria-label="Page sections"

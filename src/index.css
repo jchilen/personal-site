@@ -41,6 +41,11 @@
     --cat-tools: #8a5a00;
     --cat-lancer: #a3262e;
     --cat-articles: #116a73;
+    
+    --hex-1: #d9e6f6;
+    --hex-2: #b5cdee;
+    --hex-3: #8fb2e2;
+    --hex-4: #6f97d6;
 }
 
 .dark {
@@ -71,6 +76,11 @@
     --cat-tools: #f0b04a;
     --cat-lancer: #ef6b6b;
     --cat-articles: #5cc8d2;
+
+    --hex-1: #0a2230;
+    --hex-2: #102d3b;
+    --hex-3: #183f4c;
+    --hex-4: #243442;
 }
 
 @theme inline {
@@ -139,6 +149,10 @@
     --color-cat-tools: var(--cat-tools);
     --color-cat-lancer: var(--cat-lancer);
     --color-cat-articles: var(--cat-articles);
+    W--color-hex-1: var(--hex-1);
+    --color-hex-2: var(--hex-2);
+    --color-hex-3: var(--hex-3);
+    --color-hex-4: var(--hex-4);
     --color-ring: var(--ring);
     --color-input: var(--input);
     --color-border: var(--border);
