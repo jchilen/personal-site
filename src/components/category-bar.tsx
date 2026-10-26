@@ -168,16 +168,14 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
                         : 'min-h-[50svh] scroll-mt-20 pt-8',
                 )}
             >
-                {!floating &&
-                    (!displayedCategory ||
-                        displayedCategory.items.length === 0) &&
-                    idle}
+                {!floating && idle}
                 {displayedCategory && (
                     <div
                         key={displayedCategory.id}
                         className={cn(
-                            floating &&
-                                'pointer-events-auto relative border border-l-0 bg-muted py-4 pr-4 pl-10',
+                            floating
+                                ? 'pointer-events-auto relative border border-l-0 bg-muted py-4 pr-4 pl-10'
+                                : 'relative z-10',
                         )}
                         style={
                             {

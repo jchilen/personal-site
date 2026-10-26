@@ -27,3 +27,24 @@ export function rectangleGrid(cols: number, rows: number): Hex[] {
     }
     return hexes
 }
+
+export function hexDistance(a: Hex, b: Hex) {
+    return (
+        (Math.abs(a.q - b.q) +
+            Math.abs(a.r - b.r) +
+            Math.abs(a.q + a.r - b.q - b.r)) /
+        2
+    )
+}
+
+export function hexesWithin(radius: number): Hex[] {
+    const hexes: Hex[] = []
+    for (let q = -radius; q <= radius; q++) {
+        const rMin = Math.max(-radius, -q - radius)
+        const rMax = Math.min(radius, -q + radius)
+        for (let r = rMin; r <= rMax; r++) {
+            hexes.push({ q, r })
+        }
+    }
+    return hexes
+}

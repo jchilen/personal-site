@@ -20,19 +20,25 @@ export function ThemeProvider({
     useEffect(() => {
         const root = window.document.documentElement
 
+        // Pause every CSS transition so the whole page switches themes in one frame
+        const pauseTransitions = document.createElement('style')
+        pauseTransitions.textContent =
+            '*, *::before, *::after { transition: none !important; }'
+        document.head.appendChild(pauseTransitions)
+
+        const resolvedTheme =
+            theme === 'system'
+                ? window.matchMedia('(prefers-color-scheme: dark)').matches
+                    ? 'dark'
+                    : 'light'
+                : theme
+
         root.classList.remove('light', 'dark')
+        root.classList.add(resolvedTheme)
 
-        if (theme === 'system') {
-            const systemTheme = window.matchMedia(
-                '(prefers-color-scheme: dark)',
-            ).matches
-                ? 'dark'
-                : 'light'
-            root.classList.add(systemTheme)
-            return
-        }
-
-        root.classList.add(theme)
+        // Make the browser apply the new colors now, then bring transitions back
+        window.getComputedStyle(document.body).color
+        setTimeout(() => pauseTransitions.remove(), 0)
     }, [theme])
 
     const value = {

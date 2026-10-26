@@ -88,6 +88,7 @@
     --font-heading: 'Oxanium Variable', sans-serif;
     --font-serif: 'Newsreader Variable', Georgia, serif;
     --tracking-eyebrow: 0.3em;
+    --text-shadow-halo: 0 0 6px var(--background), 0 0 16px var(--background);
 
     @keyframes scan-reveal {
         from {

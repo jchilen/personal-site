@@ -14,7 +14,7 @@ function App() {
     }, [pathname])
 
     return (
-        <div className="flex min-h-svh flex-col">
+        <div className="flex min-h-svh flex-col overflow-x-clip">
             <ModeToggle className="fixed top-4 right-4 z-20 max-sm:hidden" />
             <main
                 key={pathname}

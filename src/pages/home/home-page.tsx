@@ -17,8 +17,10 @@ export function HomePage() {
     return (
         <>
             <title>IceNine</title>
+            <div className="relative isolate">
             <Hero />
             <CategoryBar idle={<HexField />} />
+            </div>
 
             <nav
                 aria-label="Page sections"
