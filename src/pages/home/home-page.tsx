@@ -19,38 +19,42 @@ export function HomePage() {
     return (
         <>
             <title>IceNine</title>
-            <div className="relative isolate">
-            <Hero />
-            <CategoryBar idle={<HexField key={theme} />} />
-            </div>
+            <div className="relative isolate min-h-svh">
+                <Hero />
+                <CategoryBar idle={<HexField key={theme} />} />
 
-            <nav
-                aria-label="Page sections"
-                className="flex flex-wrap justify-center gap-3 pt-6 pb-12"
-            >
-                {SECTIONS.map((section) => (
-                    <Button
-                        key={section.id}
-                        asChild
-                        variant="outline"
-                        size="sm"
-                        className="bg-card hover:border-primary hover:bg-card dark:hover:bg-card"
-                    >
-                        <a href={`#${section.id}`}>
-                            {section.title}
-                            <IconArrowDown data-icon="inline-end" />
-                        </a>
-                    </Button>
-                ))}
-            </nav>
+                <p className="pointer-events-none relative mx-auto mt-8 max-w-md text-center text-lg/relaxed text-balance text-shadow-halo halo-blur">
+                    Building tools, automating drudgery, and enabling
+                    those around me to do what they love.
+                </p>
+
+                <nav
+                    aria-label="Page sections"
+                    className="pointer-events-none relative flex flex-wrap justify-center gap-3 pt-8 pb-16"
+                >
+                    {SECTIONS.map((section) => (
+                        <Button
+                            key={section.id}
+                            asChild
+                            variant="outline"
+                            size="sm"
+                            className="pointer-events-auto relative bg-card halo-blur hover:border-primary hover:bg-card dark:hover:bg-card"
+                        >
+                            <a href={`#${section.id}`}>
+                                {section.title}
+                                <IconArrowDown data-icon="inline-end" />
+                            </a>
+                        </Button>
+                    ))}
+                </nav>
+            </div>
 
             <HomeSection id="about" number="01" title="About">
                 <p className="text-center text-lg">
                     I'm a software developer in Kansas City, moving from test
-                    automation into full-time development. I enjoy analyzing
-                    systems and finding room for improvement, and I'm always  
-                    happy to deliver quality work that enables the people around me
-                    do their best.
+                    automation into full-time development. I have passions for
+                    soccer, games, and improving efficiency in the systems I
+                    work in.
                 </p>
             </HomeSection>
 

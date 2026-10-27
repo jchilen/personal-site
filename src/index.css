@@ -249,6 +249,22 @@
     }
 }
 
+@utility halo-blur {
+    &::before {
+        --halo-spread: 5rem; /* 56px past the element's edges */
+        content: '';
+        position: absolute;
+        inset: calc(-1 * var(--halo-spread));
+        z-index: -1;
+        pointer-events: none;
+        backdrop-filter: blur(var(--blur-sm)); /* 8px */
+        mask-image:
+            linear-gradient(to right, transparent, black var(--halo-spread), black calc(100% - var(--halo-spread)), transparent),
+            linear-gradient(to bottom, transparent, black var(--halo-spread), black calc(100% - var(--halo-spread)), transparent);
+        mask-composite: intersect;
+    }
+}
+
 @layer base {
     * {
         @apply border-border outline-ring/50;

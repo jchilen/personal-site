@@ -2,27 +2,18 @@
 import { useEffect, useRef, useState } from 'react'
 import { cn } from 'cn'
 
-import {
-    hexCorners,
-    hexDistance,
-    hexesWithin,
-    hexToPixel,
-    hexWidth,
-} from '@/lib/hex'
+import { hexCorners, hexToPixel, hexWidth, rectangleGrid } from '@/lib/hex'
 
 const HEX_SIZE = 16
-const RADIUS = 14
-const CHANGES_PER_SECOND = 24
+const COLS = 44
+const ROWS = 30
+const CHANGES_PER_SECOND = 6
 
 // Each slot is a --hex-* color in index.css: Cyanotype in light mode, Blueprint in dark
 const SLOT_CLASSES = ['fill-hex-1', 'fill-hex-2', 'fill-hex-3', 'fill-hex-4']
 const SLOT_WEIGHTS = [4, 4, 3, 1.5]
 const TOTAL_WEIGHT = SLOT_WEIGHTS.reduce((sum, weight) => sum + weight, 0)
 const LOCKED_CLASS = 'fill-primary duration-0'
-
-// The outermost rings step down in opacity, so the grid fades out as a hexagon
-const RING_FADE = ['opacity-80', 'opacity-60', 'opacity-40', 'opacity-25', 'opacity-10']
-const FIRST_FADE_RING = RADIUS - RING_FADE.length + 1
 
 function randomSlot() {
     let roll = Math.random() * TOTAL_WEIGHT
@@ -33,17 +24,16 @@ function randomSlot() {
     return 0
 }
 
-const WIDTH = hexWidth(HEX_SIZE) * (2 * RADIUS + 1)
-const HEIGHT = HEX_SIZE * (3 * RADIUS + 2)
+const WIDTH = hexWidth(HEX_SIZE) * (COLS + 0.5)
+const HEIGHT = HEX_SIZE * 1.5 * (ROWS - 1) + HEX_SIZE * 2
 
-const HEXES = hexesWithin(RADIUS).map((hex) => ({
-    points: hexCorners(hexToPixel(hex, HEX_SIZE), HEX_SIZE)
+const HEX_POINTS = rectangleGrid(COLS, ROWS).map((hex) =>
+    hexCorners(hexToPixel(hex, HEX_SIZE), HEX_SIZE)
         .map(({ x, y }) => `${x.toFixed(1)},${y.toFixed(1)}`)
         .join(' '),
-    fadeClass: RING_FADE[hexDistance(hex, { q: 0, r: 0 }) - FIRST_FADE_RING],
-}))
+)
 
-const INITIAL_SLOTS = HEXES.map(randomSlot)
+const INITIAL_SLOTS = HEX_POINTS.map(randomSlot)
 
 export function HexField() {
     const [slots, setSlots] = useState(INITIAL_SLOTS)
@@ -90,46 +80,49 @@ export function HexField() {
     }
 
     return (
-        <svg
-            aria-hidden
-            viewBox={`${-WIDTH / 2} ${-HEIGHT / 2} ${WIDTH} ${HEIGHT}`}
-            className="absolute inset-y-0 left-1/2 h-full -translate-x-1/2"
-            style={{ aspectRatio: `${WIDTH} / ${HEIGHT}` }}
-        >
-            {HEXES.map(({ points, fadeClass }, index) => (
-                <polygon
-                    key={index}
-                    points={points}
-                    className={cn(
-                        'cursor-pointer stroke-foreground/25 transition-colors dark:stroke-border',
-                        locked.has(index)
-                            ? LOCKED_CLASS
-                            : [
-                                  'duration-1500 hover:fill-primary/70 hover:duration-0',
-                                  SLOT_CLASSES[slots[index]],
-                              ],
-                        fadeClass,
-                    )}
-                    onPointerDown={(event) => {
-                        if (event.pointerType !== 'mouse' || event.button !== 0) {
-                            return
-                        }
-                        event.preventDefault()
-                        const shouldLock = !locked.has(index)
-                        dragMode.current = shouldLock ? 'lock' : 'unlock'
-                        setHexLocked(index, shouldLock)
-                    }}
-                    onPointerEnter={() => {
-                        if (dragMode.current) {
-                            setHexLocked(index, dragMode.current === 'lock')
-                        }
-                    }}
-                    onPointerUp={(event) => {
-                        if (event.pointerType === 'mouse') return
-                        setHexLocked(index, !locked.has(index))
-                    }}
-                />
-            ))}
-        </svg>
+        <>
+            <svg
+                aria-hidden
+                viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+                preserveAspectRatio="xMidYMid slice"
+                className="pointer-events-auto absolute inset-y-0 left-1/2 -z-10 h-full w-screen -translate-x-1/2 mask-x-from-70% mask-t-from-85% mask-b-from-50% mask-b-to-99%"
+            >
+                <g transform={`translate(${hexWidth(HEX_SIZE) / 2} ${HEX_SIZE})`}>
+                    {HEX_POINTS.map((points, index) => (
+                        <polygon
+                            key={index}
+                            points={points}
+                            className={cn(
+                                'cursor-pointer stroke-foreground/25 transition-colors dark:stroke-border',
+                                locked.has(index)
+                                    ? LOCKED_CLASS
+                                    : [
+                                          'duration-1500 hover:fill-primary/70 hover:duration-0',
+                                          SLOT_CLASSES[slots[index]],
+                                      ],
+                            )}
+                            onPointerDown={(event) => {
+                                if (event.pointerType !== 'mouse' || event.button !== 0) {
+                                    return
+                                }
+                                event.preventDefault()
+                                const shouldLock = !locked.has(index)
+                                dragMode.current = shouldLock ? 'lock' : 'unlock'
+                                setHexLocked(index, shouldLock)
+                            }}
+                            onPointerEnter={() => {
+                                if (dragMode.current) {
+                                    setHexLocked(index, dragMode.current === 'lock')
+                                }
+                            }}
+                            onPointerUp={(event) => {
+                                if (event.pointerType === 'mouse') return
+                                setHexLocked(index, !locked.has(index))
+                            }}
+                        />
+                    ))}
+                </g>
+            </svg>
+        </>
     )
 }

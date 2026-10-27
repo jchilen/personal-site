@@ -95,77 +95,81 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
                 floating ? 'sticky top-4 z-10 mx-auto mt-6 w-fit' : 'contents',
             )}
         >
-            <nav
-                aria-label="Site sections"
+                        <div
                 className={cn(
-                    'flex w-fit gap-2 border bg-card p-1',
-                    !floating && 'sticky top-4 z-10 mx-auto mt-10',
+                    !floating &&
+                        'sticky top-4 z-10 mx-auto mt-10 w-fit',
                 )}
             >
-                {homeCategory && (
-                    <button
-                        type="button"
-                        className={cn(toggleVariants(), itemClass)}
-                        style={
-                            {
-                                '--category-color': homeCategory.color,
-                            } as CSSProperties
-                        }
-                        onClick={() => {
-                            if (floating) {
-                                navigate('/')
+                <nav
+                    aria-label="Site sections"
+                    className="flex w-fit gap-2 border bg-card p-1"
+                >
+                    {homeCategory && (
+                        <button
+                            type="button"
+                            className={cn(toggleVariants(), itemClass)}
+                            style={
+                                {
+                                    '--category-color': homeCategory.color,
+                                } as CSSProperties
+                            }
+                            onClick={() => {
+                                if (floating) {
+                                    navigate('/')
+                                    return
+                                }
+                                window.scrollTo({ top: 0, behavior: 'smooth' })
+                                selectCategory(null)
+                            }}
+                        >
+                            <homeCategory.icon className="size-7 stroke-[1.25]" />
+                            {homeCategory.label}
+                        </button>
+                    )}
+
+                    <ToggleGroup
+                        type="single"
+                        aria-label="Project categories"
+                        value={selectedId ?? ''}
+                        onValueChange={(value) => {
+                            if (!value) {
+                                selectCategory(null)
                                 return
                             }
-                            window.scrollTo({ top: 0, behavior: 'smooth' })
-                            selectCategory(null)
+                            selectCategory(value)
+                            scrollToCards()
                         }}
                     >
-                        <homeCategory.icon className="size-7 stroke-[1.25]" />
-                        {homeCategory.label}
-                    </button>
-                )}
-
-                <ToggleGroup
-                    type="single"
-                    aria-label="Project categories"
-                    value={selectedId ?? ''}
-                    onValueChange={(value) => {
-                        if (!value) {
-                            selectCategory(null)
-                            return
-                        }
-                        selectCategory(value)
-                        scrollToCards()
-                    }}
-                >
-                    {sectionCategories.map((category) => {
-                        const Icon = category.icon
-                        return (
-                            <ToggleGroupItem
-                                key={category.id}
-                                value={category.id}
-                                className={itemClass}
-                                style={
-                                    {
-                                        '--category-color': category.color,
-                                    } as CSSProperties
-                                }
-                            >
-                                <Icon className="size-7 stroke-[1.25]" />
-                                {category.label}
-                            </ToggleGroupItem>
-                        )
-                    })}
-                </ToggleGroup>
-            </nav>
+                        {sectionCategories.map((category) => {
+                            const Icon = category.icon
+                            return (
+                                <ToggleGroupItem
+                                    key={category.id}
+                                    value={category.id}
+                                    className={itemClass}
+                                    style={
+                                        {
+                                            '--category-color': category.color,
+                                        } as CSSProperties
+                                    }
+                                >
+                                    <Icon className="size-7 stroke-[1.25]" />
+                                    {category.label}
+                                </ToggleGroupItem>
+                            )
+                        })}
+                    </ToggleGroup>
+                </nav>
+            </div>
 
             <div
                 ref={cardAreaRef}
                 className={cn(
-                    'flex items-start justify-center',
+                    'pointer-events-none flex items-start justify-center',
                     floating
-                        ? 'pointer-events-none absolute top-full left-1/2 mt-3 w-max max-w-[calc(100vw-2rem)] -translate-x-1/2'
-                        : 'min-h-[50svh] scroll-mt-20 pt-8',
+                        ? 'absolute top-full left-1/2 mt-3 w-max max-w-[calc(100vw-2rem)] -translate-x-1/2'
+                        : 'min-h-60 scroll-mt-20 pt-8',
                 )}
             >
                 {!floating && idle}
@@ -175,7 +179,7 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
                         className={cn(
                             floating
                                 ? 'pointer-events-auto relative border border-l-0 bg-muted py-4 pr-4 pl-10'
-                                : 'relative z-10',
+                                : 'pointer-events-none relative halo-blur',
                         )}
                         style={
                             {
@@ -203,7 +207,7 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
                         {/* Up to 3 cards share one row; 4 or more go 2 per row (an odd last card centers) */}
                         <div
                             className={cn(
-                                'flex flex-wrap justify-center gap-4',
+                                'flex flex-wrap justify-center gap-4 *:pointer-events-auto',
                                 displayedCategory.items.length >= 4 &&
                                     'max-w-124',
                             )}
