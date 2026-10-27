@@ -225,6 +225,30 @@
     }
 }
 
+/* Article text colors from the site theme, so prose follows light and dark mode */
+@utility prose-site {
+    --tw-prose-body: var(--color-foreground);
+    --tw-prose-headings: var(--color-foreground);
+    --tw-prose-links: var(--color-foreground);
+    --tw-prose-bold: var(--color-foreground);
+    --tw-prose-counters: var(--color-muted-foreground);
+    --tw-prose-bullets: var(--color-foreground);
+    --tw-prose-hr: var(--color-border);
+    --tw-prose-quotes: var(--color-foreground);
+    --tw-prose-quote-borders: var(--color-primary);
+    --tw-prose-captions: var(--color-muted-foreground);
+
+    /* Quotes are shown exactly as written, without added decorative quote marks */
+    & blockquote p:first-of-type::before,
+    & blockquote p:last-of-type::after {
+        content: none;
+    }
+
+    & blockquote footer {
+        @apply mt-2 text-base text-muted-foreground not-italic;
+    }
+}
+
 @layer base {
     * {
         @apply border-border outline-ring/50;

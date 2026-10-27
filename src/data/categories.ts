@@ -114,8 +114,8 @@ export const categories: Category[] = [
         items: [
             {
                 title: 'Improving Efficiently',
-                description: 'A one-line summary of what the article is about.',
-                href: '/articles/your-article',
+                description: 'A guide to getting good.',
+                href: '/articles/the-article',
                 icon: ChartLineUpIcon,
             },
         ],

@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router'
 import { HomePage } from '@/pages/home/home-page'
 import { SafeLeadPage } from '@/features/safe-lead/safe-lead-page'
+import { ImprovingEfficientlyPage } from '@/features/articles/improving-efficiently/improving-efficiently-page'
 import { ComingSoonPage } from '@/pages/coming-soon-page'
 
 function App() {
@@ -25,6 +26,10 @@ function App() {
                     <Route
                         path="/tools/safe-lead-calculator"
                         element={<SafeLeadPage />}
+                    />
+                    <Route
+                        path="/articles/the-article"
+                        element={<ImprovingEfficientlyPage />}
                     />
                     <Route path="*" element={<ComingSoonPage />} />
                 </Routes>
