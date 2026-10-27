@@ -37,7 +37,7 @@ export function ThemeProvider({
         root.classList.add(resolvedTheme)
 
         // Make the browser apply the new colors now, then bring transitions back
-        window.getComputedStyle(document.body).color
+        void window.getComputedStyle(document.body).color
         setTimeout(() => pauseTransitions.remove(), 0)
     }, [theme])
 
