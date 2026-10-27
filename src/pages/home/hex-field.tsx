@@ -7,7 +7,7 @@ import { hexCorners, hexToPixel, hexWidth, rectangleGrid } from '@/lib/hex'
 const HEX_SIZE = 16
 const COLS = 44
 const ROWS = 30
-const CHANGES_PER_SECOND = 6
+const CHANGES_PER_SECOND = 24
 
 // Each slot is a --hex-* color in index.css: Cyanotype in light mode, Blueprint in dark
 const SLOT_CLASSES = ['fill-hex-1', 'fill-hex-2', 'fill-hex-3', 'fill-hex-4']
