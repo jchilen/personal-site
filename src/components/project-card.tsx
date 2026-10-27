@@ -69,8 +69,10 @@ export function ProjectCard({
             <span
                 aria-hidden="true"
                 className={cn(
-                    'pointer-events-none absolute inset-x-0 z-10 h-6 -translate-y-full border-b-2 border-(--category-color) bg-linear-to-b from-transparent to-(--category-color)/35 motion-reduce:hidden',
-                    isLeaving ? 'animate-scan-line-out' : 'animate-scan-line',
+                    'pointer-events-none absolute inset-x-0 z-10 h-6 border-(--category-color) from-transparent to-(--category-color)/35 motion-reduce:hidden',
+                    isLeaving
+                        ? 'animate-scan-line-out border-t-2 bg-linear-to-t'
+                        : 'animate-scan-line -translate-y-full border-b-2 bg-linear-to-b',
                 )}
             />
         </Link>

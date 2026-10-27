@@ -8,6 +8,7 @@
 @plugin '@tailwindcss/typography';
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant hex-open (&:hover, &:focus-visible, &[data-state=on]);
 
 :root {
     color-scheme: light;
@@ -114,8 +115,8 @@
         }
     }
 
-    --animate-scan-conceal: scan-conceal 180ms linear both;
-    --animate-scan-line-out: scan-line-out 180ms linear both;
+    --animate-scan-conceal: scan-conceal 300ms linear both;
+    --animate-scan-line-out: scan-line-out 300ms linear both;
     --animate-scan-reveal: scan-reveal 350ms linear both;
     --animate-scan-line: scan-line 350ms linear both;
 
@@ -191,7 +192,7 @@
         }
     }
 
-    --animate-halo-out: halo-out 180ms ease-in forwards;
+    --animate-halo-out: halo-out 300ms ease-in forwards;
 
     @keyframes halo-out {
         to {

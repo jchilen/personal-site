@@ -4,6 +4,7 @@ import {
     useRef,
     useState,
     type CSSProperties,
+    type ComponentType,
     type ReactNode,
 } from 'react'
 import { useNavigate } from 'react-router'
@@ -30,8 +31,46 @@ const sectionCategories = categories.filter(
     (category) => !category.scrollsToTop,
 )
 
-// Home page only: each item becomes a 104×120 pointy-top hex
-const hexItemClass = 'isolate h-30 w-26 flex-none p-0'
+// Shared by both hex sizes; HexShape sits behind the icon and label
+const hexItemClass = 'isolate flex-none p-0'
+
+// Home page: full-size hexes with the label always showing
+const fullHexClass = 'h-30 w-26'
+
+// Other pages: icon-only mini hexes that grow to full size on hover, keyboard focus, or while open
+const miniHexClass =
+        'group h-12 w-10.5 gap-0 transition-[color,width,height,margin] hex-open:mx-1.5 hex-open:h-30 hex-open:w-26'
+
+type HexContentProps = {
+    icon: ComponentType<{ className?: string }>
+    label: string
+    mini: boolean
+}
+
+function HexContent({ icon: Icon, label, mini }: HexContentProps) {
+    return (
+        <>
+            <HexShape />
+            <Icon
+                className={cn(
+                    'stroke-[1.25]',
+                    mini
+                        ? 'size-5 transition-[width,height] group-hex-open:size-7'
+                        : 'size-7',
+                )}
+            />
+            {mini ? (
+                <span className="grid grid-rows-[0fr] opacity-0 transition-[grid-template-rows,opacity] group-hex-open:grid-rows-[1fr] group-hex-open:opacity-100">
+                    <span className="overflow-hidden">
+                        <span className="block pt-1.5">{label}</span>
+                    </span>
+                </span>
+            ) : (
+                label
+            )}
+        </>
+    )
+}
 
 function HexShape() {
     return (
@@ -40,7 +79,10 @@ function HexShape() {
             viewBox="0 0 104 120"
             className="absolute inset-0 -z-10 size-full overflow-visible fill-card stroke-current"
         >
-            <polygon points="52,0 104,30 104,90 52,120 0,90 0,30" />
+            <polygon
+                points="52,0 104,30 104,90 52,120 0,90 0,30"
+                vectorEffect="non-scaling-stroke"
+            />
         </svg>
     )
 }
@@ -66,7 +108,8 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
 
     function scrollToCards() {
         const cardArea = cardAreaRef.current
-        if (!cardArea) return
+        // The floating panel opens below the bar, so the page never needs to scroll for it
+        if (!cardArea || floating) return
 
         if (cardArea.getBoundingClientRect().top < 136) {
             cardArea.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -121,7 +164,7 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
                 floating ? 'sticky top-4 z-10 mx-auto mt-6 w-fit' : 'contents',
             )}
         >
-                                    <div
+            <div
                 className={cn(
                     !floating &&
                         'sticky top-4 z-10 mx-auto mt-10 w-fit max-sm:static',
@@ -131,7 +174,7 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
                     aria-label="Site sections"
                     className={cn(
                         floating
-                            ? 'flex w-fit gap-2 border bg-card p-1'
+                            ? 'flex h-12 items-start gap-1'
                             : 'flex items-center max-sm:grid max-sm:grid-cols-2 max-sm:gap-x-2 max-sm:pr-14',
                     )}
                 >
@@ -141,7 +184,8 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
                             className={cn(
                                 toggleVariants(),
                                 itemClass,
-                                !floating && hexItemClass,
+                                hexItemClass,
+                                floating ? miniHexClass : fullHexClass,
                             )}
                             style={
                                 {
@@ -157,9 +201,11 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
                                 selectCategory(null)
                             }}
                         >
-                            {!floating && <HexShape />}
-                            <homeCategory.icon className="size-7 stroke-[1.25]" />
-                            {homeCategory.label}
+                            <HexContent
+                                icon={homeCategory.icon}
+                                label={homeCategory.label}
+                                mini={floating}
+                            />
                         </button>
                     )}
 
@@ -168,7 +214,7 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
                     <ToggleGroup
                         type="single"
                         aria-label="Project categories"
-                        className={cn(!floating && 'contents')}
+                        className="contents"
                         value={selectedId ?? ''}
                         onValueChange={(value) => {
                             if (!value) {
@@ -179,34 +225,33 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
                             scrollToCards()
                         }}
                     >
-                        {sectionCategories.map((category, index) => {
-                            const Icon = category.icon
-                            return (
-                                <Fragment key={category.id}>
-                                    {!floating && index > 0 && <Connector />}
-                                    <ToggleGroupItem
-                                        value={category.id}
-                                        className={cn(
-                                            itemClass,
-                                            !floating && hexItemClass,
-                                            !floating &&
-                                                index > 0 &&
-                                                'max-sm:-mt-6 max-sm:translate-x-[calc(50%+0.25rem)]',
-                                        )}
-                                        style={
-                                            {
-                                                '--category-color':
-                                                    category.color,
-                                            } as CSSProperties
-                                        }
-                                    >
-                                        {!floating && <HexShape />}
-                                        <Icon className="size-7 stroke-[1.25]" />
-                                        {category.label}
-                                    </ToggleGroupItem>
-                                </Fragment>
-                            )
-                        })}
+                        {sectionCategories.map((category, index) => (
+                            <Fragment key={category.id}>
+                                {!floating && index > 0 && <Connector />}
+                                <ToggleGroupItem
+                                    value={category.id}
+                                    className={cn(
+                                        itemClass,
+                                        hexItemClass,
+                                        floating ? miniHexClass : fullHexClass,
+                                        !floating &&
+                                            index > 0 &&
+                                            'max-sm:-mt-6 max-sm:translate-x-[calc(50%+0.25rem)]',
+                                    )}
+                                    style={
+                                        {
+                                            '--category-color': category.color,
+                                        } as CSSProperties
+                                    }
+                                >
+                                    <HexContent
+                                        icon={category.icon}
+                                        label={category.label}
+                                        mini={floating}
+                                    />
+                                </ToggleGroupItem>
+                            </Fragment>
+                        ))}
                     </ToggleGroup>
                 </nav>
             </div>
@@ -216,7 +261,7 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
                 className={cn(
                     'pointer-events-none flex items-start justify-center',
                     floating
-                        ? 'absolute top-full left-1/2 mt-3 w-max max-w-[calc(100vw-2rem)] -translate-x-1/2'
+                        ? 'absolute top-full left-1/2 mt-21 w-max max-w-[calc(100vw-2rem)] -translate-x-1/2'
                         : 'min-h-72 scroll-mt-36 pt-8',
                 )}
             >
@@ -227,7 +272,7 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
                         className={cn(
                             floating
                                 ? 'pointer-events-auto relative border border-l-0 bg-muted py-4 pr-4 pl-10'
-                                : 'pointer-events-none relative halo-blur',
+                                : 'halo-blur pointer-events-none relative',
                             !floating &&
                                 (isLeaving
                                     ? 'motion-safe:before:animate-halo-out'
