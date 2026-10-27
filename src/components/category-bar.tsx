@@ -1,4 +1,5 @@
 import {
+    Fragment,
     useEffect,
     useRef,
     useState,
@@ -29,6 +30,31 @@ const sectionCategories = categories.filter(
     (category) => !category.scrollsToTop,
 )
 
+// Home page only: each item becomes a 104×120 pointy-top hex
+const hexItemClass = 'isolate h-30 w-26 flex-none p-0'
+
+function HexShape() {
+    return (
+        <svg
+            aria-hidden="true"
+            viewBox="0 0 104 120"
+            className="absolute inset-0 -z-10 size-full overflow-visible fill-card stroke-current"
+        >
+            <polygon points="52,0 104,30 104,90 52,120 0,90 0,30" />
+        </svg>
+    )
+}
+
+// A line with a dot on each end, joining two hexes (desktop only)
+function Connector() {
+    return (
+        <span
+            aria-hidden="true"
+            className="mx-1.5 h-1 w-8 shrink-0 bg-muted-foreground/45 max-sm:hidden"
+        />
+    )
+}
+
 export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
     const [selectedId, setSelectedId] = useState<string | null>(null)
     const [displayedId, setDisplayedId] = useState<string | null>(null)
@@ -42,7 +68,7 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
         const cardArea = cardAreaRef.current
         if (!cardArea) return
 
-        if (cardArea.getBoundingClientRect().top < 76) {
+        if (cardArea.getBoundingClientRect().top < 136) {
             cardArea.scrollIntoView({ behavior: 'smooth', block: 'start' })
         }
     }
@@ -95,20 +121,28 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
                 floating ? 'sticky top-4 z-10 mx-auto mt-6 w-fit' : 'contents',
             )}
         >
-                        <div
+                                    <div
                 className={cn(
                     !floating &&
-                        'sticky top-4 z-10 mx-auto mt-10 w-fit',
+                        'sticky top-4 z-10 mx-auto mt-10 w-fit max-sm:static',
                 )}
             >
                 <nav
                     aria-label="Site sections"
-                    className="flex w-fit gap-2 border bg-card p-1"
+                    className={cn(
+                        floating
+                            ? 'flex w-fit gap-2 border bg-card p-1'
+                            : 'flex items-center max-sm:grid max-sm:grid-cols-2 max-sm:gap-x-2 max-sm:pr-14',
+                    )}
                 >
                     {homeCategory && (
                         <button
                             type="button"
-                            className={cn(toggleVariants(), itemClass)}
+                            className={cn(
+                                toggleVariants(),
+                                itemClass,
+                                !floating && hexItemClass,
+                            )}
                             style={
                                 {
                                     '--category-color': homeCategory.color,
@@ -123,14 +157,18 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
                                 selectCategory(null)
                             }}
                         >
+                            {!floating && <HexShape />}
                             <homeCategory.icon className="size-7 stroke-[1.25]" />
                             {homeCategory.label}
                         </button>
                     )}
 
+                    {homeCategory && !floating && <Connector />}
+
                     <ToggleGroup
                         type="single"
                         aria-label="Project categories"
+                        className={cn(!floating && 'contents')}
                         value={selectedId ?? ''}
                         onValueChange={(value) => {
                             if (!value) {
@@ -141,22 +179,32 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
                             scrollToCards()
                         }}
                     >
-                        {sectionCategories.map((category) => {
+                        {sectionCategories.map((category, index) => {
                             const Icon = category.icon
                             return (
-                                <ToggleGroupItem
-                                    key={category.id}
-                                    value={category.id}
-                                    className={itemClass}
-                                    style={
-                                        {
-                                            '--category-color': category.color,
-                                        } as CSSProperties
-                                    }
-                                >
-                                    <Icon className="size-7 stroke-[1.25]" />
-                                    {category.label}
-                                </ToggleGroupItem>
+                                <Fragment key={category.id}>
+                                    {!floating && index > 0 && <Connector />}
+                                    <ToggleGroupItem
+                                        value={category.id}
+                                        className={cn(
+                                            itemClass,
+                                            !floating && hexItemClass,
+                                            !floating &&
+                                                index > 0 &&
+                                                'max-sm:-mt-6 max-sm:translate-x-[calc(50%+0.25rem)]',
+                                        )}
+                                        style={
+                                            {
+                                                '--category-color':
+                                                    category.color,
+                                            } as CSSProperties
+                                        }
+                                    >
+                                        {!floating && <HexShape />}
+                                        <Icon className="size-7 stroke-[1.25]" />
+                                        {category.label}
+                                    </ToggleGroupItem>
+                                </Fragment>
                             )
                         })}
                     </ToggleGroup>
@@ -169,7 +217,7 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
                     'pointer-events-none flex items-start justify-center',
                     floating
                         ? 'absolute top-full left-1/2 mt-3 w-max max-w-[calc(100vw-2rem)] -translate-x-1/2'
-                        : 'min-h-60 scroll-mt-20 pt-8',
+                        : 'min-h-72 scroll-mt-36 pt-8',
                 )}
             >
                 {!floating && idle}
@@ -180,13 +228,19 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
                             floating
                                 ? 'pointer-events-auto relative border border-l-0 bg-muted py-4 pr-4 pl-10'
                                 : 'pointer-events-none relative halo-blur',
+                            !floating &&
+                                (isLeaving
+                                    ? 'motion-safe:before:animate-halo-out'
+                                    : 'motion-safe:before:animate-halo-in'),
                         )}
                         style={
                             {
                                 '--category-color': displayedCategory.color,
                             } as CSSProperties
                         }
-                        onAnimationEnd={() => {
+                        onAnimationEnd={(event) => {
+                            // The halo's fade-in fires this too; only the cards' animations should finish an exit
+                            if (event.pseudoElement) return
                             if (isLeaving) {
                                 setDisplayedId(selectedId)
                                 setIsLeaving(false)

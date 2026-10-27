@@ -182,6 +182,24 @@
     --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+@theme {
+    --animate-halo-in: halo-in 350ms ease-out;
+
+    @keyframes halo-in {
+        from {
+            opacity: 0;
+        }
+    }
+
+    --animate-halo-out: halo-out 180ms ease-in forwards;
+
+    @keyframes halo-out {
+        to {
+            opacity: 0;
+        }
+    }
+}
+
 /* Target-lock corners: faint on hover, solid when selected */
 @utility corner-brackets {
     position: relative;
