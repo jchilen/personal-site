@@ -42,7 +42,7 @@ function ComparisonBar({
         <div>
             <div className="flex justify-between font-heading text-xs tracking-eyebrow text-muted-foreground uppercase">
                 <span>{label}</span>
-                <span className="tracking-normal text-foreground">{value}</span>
+                <span className="tracking-normal text-foreground normal-case">{value}</span>
             </div>
             <div aria-hidden="true" className="mt-1.5 h-2 bg-muted">
                 <div
