@@ -1,5 +1,7 @@
 // @refresh reset
 import {
+    memo,
+    useCallback,
     useEffect,
     useLayoutEffect,
     useRef,
@@ -65,6 +67,59 @@ const HEX_POINTS = HEX_CENTERS.map((center) =>
         .map(({ x, y }) => `${x.toFixed(1)},${y.toFixed(1)}`)
         .join(' '),
 )
+
+type HexProps = {
+    index: number
+    points: string
+    slot: number
+    isLocked: boolean
+    onPress: (index: number, shouldLock: boolean) => void
+    onDragOver: (index: number) => void
+    onTap: (index: number, shouldLock: boolean) => void
+}
+
+// memo: skip re-rendering unless this hex's own props changed
+const Hex = memo(function Hex({
+    index,
+    points,
+    slot,
+    isLocked,
+    onPress,
+    onDragOver,
+    onTap,
+}: HexProps) {
+    return (
+        <polygon
+            points={points}
+            className={cn(
+                'cursor-pointer stroke-foreground/25 transition-colors dark:stroke-border',
+                isLocked
+                    ? LOCKED_CLASS
+                    : [
+                          'duration-1500',
+                          slot === EMPTY_SLOT
+                              ? EMPTY_CLASS
+                              : [
+                                    'hover:fill-primary/70 hover:duration-0',
+                                    SLOT_CLASSES[slot],
+                                ],
+                      ],
+            )}
+            onPointerDown={(event) => {
+                if (event.pointerType !== 'mouse' || event.button !== 0) {
+                    return
+                }
+                event.preventDefault()
+                onPress(index, !isLocked)
+            }}
+            onPointerEnter={() => onDragOver(index)}
+            onPointerUp={(event) => {
+                if (event.pointerType === 'mouse') return
+                onTap(index, !isLocked)
+            }}
+        />
+    )
+})
 
 type HexFieldProps = {
     // The element the empty area centers on (the name in the hero)
@@ -150,7 +205,8 @@ export function HexField({ focusRef }: HexFieldProps) {
         return () => window.removeEventListener('pointerup', endDrag)
     }, [])
 
-    function setHexLocked(index: number, shouldLock: boolean) {
+    // useCallback keeps these the same functions every render, so memo'd hexes don't re-render
+    const setHexLocked = useCallback((index: number, shouldLock: boolean) => {
         setLocked((previous) => {
             if (previous.has(index) === shouldLock) return previous
 
@@ -162,7 +218,24 @@ export function HexField({ focusRef }: HexFieldProps) {
             }
             return next
         })
-    }
+    }, [])
+
+    const startDrag = useCallback(
+        (index: number, shouldLock: boolean) => {
+            dragMode.current = shouldLock ? 'lock' : 'unlock'
+            setHexLocked(index, shouldLock)
+        },
+        [setHexLocked],
+    )
+
+    const dragOver = useCallback(
+        (index: number) => {
+            if (dragMode.current) {
+                setHexLocked(index, dragMode.current === 'lock')
+            }
+        },
+        [setHexLocked],
+    )
 
     return (
         <svg
@@ -173,56 +246,19 @@ export function HexField({ focusRef }: HexFieldProps) {
             className="pointer-events-auto absolute top-0 left-1/2 -z-10 h-svh w-screen -translate-x-1/2 mask-x-from-70% mask-t-from-85% mask-b-from-50% mask-b-to-99%"
         >
             <g transform={`translate(${GRID_OFFSET_X} ${GRID_OFFSET_Y})`}>
-                {slots &&
-                    HEX_POINTS.map((points, index) => {
-                        const slot = slots[index]
-                        return (
-                            <polygon
-                                key={index}
-                                points={points}
-                                className={cn(
-                                    'cursor-pointer stroke-foreground/25 transition-colors dark:stroke-border',
-                                    locked.has(index)
-                                        ? LOCKED_CLASS
-                                        : [
-                                              'duration-1500',
-                                              slot === EMPTY_SLOT
-                                                  ? EMPTY_CLASS
-                                                  : [
-                                                        'hover:fill-primary/70 hover:duration-0',
-                                                        SLOT_CLASSES[slot],
-                                                    ],
-                                          ],
-                                )}
-                                onPointerDown={(event) => {
-                                    if (
-                                        event.pointerType !== 'mouse' ||
-                                        event.button !== 0
-                                    ) {
-                                        return
-                                    }
-                                    event.preventDefault()
-                                    const shouldLock = !locked.has(index)
-                                    dragMode.current = shouldLock
-                                        ? 'lock'
-                                        : 'unlock'
-                                    setHexLocked(index, shouldLock)
-                                }}
-                                onPointerEnter={() => {
-                                    if (dragMode.current) {
-                                        setHexLocked(
-                                            index,
-                                            dragMode.current === 'lock',
-                                        )
-                                    }
-                                }}
-                                onPointerUp={(event) => {
-                                    if (event.pointerType === 'mouse') return
-                                    setHexLocked(index, !locked.has(index))
-                                }}
-                            />
-                        )
-                    })}
+                                {slots &&
+                    HEX_POINTS.map((points, index) => (
+                        <Hex
+                            key={index}
+                            index={index}
+                            points={points}
+                            slot={slots[index]}
+                            isLocked={locked.has(index)}
+                            onPress={startDrag}
+                            onDragOver={dragOver}
+                            onTap={setHexLocked}
+                        />
+                    ))}
             </g>
         </svg>
     )
