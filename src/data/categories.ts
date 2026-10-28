@@ -52,7 +52,7 @@ export const categories: Category[] = [
         actionLabel: 'Open tool',
         items: [
             {
-                title: 'Confidence Calculator',
+                title: 'Drop Rate Confidence',
                 description:
                     'Is your luck really that bad?',
                 href: '/tools/confidence-calculator',

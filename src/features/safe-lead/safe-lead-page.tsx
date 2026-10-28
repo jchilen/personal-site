@@ -8,7 +8,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { PanelHeader } from '@/components/panel-header'
 import { calculateSafeLead, type Possession } from './safe-lead'
 import { SafeLeadOutput } from './safe-lead-output'
-import { useNumberField } from './use-number-field'
+import { useNumberField } from '@/hooks/use-number-field'
 import { MethodologyLayout } from '@/components/methodology-layout'
 import { SafeLeadMethodology } from './safe-lead-methodology'
 import { InlineLink } from '@/components/inline-link'
@@ -23,9 +23,9 @@ const possessionItemClass =
     'corner-brackets h-10 border text-muted-foreground hover:bg-transparent hover:text-cat-tools data-[state=on]:bg-transparent data-[state=on]:text-cat-tools'
 
 export function SafeLeadPage() {
-    const lead = useNumberField(99)
-    const minutes = useNumberField(40)
-    const seconds = useNumberField(59)
+    const lead = useNumberField({ max: 99 })
+    const minutes = useNumberField({ max: 40 })
+    const seconds = useNumberField({ max: 59 })
     const [possession, setPossession] = useState<Possession>('leading')
 
     const pointsAhead = lead.number
