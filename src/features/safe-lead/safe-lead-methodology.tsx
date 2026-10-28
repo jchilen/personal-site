@@ -57,6 +57,11 @@ export function SafeLeadMethodology() {
                 <InlineLink href="https://alumni.unc.edu/news/8-points-17-seconds/">
                     North Carolina vs. Duke in 1974
                 </InlineLink>
+                . Unfortunately for him, there has since been a second instance
+                of a team fumbling from a supposedly unlosable position,{' '}
+                <InlineLink href="https://www.goodbullhunting.com/2016/3/21/11279290/defying-the-odds-the-math-behind-texas-a-ms-miracle-comeback-against-2016-ncaa-tournament">
+                    Texas A&M vs Northern Iowa in 2016
+                </InlineLink>
                 .
             </p>
         </>

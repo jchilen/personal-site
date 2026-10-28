@@ -43,7 +43,7 @@
     --cat-tools: #8a5a00;
     --cat-lancer: #a3262e;
     --cat-articles: #116a73;
-    
+
     --hex-1: #d9e6f6;
     --hex-2: #b5cdee;
     --hex-3: #8fb2e2;
@@ -90,7 +90,6 @@
     --font-heading: 'Oxanium Variable', sans-serif;
     --font-serif: 'Newsreader Variable', Georgia, serif;
     --tracking-eyebrow: 0.3em;
-    --text-shadow-halo: 0 0 6px var(--background), 0 0 16px var(--background);
 
     @keyframes scan-reveal {
         from {
@@ -116,7 +115,7 @@
     }
 
     --animate-scan-conceal: scan-conceal 300ms linear both;
-    --animate-scan-line-out: scan-line-out 300ms linear both;
+    --animate-scan-line-out: scan-line 300ms linear both;
     --animate-scan-reveal: scan-reveal 350ms linear both;
     --animate-scan-line: scan-line 350ms linear both;
 
@@ -126,20 +125,6 @@
         }
         to {
             clip-path: inset(100% 0 0 0);
-        }
-    }
-
-    @keyframes scan-line-out {
-        0% {
-            top: 0;
-            opacity: 1;
-        }
-        90% {
-            opacity: 1;
-        }
-        100% {
-            top: 100%;
-            opacity: 0;
         }
     }
 
@@ -181,24 +166,6 @@
     --radius-2xl: calc(var(--radius) * 1.8);
     --radius-3xl: calc(var(--radius) * 2.2);
     --radius-4xl: calc(var(--radius) * 2.6);
-}
-
-@theme {
-    --animate-halo-in: halo-in 350ms ease-out;
-
-    @keyframes halo-in {
-        from {
-            opacity: 0;
-        }
-    }
-
-    --animate-halo-out: halo-out 300ms ease-in forwards;
-
-    @keyframes halo-out {
-        to {
-            opacity: 0;
-        }
-    }
 }
 
 /* Target-lock corners: faint on hover, solid when selected */
@@ -265,22 +232,6 @@
 
     & blockquote footer {
         @apply mt-2 text-base text-muted-foreground not-italic;
-    }
-}
-
-@utility halo-blur {
-    &::before {
-        --halo-spread: 5rem; /* 56px past the element's edges */
-        content: '';
-        position: absolute;
-        inset: calc(-1 * var(--halo-spread));
-        z-index: -1;
-        pointer-events: none;
-        backdrop-filter: blur(var(--blur-sm)); /* 8px */
-        mask-image:
-            linear-gradient(to right, transparent, black var(--halo-spread), black calc(100% - var(--halo-spread)), transparent),
-            linear-gradient(to bottom, transparent, black var(--halo-spread), black calc(100% - var(--halo-spread)), transparent);
-        mask-composite: intersect;
     }
 }
 

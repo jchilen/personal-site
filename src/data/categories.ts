@@ -54,7 +54,7 @@ export const categories: Category[] = [
             {
                 title: 'Confidence Calculator',
                 description:
-                    'Find out how lucky or unlucky you were in a given game of chance.',
+                    'Is your luck really that bad?',
                 href: '/tools/confidence-calculator',
                 icon: IconSquareRoot,
             },

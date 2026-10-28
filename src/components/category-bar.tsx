@@ -77,10 +77,11 @@ function HexShape() {
         <svg
             aria-hidden="true"
             viewBox="0 0 104 120"
-            className="absolute inset-0 -z-10 size-full overflow-visible fill-card stroke-current"
+            className="absolute inset-0 -z-10 size-full overflow-visible fill-card stroke-current drop-shadow-[0_2px_6px_rgb(3_20_34/0.75)] dark:drop-shadow-[0_0_8px_rgb(0_0_0/0.99)]"
         >
             <polygon
                 points="52,0 104,30 104,90 52,120 0,90 0,30"
+                className="pointer-events-auto"
                 vectorEffect="non-scaling-stroke"
             />
         </svg>
@@ -92,7 +93,7 @@ function Connector() {
     return (
         <span
             aria-hidden="true"
-            className="mx-1.5 h-1 w-8 shrink-0 bg-muted-foreground/45 max-sm:hidden"
+            className="mx-1.5 h-1 w-8 shrink-0 bg-muted-foreground max-sm:hidden"
         />
     )
 }
@@ -161,6 +162,7 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
         <div
             ref={dockRef}
             className={cn(
+                'pointer-events-none',
                 floating ? 'sticky top-4 z-10 mx-auto mt-6 w-fit' : 'contents',
             )}
         >
@@ -272,20 +274,14 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
                         className={cn(
                             floating
                                 ? 'pointer-events-auto relative border border-l-0 bg-muted py-4 pr-4 pl-10'
-                                : 'halo-blur pointer-events-none relative',
-                            !floating &&
-                                (isLeaving
-                                    ? 'motion-safe:before:animate-halo-out'
-                                    : 'motion-safe:before:animate-halo-in'),
+                                : 'pointer-events-none relative',
                         )}
                         style={
                             {
                                 '--category-color': displayedCategory.color,
                             } as CSSProperties
                         }
-                        onAnimationEnd={(event) => {
-                            // The halo's fade-in fires this too; only the cards' animations should finish an exit
-                            if (event.pseudoElement) return
+                        onAnimationEnd={() => {
                             if (isLeaving) {
                                 setDisplayedId(selectedId)
                                 setIsLeaving(false)

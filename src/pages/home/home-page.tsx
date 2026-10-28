@@ -1,4 +1,5 @@
 import { IconArrowDown } from '@tabler/icons-react'
+import { useRef } from 'react'
 import { Hero } from './hero'
 import { HomeSection } from './home-section'
 import { ExperienceSection } from './experience-section'
@@ -6,7 +7,6 @@ import { ContactSection } from './contact-section'
 import { HexField } from './hex-field'
 import { CategoryBar } from '@/components/category-bar'
 import { Button } from '@/components/ui/button'
-import { useTheme } from '@/hooks/use-theme'
 
 const SECTIONS = [
     { id: 'about', title: 'About' },
@@ -15,18 +15,15 @@ const SECTIONS = [
 ]
 
 export function HomePage() {
-    const { theme } = useTheme()
+    const nameRef = useRef<HTMLHeadingElement>(null)
     return (
         <>
             <title>IceNine</title>
             <div className="relative isolate min-h-svh">
-                <Hero />
-                <CategoryBar idle={<HexField key={theme} />} />
-
-                <p className="pointer-events-none relative mx-auto mt-8 max-w-md text-center text-lg/relaxed text-balance text-shadow-halo halo-blur">
-                    Building tools, automating drudgery, and enabling
-                    those around me to do what they love.
-                </p>
+                <Hero nameRef={nameRef} />
+                <CategoryBar
+                    idle={<HexField focusRef={nameRef} />}
+                />
 
                 <nav
                     aria-label="Page sections"
@@ -38,7 +35,7 @@ export function HomePage() {
                             asChild
                             variant="outline"
                             size="sm"
-                            className="pointer-events-auto relative bg-card halo-blur hover:border-primary hover:bg-card dark:hover:bg-card"
+                            className="pointer-events-auto bg-card hover:border-primary hover:bg-card dark:hover:bg-card"
                         >
                             <a href={`#${section.id}`}>
                                 {section.title}
@@ -51,10 +48,10 @@ export function HomePage() {
 
             <HomeSection id="about" number="01" title="About">
                 <p className="text-center text-lg">
-                    I'm a software developer in Kansas City, moving from test
-                    automation into full-time development. I have passions for
-                    soccer, games, and improving efficiency in the systems I
-                    work in.
+                    I'm a software developer moving from test automation into
+                    full-time development. Bulding tools, automating drudgery,
+                    and enabling those around me to do what they love are the
+                    things I do best.
                 </p>
             </HomeSection>
 
