@@ -37,12 +37,16 @@ export function ProjectCard({
             to={item.href}
             className={cn(
                 'group/link corner-brackets block w-60 text-left text-(--category-color) [--brackets-hover-opacity:1]',
-                isLeaving ? 'animate-scan-conceal' : 'animate-scan-reveal',
-                'motion-reduce:animate-none',
             )}
             style={{ '--category-color': color } as CSSProperties}
         >
-            <Card size="sm" className="h-full gap-4 border shadow-none ring-0">
+            <Card
+                size="sm"
+                className={cn(
+                    'h-full gap-4 border shadow-none ring-0 motion-reduce:animate-none',
+                    isLeaving ? 'animate-scan-conceal' : 'animate-scan-reveal',
+                )}
+            >
                 <CardHeader className="gap-3">
                     <div className="flex justify-between font-heading text-xs tracking-eyebrow text-muted-foreground uppercase">
                         <span>{label}</span>
@@ -69,12 +73,14 @@ export function ProjectCard({
             <span
                 aria-hidden="true"
                 className={cn(
-                    'pointer-events-none absolute inset-x-0 z-10 h-6 border-(--category-color) from-transparent to-(--category-color)/35 motion-reduce:hidden',
-                    isLeaving
-                        ? 'animate-scan-line-out border-t-2 bg-linear-to-t'
-                        : 'animate-scan-line -translate-y-full border-b-2 bg-linear-to-b',
+                    'pointer-events-none absolute inset-0 z-10 motion-reduce:hidden',
+                    isLeaving ? 'animate-scan-line-out' : 'animate-scan-line',
                 )}
-            />
+            >
+                <span
+                    className="absolute inset-x-0 bottom-0 h-6 border-b-2 border-(--category-color) bg-linear-to-b from-transparent to-(--category-color)/35"
+                />
+            </span>
         </Link>
     )
 }

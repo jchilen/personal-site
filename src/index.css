@@ -100,22 +100,40 @@
         }
     }
 
+    /* The line sits on the layer's bottom edge, so sliding the layer from one
+       card-height up down to its resting spot sweeps the line top to bottom */
     @keyframes scan-line {
         0% {
-            top: 0;
+            transform: translateY(-100%);
             opacity: 1;
         }
         90% {
             opacity: 1;
         }
         100% {
-            top: 100%;
+            transform: translateY(0);
+            opacity: 0;
+        }
+    }
+
+    /* Same motion as scan-line, under its own name: switching between two classes
+       only restarts an animation if the keyframes name changes */
+    @keyframes scan-line-out {
+        0% {
+            transform: translateY(-100%);
+            opacity: 1;
+        }
+        90% {
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(0);
             opacity: 0;
         }
     }
 
     --animate-scan-conceal: scan-conceal 300ms linear both;
-    --animate-scan-line-out: scan-line 300ms linear both;
+    --animate-scan-line-out: scan-line-out 300ms linear both;
     --animate-scan-reveal: scan-reveal 350ms linear both;
     --animate-scan-line: scan-line 350ms linear both;
 
