@@ -34,7 +34,7 @@ export const portfolio: PortfolioItem[] = [
     {
         title: "Defining Moments - Miracle's Solo Rampage",
         source: 'Team Liquid',
-        description: 'A one-in-a-kind moment.',
+        description: 'A one-of-a-kind moment.',
         href: 'https://www.teamliquid.com/news/2019/08/05/defining-moments-miracles-solo-rampage',
         icon: IconSkull,
         hue: 236,
@@ -42,7 +42,8 @@ export const portfolio: PortfolioItem[] = [
     {
         title: 'Race to the Finish Line: Earth Spirit vs Puck',
         source: 'Team Liquid',
-        description: 'Analytics on one of the longest chases in Dota 2 history.',
+        description:
+            'Analytics on one of the longest chases in Dota 2 history.',
         href: 'https://www.teamliquid.com/news/2019/02/19/race-to-the-finish-line-earth-spirit-vs-puck',
         icon: IconRoute,
         hue: 272,
@@ -50,7 +51,8 @@ export const portfolio: PortfolioItem[] = [
     {
         title: "Team Liquid's TI Drafts: Analyzing Comfort Heroes",
         source: 'Team Liquid',
-        description: 'A look into the value of utilizing your most-played heroes.',
+        description:
+            'A look into the value of utilizing your most-played heroes.',
         href: 'https://www.teamliquid.com/news/2019/10/08/team-liquids-ti-drafts-analyzing-comfort-heroes',
         icon: IconArmchair,
         hue: 308,
@@ -98,7 +100,8 @@ export const portfolio: PortfolioItem[] = [
     {
         title: 'More Than Just a Role',
         source: 'LiquidDota',
-        description: "An look into how one of Dota's key positions has changed over time.",
+        description:
+            "A look into how one of Dota's key positions has changed over time.",
         href: 'https://tl.net/forum/dota-2-general/525993-playmakers-more-than-just-a-role',
         icon: IconChess,
         hue: 164,
