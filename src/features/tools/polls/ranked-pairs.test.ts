@@ -165,30 +165,42 @@ describe('countOrderings', () => {
 
 describe('findPossibleWinners', () => {
     test('Test 1: only A can win, found by the quick check', () => {
-        expect(findPossibleWinners(sortedWinsFor(OPTIONS, CLEAR_WINNER), 3)).toEqual([0])
+        expect(
+            findPossibleWinners(sortedWinsFor(OPTIONS, CLEAR_WINNER), 3),
+        ).toEqual([0])
     })
 
     test('Test 2: A or B can win, depending on the order of the 5–3 wins', () => {
-        expect(findPossibleWinners(sortedWinsFor(OPTIONS, CYCLE), 3)).toEqual([0, 1])
+        expect(findPossibleWinners(sortedWinsFor(OPTIONS, CYCLE), 3)).toEqual([
+            0, 1,
+        ])
     })
 
     test('a 5–5–5 cycle: every option can win', () => {
-        expect(findPossibleWinners(sortedWinsFor(OPTIONS, EVEN_CYCLE), 3)).toEqual([0, 1, 2])
+        expect(
+            findPossibleWinners(sortedWinsFor(OPTIONS, EVEN_CYCLE), 3),
+        ).toEqual([0, 1, 2])
     })
 
     test('an exact tie at the top: both tied options can win', () => {
         const tied = ballots([2, 'A>B>C'], [2, 'B>A>C'])
-        expect(findPossibleWinners(sortedWinsFor(OPTIONS, tied), 3)).toEqual([0, 1])
+        expect(findPossibleWinners(sortedWinsFor(OPTIONS, tied), 3)).toEqual([
+            0, 1,
+        ])
     })
 
     test('gives up (null) when checking every order would exceed the budget', () => {
         // Test 2 has 2 possible orders; with a budget of 1, it shouldn't try
-        expect(findPossibleWinners(sortedWinsFor(OPTIONS, CYCLE), 3, 1)).toBeNull()
+        expect(
+            findPossibleWinners(sortedWinsFor(OPTIONS, CYCLE), 3, 1),
+        ).toBeNull()
     })
 
     test('still uses the quick check when the order cannot matter, even over budget', () => {
         // Test 1 has 2 possible orders, but nothing conflicts, so the budget never comes up
-        expect(findPossibleWinners(sortedWinsFor(OPTIONS, CLEAR_WINNER), 3, 1)).toEqual([0])
+        expect(
+            findPossibleWinners(sortedWinsFor(OPTIONS, CLEAR_WINNER), 3, 1),
+        ).toEqual([0])
     })
 })
 
@@ -224,7 +236,9 @@ describe('smithSet', () => {
 describe('pickByRandomBallot', () => {
     test('uses the first ballot when random gives 0', () => {
         // Ballot 0 is A>B>C, so A is the highest of A and B
-        expect(pickByRandomBallot([0, 1], OPTIONS, CYCLE, FIRST_BALLOT)).toEqual({
+        expect(
+            pickByRandomBallot([0, 1], OPTIONS, CYCLE, FIRST_BALLOT),
+        ).toEqual({
             winner: 0,
             ballotIndex: 0,
         })
@@ -232,7 +246,9 @@ describe('pickByRandomBallot', () => {
 
     test('uses the middle ballot when random gives 0.5', () => {
         // Ballot 4 of 8 is B>C>A, so B is the highest of A and B
-        expect(pickByRandomBallot([0, 1], OPTIONS, CYCLE, MIDDLE_BALLOT)).toEqual({
+        expect(
+            pickByRandomBallot([0, 1], OPTIONS, CYCLE, MIDDLE_BALLOT),
+        ).toEqual({
             winner: 1,
             ballotIndex: 4,
         })
@@ -241,7 +257,9 @@ describe('pickByRandomBallot', () => {
 
 describe('decideWinner', () => {
     test('reports no votes when there are no ballots', () => {
-        expect(decideWinner(OPTIONS, [], FIRST_BALLOT)).toEqual({ result: 'no-votes' })
+        expect(decideWinner(OPTIONS, [], FIRST_BALLOT)).toEqual({
+            result: 'no-votes',
+        })
     })
 
     test('Test 1: A wins outright under Ranked Pairs', () => {

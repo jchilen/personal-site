@@ -2,7 +2,8 @@ export function ConfidenceMethodology() {
     return (
         <>
             <p>
-                Heads up, this was primarily written with World of Warcraft loot in mind.
+                Heads up, this was primarily written with World of Warcraft loot
+                in mind.
             </p>
             <p>
                 Every kill is its own separate roll, so if an item has a 5% drop
@@ -10,9 +11,9 @@ export function ConfidenceMethodology() {
                 escalating odds.
             </p>
             <p>
-                When you lose the roll several times in a row, you take the miss 
-                chance multiplied by itself once per kill to get the likelihood 
-                of that happening. Everything else, getting at least one drop, 
+                When you lose the roll several times in a row, you take the miss
+                chance multiplied by itself once per kill to get the likelihood
+                of that happening. Everything else, getting at least one drop,
                 is what's left over:
             </p>
             <figure className="border bg-card px-5 py-4">
@@ -32,9 +33,9 @@ export function ConfidenceMethodology() {
                 </dl>
             </figure>
             <p>
-                While we default to 'Kills Needed', 'Chance After N' plugs your kills straight into that formula.
-                'Kills Needed' runs it backwards. Solving for n takes a
-                logarithm:
+                While we default to 'Kills Needed', 'Chance After N' plugs your
+                kills straight into that formula. 'Kills Needed' runs it
+                backwards. Solving for n takes a logarithm:
             </p>
             <figure className="border bg-card px-5 py-4">
                 <figcaption className="font-heading text-xs tracking-eyebrow text-muted-foreground uppercase">
@@ -62,8 +63,9 @@ export function ConfidenceMethodology() {
                 want to be.
             </p>
             <p>
-                My personal worst (or best) run was 25 kills to get an item called
-                Shadowcraft Spaulders, a 16% drop rate. How do your odds stack up? 
+                My personal worst (or best) run was 25 kills to get an item
+                called Shadowcraft Spaulders, a 16% drop rate. How do your odds
+                stack up?
             </p>
         </>
     )

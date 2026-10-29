@@ -243,10 +243,10 @@ export function HexField({ focusRef }: HexFieldProps) {
             aria-hidden
             viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
             preserveAspectRatio="xMidYMid slice"
-            className="pointer-events-auto absolute top-0 left-1/2 -z-10 h-svh w-screen -translate-x-1/2 mask-x-from-70% mask-t-from-85% mask-b-from-50% mask-b-to-99%"
+            className="pointer-events-auto absolute top-0 left-1/2 -z-10 h-svh w-screen -translate-x-1/2 mask-t-from-85% mask-x-from-70% mask-b-from-50% mask-b-to-99%"
         >
             <g transform={`translate(${GRID_OFFSET_X} ${GRID_OFFSET_Y})`}>
-                                {slots &&
+                {slots &&
                     HEX_POINTS.map((points, index) => (
                         <Hex
                             key={index}

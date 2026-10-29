@@ -54,8 +54,7 @@ export const categories: Category[] = [
         items: [
             {
                 title: 'Drop Rate Confidence',
-                description:
-                    'Is your luck really that bad?',
+                description: 'Is your luck really that bad?',
                 href: '/tools/confidence-calculator',
                 icon: IconSquareRoot,
             },
@@ -121,7 +120,8 @@ export const categories: Category[] = [
             },
             {
                 title: 'Writing Portfolio',
-                description: "Articles I've written for Team Liquid and Monster Energy.",
+                description:
+                    "Articles I've written for Team Liquid and Monster Energy.",
                 href: '/articles/portfolio',
                 icon: IconBooks,
                 actionLabel: 'View portfolio',

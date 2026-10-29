@@ -69,7 +69,7 @@ export function ArticleLayout({
 
                 <article
                     id={ARTICLE_START_ID}
-                    className="prose prose-lg prose-site scroll-mt-28 font-serif prose-headings:scroll-mt-28 prose-headings:font-heading prose-headings:font-semibold prose-headings:tracking-wide prose-headings:uppercase prose-headings:text-balance prose-h2:clear-both prose-h3:clear-both prose-a:decoration-primary prose-a:decoration-2 prose-a:underline-offset-4 dark:prose-a:text-primary"
+                    className="prose prose-lg prose-site scroll-mt-28 font-serif prose-headings:scroll-mt-28 prose-headings:font-heading prose-headings:font-semibold prose-headings:tracking-wide prose-headings:text-balance prose-headings:uppercase prose-h2:clear-both prose-h3:clear-both prose-a:decoration-primary prose-a:decoration-2 prose-a:underline-offset-4 dark:prose-a:text-primary"
                 >
                     {children}
                 </article>

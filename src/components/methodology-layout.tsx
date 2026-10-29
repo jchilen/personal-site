@@ -63,25 +63,25 @@ export function MethodologyLayout({
             <Collapsible open={isOpen}>
                 <CollapsibleContent asChild>
                     <article className="mt-8 border-t-2 border-primary pt-6 duration-300 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=open]:animate-in data-[state=open]:fade-in motion-reduce:animate-none lg:mt-12 lg:ml-8 lg:w-136 lg:border-t-0 lg:border-l-2 lg:pt-0 lg:pl-8">
-                    <Eyebrow className="font-semibold text-foreground dark:text-primary">
-                        Methodology
-                    </Eyebrow>
-                    <h2 className="mt-2 font-heading text-xl font-semibold tracking-widest uppercase">
-                        {title}
-                    </h2>
-                    <div className="mt-4 space-y-4 font-serif text-lg">
-                        {methodology}
-                    </div>
-                    <Button
-                        variant="link"
-                        size="sm"
-                        className="mt-6 h-auto p-0 lg:hidden"
-                        onClick={() => toolRef.current?.scrollIntoView()}
-                    >
-                        {backLabel}
-                        <IconArrowUp data-icon="inline-end" />
-                    </Button>
-                                    </article>
+                        <Eyebrow className="font-semibold text-foreground dark:text-primary">
+                            Methodology
+                        </Eyebrow>
+                        <h2 className="mt-2 font-heading text-xl font-semibold tracking-widest uppercase">
+                            {title}
+                        </h2>
+                        <div className="mt-4 space-y-4 font-serif text-lg">
+                            {methodology}
+                        </div>
+                        <Button
+                            variant="link"
+                            size="sm"
+                            className="mt-6 h-auto p-0 lg:hidden"
+                            onClick={() => toolRef.current?.scrollIntoView()}
+                        >
+                            {backLabel}
+                            <IconArrowUp data-icon="inline-end" />
+                        </Button>
+                    </article>
                 </CollapsibleContent>
             </Collapsible>
         </div>

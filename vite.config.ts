@@ -17,7 +17,7 @@ export default defineConfig({
         },
         react({ include: /\.(mdx|js|jsx|ts|tsx)$/ }),
         tailwindcss(),
-        cloudflare(),
+        !process.env.VITEST && cloudflare(), // Vitest runs plain functions, not the Worker, and the plugin's own server clashes with Vitest's
     ],
     resolve: {
         alias: {

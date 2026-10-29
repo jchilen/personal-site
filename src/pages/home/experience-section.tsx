@@ -3,12 +3,7 @@ import { IconMinus, IconPlus } from '@tabler/icons-react'
 
 import { PanelHeader } from '@/components/panel-header'
 import { Button } from '@/components/ui/button'
-import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card'
 import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { cn } from '@/lib/utils'

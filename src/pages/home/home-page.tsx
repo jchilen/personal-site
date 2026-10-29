@@ -21,9 +21,7 @@ export function HomePage() {
             <title>IceNine</title>
             <div className="relative isolate min-h-svh">
                 <Hero nameRef={nameRef} />
-                <CategoryBar
-                    idle={<HexField focusRef={nameRef} />}
-                />
+                <CategoryBar idle={<HexField focusRef={nameRef} />} />
 
                 <nav
                     aria-label="Page sections"

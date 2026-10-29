@@ -54,7 +54,7 @@ export function ProjectCard({
                     isLeaving ? 'animate-scan-conceal' : 'animate-scan-reveal',
                 )}
             >
-            {header}
+                {header}
                 <CardHeader className="gap-3">
                     <div className="flex justify-between font-heading text-xs tracking-eyebrow text-muted-foreground uppercase">
                         <span>{label}</span>
@@ -74,7 +74,7 @@ export function ProjectCard({
 
                 <CardFooter className="mt-auto gap-1.5 border-t font-heading text-xs font-semibold tracking-widest text-muted-foreground uppercase transition-colors group-hover/link:text-(--category-color) group-focus-visible/link:text-(--category-color)">
                     {actionLabel}
-                        {isExternal && (
+                    {isExternal && (
                         <span className="sr-only">(opens in a new tab)</span>
                     )}
                     <IconArrowUpRight className="size-3.5" />

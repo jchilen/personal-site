@@ -39,7 +39,7 @@ const fullHexClass = 'h-30 w-26'
 
 // Other pages: icon-only mini hexes that grow to full size on hover, keyboard focus, or while open
 const miniHexClass =
-        'group h-12 w-10.5 gap-0 transition-[color,width,height,margin] hex-open:mx-1.5 hex-open:h-30 hex-open:w-26'
+    'group h-12 w-10.5 gap-0 transition-[color,width,height,margin] hex-open:mx-1.5 hex-open:h-30 hex-open:w-26'
 
 type HexContentProps = {
     icon: ComponentType<{ className?: string }>

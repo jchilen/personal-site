@@ -62,7 +62,12 @@ export function Figure({ src, alt, caption, float }: FigureProps) {
                         type="button"
                         className="block w-full cursor-zoom-in border bg-card p-1 transition-colors hover:border-primary"
                     >
-                        <img src={src} alt={alt} loading="lazy" className="w-full" />
+                        <img
+                            src={src}
+                            alt={alt}
+                            loading="lazy"
+                            className="w-full"
+                        />
                         <span className="sr-only">Enlarge image</span>
                     </button>
                 </DialogTrigger>

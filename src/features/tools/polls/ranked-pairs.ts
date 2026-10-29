@@ -167,7 +167,10 @@ function allOrders(groups: Win[][]) {
     return groups.reduce<Win[][]>(
         (orders, group) =>
             orders.flatMap((order) =>
-                permutations(group).map((groupOrder) => [...order, ...groupOrder]),
+                permutations(group).map((groupOrder) => [
+                    ...order,
+                    ...groupOrder,
+                ]),
             ),
         [[]],
     )
@@ -215,13 +218,15 @@ export function bordaScores(options: string[], ballots: Ballot[]) {
 /** The Smith set: the smallest group of options that each beat every option outside the group */
 export function smithSet(headToHead: number[][]) {
     const count = headToHead.length
-    const beatsOrTies = (a: number, b: number) => headToHead[a][b] >= headToHead[b][a]
+    const beatsOrTies = (a: number, b: number) =>
+        headToHead[a][b] >= headToHead[b][a]
 
     // Every option you can get to from `option` by following beat-or-tie results
     const reachable = (option: number, seen = new Set<number>()) => {
         seen.add(option)
         for (let next = 0; next < count; next++) {
-            if (!seen.has(next) && beatsOrTies(option, next)) reachable(next, seen)
+            if (!seen.has(next) && beatsOrTies(option, next))
+                reachable(next, seen)
         }
         return seen
     }
@@ -247,7 +252,8 @@ export function pickByRandomBallot(
     const ranked = toPositions(ballots[ballotIndex], positions)
 
     const winner = ranked.find((option) => tied.includes(option))
-    if (winner === undefined) throw new Error('Ballot does not rank the tied options')
+    if (winner === undefined)
+        throw new Error('Ballot does not rank the tied options')
 
     return { winner, ballotIndex }
 }
@@ -295,10 +301,21 @@ export function decideWinner(
     const bordaTied = tied.filter((option) => scores[option] === best)
 
     if (bordaTied.length === 1) {
-        return { result: 'borda', winner: bordaTied[0], tied, tiedBy, bordaScores: scores }
+        return {
+            result: 'borda',
+            winner: bordaTied[0],
+            tied,
+            tiedBy,
+            bordaScores: scores,
+        }
     }
 
-    const { winner, ballotIndex } = pickByRandomBallot(bordaTied, options, ballots, random)
+    const { winner, ballotIndex } = pickByRandomBallot(
+        bordaTied,
+        options,
+        ballots,
+        random,
+    )
     return {
         result: 'random-ballot',
         winner,

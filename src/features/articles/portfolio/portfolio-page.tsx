@@ -20,9 +20,13 @@ export function PortfolioPage() {
                         actionLabel="Read article"
                         index={index}
                         isLeaving={false}
-                        header={<HexMosaic seed={item.title} tall={item.featured} />}
+                        header={
+                            <HexMosaic seed={item.title} tall={item.featured} />
+                        }
                         className={
-                            item.featured ? 'sm:col-span-2 sm:w-auto' : undefined
+                            item.featured
+                                ? 'sm:col-span-2 sm:w-auto'
+                                : undefined
                         }
                     />
                 ))}

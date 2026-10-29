@@ -7,7 +7,9 @@ export default {
         const url = new URL(request.url)
 
         if (url.pathname === '/api/health') {
-            const row = await env.DB.prepare('SELECT 1 AS ok').first<{ ok: number }>()
+            const row = await env.DB.prepare('SELECT 1 AS ok').first<{
+                ok: number
+            }>()
             return Response.json({ status: 'ok', database: row?.ok === 1 })
         }
 

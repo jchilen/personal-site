@@ -22,7 +22,10 @@ export function TableOfContents({ toc }: { toc: Toc }) {
             let current = ARTICLE_START_ID
             for (const id of ids) {
                 const heading = document.getElementById(id)
-                if (heading && heading.getBoundingClientRect().top < ACTIVE_OFFSET) {
+                if (
+                    heading &&
+                    heading.getBoundingClientRect().top < ACTIVE_OFFSET
+                ) {
                     current = id
                 }
             }
@@ -82,7 +85,8 @@ function TocLink({ id, label, depth, activeId }: TocLinkProps) {
             aria-current={id === activeId ? 'location' : undefined}
             className={cn(
                 'block border-l-2 border-transparent py-1 pr-2 text-sm text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground aria-[current=location]:border-primary aria-[current=location]:text-foreground',
-                depth === 2 && 'pl-3 font-heading text-xs tracking-widest uppercase',
+                depth === 2 &&
+                    'pl-3 font-heading text-xs tracking-widest uppercase',
                 depth === 3 && 'pl-6',
                 depth === 4 && 'pl-9',
             )}

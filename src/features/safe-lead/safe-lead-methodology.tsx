@@ -12,10 +12,10 @@ export function SafeLeadMethodology() {
                 goes down.
             </p>
             <p>
-                This is a heuristic method, something practical that
-                Bill James came up with by guessing at formulas and tweaking
-                over time based on results. Eventually he settled on something
-                he felt confident in:
+                This is a heuristic method, something practical that Bill James
+                came up with by guessing at formulas and tweaking over time
+                based on results. Eventually he settled on something he felt
+                confident in:
             </p>
             <ol className="list-decimal space-y-2 pl-6 marker:font-heading marker:text-foreground dark:marker:text-primary">
                 <li>Take the number of points one team is ahead.</li>
