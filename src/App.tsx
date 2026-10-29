@@ -6,6 +6,7 @@ import { HomePage } from '@/pages/home/home-page'
 import { SafeLeadPage } from '@/features/safe-lead/safe-lead-page'
 import { ConfidencePage } from '@/features/confidence/confidence-page'
 import { ImprovingEfficientlyPage } from '@/features/articles/improving-efficiently/improving-efficiently-page'
+import { PortfolioPage } from '@/features/articles/portfolio/portfolio-page'
 import { ComingSoonPage } from '@/pages/coming-soon-page'
 
 function App() {
@@ -35,6 +36,10 @@ function App() {
                     <Route
                         path="/articles/the-article"
                         element={<ImprovingEfficientlyPage />}
+                    />
+                    <Route
+                        path="/articles/portfolio"
+                        element={<PortfolioPage />}
                     />
                     <Route path="*" element={<ComingSoonPage />} />
                 </Routes>

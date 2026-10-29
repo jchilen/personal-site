@@ -48,6 +48,10 @@
     --hex-2: #b5cdee;
     --hex-3: #8fb2e2;
     --hex-4: #6f97d6;
+
+    /* Shared lightness and saturation for colors picked by hue (portfolio cards) */
+    --hue-lightness: 0.55;
+    --hue-chroma: 0.13;
 }
 
 .dark {
@@ -83,6 +87,9 @@
     --hex-2: #102d3b;
     --hex-3: #183f4c;
     --hex-4: #243442;
+
+    --hue-lightness: 0.74;
+    --hue-chroma: 0.12;
 }
 
 @theme inline {

@@ -8,6 +8,7 @@ import {
     IconTool,
     IconTargetArrow,
     IconPuzzle,
+    IconBooks,
 } from '@tabler/icons-react'
 import {
     ChartLineUpIcon,
@@ -117,6 +118,13 @@ export const categories: Category[] = [
                 description: 'A guide to getting good.',
                 href: '/articles/the-article',
                 icon: ChartLineUpIcon,
+            },
+            {
+                title: 'Writing Portfolio',
+                description: "Articles I've written for Team Liquid and Monster Energy.",
+                href: '/articles/portfolio',
+                icon: IconBooks,
+                actionLabel: 'View portfolio',
             },
         ],
     },
