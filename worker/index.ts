@@ -1,18 +1,32 @@
 import type { Env } from './env'
-import { errorResponse } from './http'
-import { createPoll } from './polls'
+import { errorResponse, type Handler } from './http'
+import { createPoll, getPoll } from './polls'
+
+async function health(_request: Request, env: Env): Promise<Response> {
+    const row = await env.DB.prepare('SELECT 1 AS ok').first<{ ok: number }>()
+    return Response.json({ status: 'ok', database: row?.ok === 1 })
+}
+
+// Each route: an HTTP method, a URL pattern (":id" captures that part of the path), and its handler
+const routes: { method: string; pattern: URLPattern; handler: Handler }[] = [
+    { method: 'GET', pattern: new URLPattern({ pathname: '/api/health' }), handler: health },
+    { method: 'POST', pattern: new URLPattern({ pathname: '/api/polls' }), handler: createPoll },
+    { method: 'GET', pattern: new URLPattern({ pathname: '/api/polls/:id' }), handler: getPoll },
+]
 
 export default {
     async fetch(request, env) {
-        const url = new URL(request.url)
+        for (const route of routes) {
+            if (route.method !== request.method) continue
+            const match = route.pattern.exec(request.url)
+            if (!match) continue
 
-        if (url.pathname === '/api/health') {
-            const row = await env.DB.prepare('SELECT 1 AS ok').first<{ ok: number }>()
-            return Response.json({ status: 'ok', database: row?.ok === 1 })
-        }
-
-        if (url.pathname === '/api/polls' && request.method === 'POST') {
-            return createPoll(request, env)
+            try {
+                return await route.handler(request, env, match.pathname.groups)
+            } catch (error) {
+                console.error(error)
+                return errorResponse(500, 'Something went wrong')
+            }
         }
 
         return errorResponse(404, 'Not found')

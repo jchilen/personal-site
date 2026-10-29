@@ -1,6 +1,6 @@
 import { validateNewPoll } from '../src/features/tools/polls/poll-rules'
 import type { Env } from './env'
-import { errorResponse } from './http'
+import { errorResponse, type Params } from './http'
 import { randomToken, sha256 } from './tokens'
 
 const DAY_MS = 24 * 60 * 60 * 1000
@@ -48,4 +48,35 @@ function adminCookie(pollId: string, token: string): string {
         'Secure',
         'SameSite=Strict',
     ].join('; ')
+}
+
+interface PollRow {
+    title: string
+    options: string
+    expected_voters: number
+    expires_at: number
+    closed_at: number | null
+}
+
+export async function getPoll(_request: Request, env: Env, params: Params): Promise<Response> {
+    const { id } = params
+    if (!id) return errorResponse(404, 'Poll not found')
+
+    // Only the columns voters may see: never the admin hash, and the seed stays hidden until results
+    const row = await env.DB.prepare(
+        'SELECT title, options, expected_voters, expires_at, closed_at FROM polls WHERE id = ?',
+    )
+        .bind(id)
+        .first<PollRow>()
+    if (!row) return errorResponse(404, 'Poll not found')
+
+    return Response.json({
+        id,
+        title: row.title,
+        options: JSON.parse(row.options) as string[],
+        expectedVoters: row.expected_voters,
+        expiresAt: row.expires_at,
+        // A poll past its 7 days counts as closed even before anything has marked it closed
+        closed: row.closed_at !== null || row.expires_at <= Date.now(),
+    })
 }
