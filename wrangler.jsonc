@@ -1,13 +1,21 @@
 {
     "$schema": "node_modules/wrangler/config-schema.json",
     "name": "personal-site",
+    "main": "./worker/index.ts",
     "compatibility_date": "2026-10-24",
     "routes": [
         { "pattern": "icenine.dev", "custom_domain": true },
         { "pattern": "www.icenine.dev", "custom_domain": true },
     ],
     "assets": {
-        "directory": "./dist",
         "not_found_handling": "single-page-application",
+        "run_worker_first": ["/api/*"],
     },
+    "d1_databases": [
+        {
+            "binding": "DB",
+            "database_name": "icenine-polls",
+            "database_id": "530d7eb4-faf9-46da-a761-5fd48984cf57",
+        },
+    ],
 }
