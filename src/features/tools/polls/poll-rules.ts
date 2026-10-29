@@ -82,3 +82,28 @@ export function validateNewPoll(input: unknown): Validation<NewPoll> {
         value: { title: title.trim(), options: cleanOptions, expectedVoters },
     }
 }
+
+// A ballot must rank every option in the poll exactly once
+export function validateBallot(input: unknown, options: string[]): Validation<string[]> {
+    if (typeof input !== 'object' || input === null) return fail('Expected a JSON object')
+    const { ranking } = input as Record<string, unknown>
+
+    if (
+        !Array.isArray(ranking) ||
+        !ranking.every((option): option is string => typeof option === 'string')
+    ) {
+        return fail('Ranking must be a list of options')
+    }
+
+    // Same length, no repeats, and every option present means each appears exactly once
+    const ranked = new Set(ranking)
+    if (
+        ranking.length !== options.length ||
+        ranked.size !== options.length ||
+        !options.every((option) => ranked.has(option))
+    ) {
+        return fail('Rank every option exactly once')
+    }
+
+    return { ok: true, value: ranking }
+}

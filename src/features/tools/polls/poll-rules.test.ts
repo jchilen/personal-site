@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { POLL_LIMITS, validateNewPoll } from './poll-rules'
+import { POLL_LIMITS, validateBallot, validateNewPoll } from './poll-rules'
 
 const VALID = {
     title: 'Lunch',
@@ -63,5 +63,30 @@ describe('validateNewPoll', () => {
         ['a voter count sent as text', { expectedVoters: '4' }],
     ])('rejects %s', (_name, changes) => {
         expect(validateNewPoll(withChanges(changes)).ok).toBe(false)
+    })
+})
+
+describe('validateBallot', () => {
+    const OPTIONS = ['Tacos', 'Pizza', 'Sushi']
+
+    test('accepts every option ranked once, in any order', () => {
+        const ranking = ['Sushi', 'Tacos', 'Pizza']
+        expect(validateBallot({ ranking }, OPTIONS)).toEqual({ ok: true, value: ranking })
+    })
+
+    test('rejects anything that is not an object', () => {
+        expect(validateBallot(null, OPTIONS).ok).toBe(false)
+    })
+
+    test.each([
+        ['a missing option', ['Sushi', 'Tacos']],
+        ['an extra option', ['Sushi', 'Tacos', 'Pizza', 'Curry']],
+        ['an option twice', ['Sushi', 'Tacos', 'Tacos']],
+        ['an option not in the poll', ['Sushi', 'Tacos', 'Curry']],
+        ['different capitalization', ['sushi', 'Tacos', 'Pizza']],
+        ['something that is not a list', 'Sushi'],
+        ['an entry that is not text', ['Sushi', 'Tacos', 3]],
+    ])('rejects %s', (_name, ranking) => {
+        expect(validateBallot({ ranking }, OPTIONS).ok).toBe(false)
     })
 })

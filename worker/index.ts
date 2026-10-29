@@ -1,6 +1,6 @@
 import type { Env } from './env'
 import { errorResponse, type Handler } from './http'
-import { createPoll, getPoll } from './polls'
+import { castBallot, createPoll, getPoll } from './polls'
 
 async function health(_request: Request, env: Env): Promise<Response> {
     const row = await env.DB.prepare('SELECT 1 AS ok').first<{ ok: number }>()
@@ -12,6 +12,11 @@ const routes: { method: string; pattern: URLPattern; handler: Handler }[] = [
     { method: 'GET', pattern: new URLPattern({ pathname: '/api/health' }), handler: health },
     { method: 'POST', pattern: new URLPattern({ pathname: '/api/polls' }), handler: createPoll },
     { method: 'GET', pattern: new URLPattern({ pathname: '/api/polls/:id' }), handler: getPoll },
+    {
+        method: 'POST',
+        pattern: new URLPattern({ pathname: '/api/polls/:id/ballots' }),
+        handler: castBallot,
+    },
 ]
 
 export default {
