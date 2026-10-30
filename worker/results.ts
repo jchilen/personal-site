@@ -8,7 +8,7 @@ import { errorResponse, type Params } from './http'
 import { isClosed, type PollRow } from './polls'
 
 // Server-side only: includes the admin hash and seed, which must never be put in a response as-is
-type PollDetails = Omit<PollRow, 'id' | 'created_at'>
+type PollDetails = Omit<PollRow, 'id' | 'created_at' | 'creator_id_hash'>
 
 function loadPoll(env: Env, id: string): Promise<PollDetails | null> {
     return env.DB.prepare(

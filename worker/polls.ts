@@ -3,11 +3,20 @@ import {
     validateNewPoll,
 } from '../src/features/tools/polls/poll-rules'
 import type { Env } from './env'
-import { errorResponse, getCookie, withinRateLimit, type Params } from './http'
+import {
+    cookie,
+    errorResponse,
+    getCookie,
+    withinRateLimit,
+    type Params,
+} from './http'
 import { randomToken, sha256 } from './tokens'
 
+// A poll lasts at most 7 days open plus 30 days of results, so this outlasts every poll it lists.
+// Creating another poll resets the clock.
 const DAY_MS = 24 * 60 * 60 * 1000
 const OPEN_DAYS = 7
+const CREATOR_COOKIE_DAYS = 37
 
 export async function createPoll(
     request: Request,
@@ -33,13 +42,16 @@ export async function createPoll(
     const id = randomToken(8)
     const adminToken = randomToken(32)
     const adminTokenHash = await sha256(adminToken)
+    // Reuse this browser's creator ID, so all its polls share one list
+    const creatorId = getCookie(request, 'poll_creator') || randomToken(32)
+    const creatorIdHash = await sha256(creatorId)
     const seed = randomToken(16)
     const createdAt = Date.now()
     const expiresAt = createdAt + OPEN_DAYS * DAY_MS
 
     await env.DB.prepare(
-        `INSERT INTO polls (id, title, options, expected_voters, admin_token_hash, seed, created_at, expires_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO polls (id, title, options, expected_voters, admin_token_hash, creator_id_hash, seed, created_at, expires_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
         .bind(
             id,
@@ -47,32 +59,28 @@ export async function createPoll(
             JSON.stringify(options),
             expectedVoters,
             adminTokenHash,
+            creatorIdHash,
             seed,
             createdAt,
             expiresAt,
         )
         .run()
 
-    // The token goes back twice: in a cookie for this browser, and in the body for the backup admin link
-    return Response.json(
-        { id, adminToken },
-        {
-            status: 201,
-            headers: { 'Set-Cookie': pollCookie('poll_admin', adminToken, id) },
-        },
+    // Two cookies: admin access to this poll, and the creator ID for "Your polls".
+    // Set-Cookie is the one header that can't be merged into one line, so each gets its own append
+    const headers = new Headers()
+    headers.append('Set-Cookie', pollCookie('poll_admin', adminToken, id))
+    headers.append(
+        'Set-Cookie',
+        cookie('poll_creator', creatorId, '/api/polls', CREATOR_COOKIE_DAYS),
     )
+
+    return Response.json({ id, adminToken }, { status: 201, headers })
 }
 
 // Cookies only this poll's API receives, lasting as long as the poll can be open
 function pollCookie(name: string, value: string, pollId: string): string {
-    return [
-        `${name}=${value}`,
-        `Path=/api/polls/${pollId}`,
-        `Max-Age=${OPEN_DAYS * 24 * 60 * 60}`,
-        'HttpOnly',
-        'Secure',
-        'SameSite=Strict',
-    ].join('; ')
+    return cookie(name, value, `/api/polls/${pollId}`, OPEN_DAYS)
 }
 
 // Every column of the polls table. Queries that select fewer columns use Pick<PollRow, ...>
@@ -87,6 +95,7 @@ export interface PollRow {
     expires_at: number
     closed_at: number | null
     results: string | null
+    creator_id_hash: string | null
 }
 
 // Closed by hand, or past its 7 days even if nothing has marked it closed yet
@@ -205,4 +214,45 @@ export async function castBallot(
             headers: { 'Set-Cookie': pollCookie('poll_voter', voterId, id) },
         },
     )
+}
+
+type MyPollRow = Pick<
+    PollRow,
+    | 'id'
+    | 'title'
+    | 'expected_voters'
+    | 'created_at'
+    | 'expires_at'
+    | 'closed_at'
+> & { ballot_count: number }
+
+export async function listMyPolls(
+    request: Request,
+    env: Env,
+): Promise<Response> {
+    // No cookie means this browser hasn't created any polls: an empty list, not an error
+    const creatorId = getCookie(request, 'poll_creator')
+    if (!creatorId) return Response.json({ polls: [] })
+
+    const { results: rows } = await env.DB.prepare(
+        `SELECT id, title, expected_voters, created_at, expires_at, closed_at,
+                (SELECT COUNT(*) FROM ballots WHERE ballots.poll_id = polls.id) AS ballot_count
+         FROM polls
+         WHERE creator_id_hash = ?
+         ORDER BY created_at DESC`,
+    )
+        .bind(await sha256(creatorId))
+        .all<MyPollRow>()
+
+    const now = Date.now()
+    return Response.json({
+        polls: rows.map((row) => ({
+            id: row.id,
+            title: row.title,
+            expectedVoters: row.expected_voters,
+            ballotCount: row.ballot_count,
+            createdAt: row.created_at,
+            closed: isClosed(row, now),
+        })),
+    })
 }

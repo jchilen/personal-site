@@ -31,3 +31,20 @@ export async function withinRateLimit(
     const { success } = await limiter.limit({ key: ip })
     return success
 }
+
+// HttpOnly: page scripts can't read it. Secure: HTTPS only. SameSite=Strict: only sent by your own site
+export function cookie(
+    name: string,
+    value: string,
+    path: string,
+    maxAgeDays: number,
+): string {
+    return [
+        `${name}=${value}`,
+        `Path=${path}`,
+        `Max-Age=${maxAgeDays * 24 * 60 * 60}`,
+        'HttpOnly',
+        'Secure',
+        'SameSite=Strict',
+    ].join('; ')
+}
