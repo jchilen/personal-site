@@ -259,7 +259,7 @@ export function pickByRandomBallot(
 }
 
 /** What the tiebreak chain chose between, and why */
-type TieBreak = {
+export type TieBreak = {
     tied: number[] // the options the tiebreakers chose between
     tiedBy: 'ranked-pairs' | 'smith-set' // possible RP winners, or the Smith set if the search gave up
     bordaScores: number[] // every option's Borda score

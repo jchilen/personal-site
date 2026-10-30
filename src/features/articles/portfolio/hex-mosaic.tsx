@@ -1,27 +1,8 @@
 import { cn } from 'cn'
 import { hexCorners, hexToPixel, hexWidth, rectangleGrid } from '@/lib/hex'
+import { hashString, seededRandom } from '@/lib/random'
 
 const HEX_SIZE = 8
-
-// Turns text into a number (an FNV-1a hash), so the same title always gives the same pattern
-function hashString(text: string) {
-    let hash = 2166136261
-    for (const char of text) {
-        hash = Math.imul(hash ^ char.charCodeAt(0), 16777619)
-    }
-    return hash >>> 0
-}
-
-// A tiny seeded random number generator (mulberry32): the same seed always gives the same sequence
-function seededRandom(seed: number) {
-    let state = seed
-    return () => {
-        state = (state + 0x6d2b79f5) | 0
-        let t = Math.imul(state ^ (state >>> 15), 1 | state)
-        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
-        return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-    }
-}
 
 type HexMosaicProps = {
     seed: string
