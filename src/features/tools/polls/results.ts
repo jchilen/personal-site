@@ -35,19 +35,27 @@ export type PollResults = {
 }
 
 // Converts a decision's positions (within this round's options) into labels
-function toPlace(decision: Exclude<Decision, { result: 'no-votes' }>, options: string[]): Place {
+function toPlace(
+    decision: Exclude<Decision, { result: 'no-votes' }>,
+    options: string[],
+): Place {
     const label = (position: number) => options[position]
     const option = label(decision.winner)
-    if (decision.result === 'ranked-pairs') return { option, decidedBy: 'ranked-pairs' }
+    if (decision.result === 'ranked-pairs')
+        return { option, decidedBy: 'ranked-pairs' }
 
     const tieBreak: LabeledTieBreak = {
         tied: decision.tied.map(label),
         tiedBy: decision.tiedBy,
         bordaScores: Object.fromEntries(
-            options.map((name, position) => [name, decision.bordaScores[position]] as const),
+            options.map(
+                (name, position) =>
+                    [name, decision.bordaScores[position]] as const,
+            ),
         ),
     }
-    if (decision.result === 'borda') return { option, decidedBy: 'borda', ...tieBreak }
+    if (decision.result === 'borda')
+        return { option, decidedBy: 'borda', ...tieBreak }
 
     return {
         option,
@@ -74,7 +82,9 @@ export function rankByPlace(
     while (remaining.length > 0) {
         // Remove already-placed options from every ballot, keeping the rest in the voter's order
         const running = new Set(remaining)
-        const roundBallots = ballots.map((ballot) => ballot.filter((option) => running.has(option)))
+        const roundBallots = ballots.map((ballot) =>
+            ballot.filter((option) => running.has(option)),
+        )
 
         const decision = decideWinner(remaining, roundBallots, random, budget)
         if (decision.result === 'no-votes') break
@@ -88,7 +98,11 @@ export function rankByPlace(
 }
 
 /** The results stored when a poll closes. The seed makes the random tiebreak repeatable */
-export function computeResults(options: string[], ballots: Ballot[], seed: string): PollResults {
+export function computeResults(
+    options: string[],
+    ballots: Ballot[],
+    seed: string,
+): PollResults {
     return {
         ballotCount: ballots.length,
         headToHead: buildHeadToHead(options, ballots),

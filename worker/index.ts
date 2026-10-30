@@ -1,6 +1,7 @@
 import type { Env } from './env'
 import { errorResponse, type Handler } from './http'
 import { castBallot, createPoll, getPoll } from './polls'
+import { closePoll, getResults, getStatus } from './results'
 
 async function health(_request: Request, env: Env): Promise<Response> {
     const row = await env.DB.prepare('SELECT 1 AS ok').first<{ ok: number }>()
@@ -9,13 +10,40 @@ async function health(_request: Request, env: Env): Promise<Response> {
 
 // Each route: an HTTP method, a URL pattern (":id" captures that part of the path), and its handler
 const routes: { method: string; pattern: URLPattern; handler: Handler }[] = [
-    { method: 'GET', pattern: new URLPattern({ pathname: '/api/health' }), handler: health },
-    { method: 'POST', pattern: new URLPattern({ pathname: '/api/polls' }), handler: createPoll },
-    { method: 'GET', pattern: new URLPattern({ pathname: '/api/polls/:id' }), handler: getPoll },
+    {
+        method: 'GET',
+        pattern: new URLPattern({ pathname: '/api/health' }),
+        handler: health,
+    },
+    {
+        method: 'POST',
+        pattern: new URLPattern({ pathname: '/api/polls' }),
+        handler: createPoll,
+    },
+    {
+        method: 'GET',
+        pattern: new URLPattern({ pathname: '/api/polls/:id' }),
+        handler: getPoll,
+    },
     {
         method: 'POST',
         pattern: new URLPattern({ pathname: '/api/polls/:id/ballots' }),
         handler: castBallot,
+    },
+    {
+        method: 'GET',
+        pattern: new URLPattern({ pathname: '/api/polls/:id/status' }),
+        handler: getStatus,
+    },
+    {
+        method: 'POST',
+        pattern: new URLPattern({ pathname: '/api/polls/:id/close' }),
+        handler: closePoll,
+    },
+    {
+        method: 'GET',
+        pattern: new URLPattern({ pathname: '/api/polls/:id/results' }),
+        handler: getResults,
     },
 ]
 

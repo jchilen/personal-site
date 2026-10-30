@@ -69,16 +69,22 @@ function pollCookie(name: string, value: string, pollId: string): string {
     ].join('; ')
 }
 
-interface PollRow {
+// Every column of the polls table. Queries that select fewer columns use Pick<PollRow, ...>
+export interface PollRow {
+    id: string
     title: string
     options: string
     expected_voters: number
+    admin_token_hash: string
+    seed: string
+    created_at: number
     expires_at: number
     closed_at: number | null
+    results: string | null
 }
 
 // Closed by hand, or past its 7 days even if nothing has marked it closed yet
-function isClosed(
+export function isClosed(
     row: Pick<PollRow, 'expires_at' | 'closed_at'>,
     now: number,
 ): boolean {
@@ -98,7 +104,16 @@ export async function getPoll(
         'SELECT title, options, expected_voters, expires_at, closed_at FROM polls WHERE id = ?',
     )
         .bind(id)
-        .first<PollRow>()
+        .first<
+            Pick<
+                PollRow,
+                | 'title'
+                | 'options'
+                | 'expected_voters'
+                | 'expires_at'
+                | 'closed_at'
+            >
+        >()
     if (!row) return errorResponse(404, 'Poll not found')
 
     // Whether this browser has a ballot in this poll (no cookie means it never voted)
@@ -123,11 +138,17 @@ export async function getPoll(
     })
 }
 
-export async function castBallot(request: Request, env: Env, params: Params): Promise<Response> {
+export async function castBallot(
+    request: Request,
+    env: Env,
+    params: Params,
+): Promise<Response> {
     const { id } = params
     if (!id) return errorResponse(404, 'Poll not found')
 
-    const row = await env.DB.prepare('SELECT options, expires_at, closed_at FROM polls WHERE id = ?')
+    const row = await env.DB.prepare(
+        'SELECT options, expires_at, closed_at FROM polls WHERE id = ?',
+    )
         .bind(id)
         .first<Pick<PollRow, 'options' | 'expires_at' | 'closed_at'>>()
     if (!row) return errorResponse(404, 'Poll not found')
@@ -159,11 +180,17 @@ export async function castBallot(request: Request, env: Env, params: Params): Pr
         .run()
 
     if (result.meta.changes === 0) {
-        return errorResponse(409, 'Your vote was not counted: you already voted, or the poll just closed')
+        return errorResponse(
+            409,
+            'Your vote was not counted: you already voted, or the poll just closed',
+        )
     }
 
     return Response.json(
         { ok: true },
-        { status: 201, headers: { 'Set-Cookie': pollCookie('poll_voter', voterId, id) } },
+        {
+            status: 201,
+            headers: { 'Set-Cookie': pollCookie('poll_voter', voterId, id) },
+        },
     )
 }

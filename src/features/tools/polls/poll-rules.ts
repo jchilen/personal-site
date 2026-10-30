@@ -84,8 +84,12 @@ export function validateNewPoll(input: unknown): Validation<NewPoll> {
 }
 
 // A ballot must rank every option in the poll exactly once
-export function validateBallot(input: unknown, options: string[]): Validation<string[]> {
-    if (typeof input !== 'object' || input === null) return fail('Expected a JSON object')
+export function validateBallot(
+    input: unknown,
+    options: string[],
+): Validation<string[]> {
+    if (typeof input !== 'object' || input === null)
+        return fail('Expected a JSON object')
     const { ranking } = input as Record<string, unknown>
 
     if (

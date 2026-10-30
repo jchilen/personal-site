@@ -71,7 +71,10 @@ describe('validateBallot', () => {
 
     test('accepts every option ranked once, in any order', () => {
         const ranking = ['Sushi', 'Tacos', 'Pizza']
-        expect(validateBallot({ ranking }, OPTIONS)).toEqual({ ok: true, value: ranking })
+        expect(validateBallot({ ranking }, OPTIONS)).toEqual({
+            ok: true,
+            value: ranking,
+        })
     })
 
     test('rejects anything that is not an object', () => {

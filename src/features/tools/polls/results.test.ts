@@ -13,7 +13,12 @@ function ballots(...groups: [number, string][]): Ballot[] {
 
 const CLEAR_WINNER = ballots([3, 'A>B>C'], [3, 'B>A>C'], [2, 'C>A>B'])
 const CYCLE = ballots([3, 'A>B>C'], [3, 'B>C>A'], [2, 'C>A>B'])
-const EVEN_CYCLE = ballots([3, 'A>B>C'], [2, 'B>C>A'], [2, 'C>A>B'], [1, 'C>B>A'])
+const EVEN_CYCLE = ballots(
+    [3, 'A>B>C'],
+    [2, 'B>C>A'],
+    [2, 'C>A>B'],
+    [1, 'C>B>A'],
+)
 
 const FIRST_BALLOT = () => 0
 const MIDDLE_BALLOT = () => 0.5
@@ -26,7 +31,9 @@ describe('rankByPlace', () => {
     test('a clear winner: every place is decided by Ranked Pairs alone', () => {
         const places = rankByPlace(OPTIONS, CLEAR_WINNER, FIRST_BALLOT)
         expect(order(places)).toEqual(['A', 'B', 'C'])
-        expect(places.every((place) => place.decidedBy === 'ranked-pairs')).toBe(true)
+        expect(
+            places.every((place) => place.decidedBy === 'ranked-pairs'),
+        ).toBe(true)
     })
 
     test('the cycle: Borda picks B, and the ranking agrees with the winner', () => {
@@ -56,7 +63,11 @@ describe('rankByPlace', () => {
 
     test('the 5–5–5 cycle: a different draw changes 1st place, and the rest follows head-to-head', () => {
         // Ballot 4 is B>C>A, so B wins; with B out, C beat A 5–3
-        expect(order(rankByPlace(OPTIONS, EVEN_CYCLE, MIDDLE_BALLOT))).toEqual(['B', 'C', 'A'])
+        expect(order(rankByPlace(OPTIONS, EVEN_CYCLE, MIDDLE_BALLOT))).toEqual([
+            'B',
+            'C',
+            'A',
+        ])
     })
 
     test('no ballots: no places', () => {
@@ -84,6 +95,9 @@ describe('computeResults', () => {
     })
 
     test('no votes: zero ballots and no places', () => {
-        expect(computeResults(OPTIONS, [], 'seed-1')).toMatchObject({ ballotCount: 0, places: [] })
+        expect(computeResults(OPTIONS, [], 'seed-1')).toMatchObject({
+            ballotCount: 0,
+            places: [],
+        })
     })
 })
