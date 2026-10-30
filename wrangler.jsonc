@@ -18,4 +18,20 @@
             "database_id": "530d7eb4-faf9-46da-a761-5fd48984cf57",
         },
     ],
+    "ratelimits": [
+        {
+            "name": "CREATE_LIMITER",
+            "namespace_id": "1001",
+            "simple": { "limit": 5, "period": 60 },
+        },
+        {
+            "name": "BALLOT_LIMITER",
+            "namespace_id": "1002",
+            "simple": { "limit": 10, "period": 60 },
+        },
+    ],
+    "triggers": {
+        // Daily at 09:17 UTC (4:17 AM Central). Cron times are always UTC
+        "crons": ["17 9 * * *"],
+    },
 }

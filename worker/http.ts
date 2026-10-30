@@ -21,3 +21,13 @@ export function getCookie(request: Request, name: string): string | undefined {
     }
     return undefined
 }
+
+// Counts this request against a limiter, keyed by the visitor's IP address. False means over the limit
+export async function withinRateLimit(
+    limiter: RateLimit,
+    request: Request,
+): Promise<boolean> {
+    const ip = request.headers.get('CF-Connecting-IP') ?? 'unknown'
+    const { success } = await limiter.limit({ key: ip })
+    return success
+}

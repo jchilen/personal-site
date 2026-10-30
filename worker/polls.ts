@@ -3,7 +3,7 @@ import {
     validateNewPoll,
 } from '../src/features/tools/polls/poll-rules'
 import type { Env } from './env'
-import { errorResponse, getCookie, type Params } from './http'
+import { errorResponse, getCookie, withinRateLimit, type Params } from './http'
 import { randomToken, sha256 } from './tokens'
 
 const DAY_MS = 24 * 60 * 60 * 1000
@@ -13,6 +13,12 @@ export async function createPoll(
     request: Request,
     env: Env,
 ): Promise<Response> {
+    if (!(await withinRateLimit(env.CREATE_LIMITER, request))) {
+        return errorResponse(
+            429,
+            'Too many polls created. Try again in a minute.',
+        )
+    }
     let body: unknown
     try {
         body = await request.json()
@@ -145,6 +151,12 @@ export async function castBallot(
 ): Promise<Response> {
     const { id } = params
     if (!id) return errorResponse(404, 'Poll not found')
+    if (!(await withinRateLimit(env.BALLOT_LIMITER, request))) {
+        return errorResponse(
+            429,
+            'Too many votes from your network. Try again in a minute.',
+        )
+    }
 
     const row = await env.DB.prepare(
         'SELECT options, expires_at, closed_at FROM polls WHERE id = ?',

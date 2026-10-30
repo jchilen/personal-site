@@ -2,6 +2,7 @@ import type { Env } from './env'
 import { errorResponse, type Handler } from './http'
 import { castBallot, createPoll, getPoll } from './polls'
 import { closePoll, getResults, getStatus } from './results'
+import { deleteOldPolls } from './cleanup'
 
 async function health(_request: Request, env: Env): Promise<Response> {
     const row = await env.DB.prepare('SELECT 1 AS ok').first<{ ok: number }>()
@@ -63,5 +64,9 @@ export default {
         }
 
         return errorResponse(404, 'Not found')
+    },
+    // Runs on the schedule in wrangler.jsonc, not for requests
+    async scheduled(controller, env) {
+        await deleteOldPolls(env, controller.scheduledTime)
     },
 } satisfies ExportedHandler<Env>
