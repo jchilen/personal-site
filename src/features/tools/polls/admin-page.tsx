@@ -96,8 +96,8 @@ function PollManager({ id, status, onRefresh }: PollManagerProps) {
             <section className="flex flex-col gap-3 p-4">
                 <SectionTitle>Close the poll</SectionTitle>
                 <p className="text-sm text-muted-foreground">
-                    Closing ends voting and shows the results to everyone.
-                    This poll will close at{' '}
+                    Closing ends voting and shows the results to everyone. This
+                    poll will close at{' '}
                     <span className="font-semibold whitespace-nowrap text-foreground">
                         {formatCloseTime(status.expiresAt)}
                     </span>
