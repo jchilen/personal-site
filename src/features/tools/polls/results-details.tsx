@@ -1,4 +1,5 @@
 import { cn } from 'cn'
+import { Link } from 'react-router'
 import { IconChevronDown } from '@tabler/icons-react'
 import { SectionTitle } from '@/components/section-title'
 import {
@@ -170,6 +171,14 @@ export function ResultsDetails({ options, results }: ResultsDetailsProps) {
                         was fixed when the poll was created.
                     </p>
                     <code className="font-mono text-sm break-all">{seed}</code>
+                </section>
+                <section className="p-4">
+                    <Link
+                        to="/tools/polls#methodology"
+                        className="text-sm text-cat-tools underline underline-offset-4 transition-colors hover:text-foreground"
+                    >
+                        Read the full methodology
+                    </Link>
                 </section>
             </CollapsibleContent>
         </Collapsible>

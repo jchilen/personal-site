@@ -10,6 +10,7 @@ type MethodologyLayoutProps = {
     title: string
     methodology: ReactNode
     backLabel?: string
+    defaultOpen?: boolean
     children: ReactNode
 }
 
@@ -17,9 +18,10 @@ export function MethodologyLayout({
     title,
     methodology,
     backLabel = 'Back to tool',
+    defaultOpen = false,
     children,
 }: MethodologyLayoutProps) {
-    const [isOpen, setIsOpen] = useState(false)
+    const [isOpen, setIsOpen] = useState(defaultOpen)
     const toolRef = useRef<HTMLDivElement>(null)
 
     const toggle = (

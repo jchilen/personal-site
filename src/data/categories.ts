@@ -61,7 +61,7 @@ export const categories: Category[] = [
             {
                 title: 'Ranked Choice Poll',
                 description:
-                    'Set up a ranked-choice poll to find the option everyone can live with.',
+                    'Set up a ranked-choice poll to find the option most amenable to everyone.',
                 href: '/tools/polls',
                 icon: RankingIcon,
             },
