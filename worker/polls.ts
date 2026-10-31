@@ -167,7 +167,7 @@ export async function castBallot(
     if (!(await withinRateLimit(env.BALLOT_LIMITER, request))) {
         return errorResponse(
             429,
-            'Too many votes from your network. Try again in a minute.',
+            "You're requesting too fast!. Try again in a minute.",
         )
     }
 

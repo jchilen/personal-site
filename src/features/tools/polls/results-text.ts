@@ -20,7 +20,7 @@ export function winnerSummary(first: Place): string {
         case 'ranked-pairs':
             return 'A clear winner, with no tiebreak needed.'
         case 'borda':
-            return `${formatList(first.tied)} were close, so a tiebreaker decided it.`
+            return `${formatList(first.tied)} could have both won, so a tiebreaker decided it.`
         case 'random-ballot':
             return `${formatList(first.bordaTied)} were tied all the way, so a drawn ballot decided it.`
     }

@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import { IconRefresh } from '@tabler/icons-react'
 import { SectionTitle } from '@/components/section-title'
-import { ToolLayout } from '@/components/tool-layout'
+import { PollPageLayout } from './poll-page-layout'
 import { Button } from '@/components/ui/button'
 import { useApi } from '@/hooks/use-api'
 import { errorMessage, postJson, requestJson } from '@/lib/api'
@@ -180,17 +180,12 @@ export function AdminPage() {
     }
 
     return (
-        <ToolLayout
+        <PollPageLayout
             eyebrow="Manage poll"
-            title={
-                state.status === 'success'
-                    ? state.data.title
-                    : 'Ranked Choice Poll'
-            }
+            title={state.status === 'success' ? state.data.title : 'Ranked Choice Poll'}
             intro="Watch the votes come in, and close the poll when everyone's done."
         >
-            <meta name="robots" content="noindex" />
-            <div className="mx-auto max-w-md">{content}</div>
-        </ToolLayout>
+            {content}
+        </PollPageLayout>
     )
 }

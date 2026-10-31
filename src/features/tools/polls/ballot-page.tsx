@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link, useParams } from 'react-router'
 import { PollMessage } from './poll-message'
-import { ToolLayout } from '@/components/tool-layout'
+import { PollPageLayout } from './poll-page-layout'
 import { Button } from '@/components/ui/button'
 import { useApi } from '@/hooks/use-api'
 import type { PollInfo } from './api-types'
@@ -48,18 +48,12 @@ export function BallotPage() {
     }
 
     return (
-        <ToolLayout
+        <PollPageLayout
             eyebrow="Ranked Choice Poll"
-            title={
-                state.status === 'success'
-                    ? state.data.title
-                    : 'Ranked Choice Poll'
-            }
+            title={state.status === 'success' ? state.data.title : 'Ranked Choice Poll'}
             intro="Rank every option, favorite first."
         >
-            {/* Poll links are private to the people they're shared with, so keep them out of search results */}
-            <meta name="robots" content="noindex" />
-            <div className="mx-auto max-w-md">{content}</div>
-        </ToolLayout>
+            {content}
+        </PollPageLayout>
     )
 }

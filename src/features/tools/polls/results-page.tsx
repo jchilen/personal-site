@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { cn } from 'cn'
 import { Link, useParams } from 'react-router'
 import { SectionTitle } from '@/components/section-title'
-import { ToolLayout } from '@/components/tool-layout'
+import { PollPageLayout } from './poll-page-layout'
 import { Button } from '@/components/ui/button'
 import { useApi } from '@/hooks/use-api'
 import type { PollResultsResponse } from './api-types'
@@ -79,17 +79,12 @@ export function ResultsPage() {
     }
 
     return (
-        <ToolLayout
+        <PollPageLayout
             eyebrow="Poll results"
-            title={
-                state.status === 'success'
-                    ? state.data.title
-                    : 'Ranked Choice Poll'
-            }
+            title={state.status === 'success' ? state.data.title : 'Ranked Choice Poll'}
             intro="Every ballot counted, using Ranked Pairs."
         >
-            <meta name="robots" content="noindex" />
-            <div className="mx-auto max-w-md">{content}</div>
-        </ToolLayout>
+            {content}
+        </PollPageLayout>
     )
 }

@@ -26,9 +26,8 @@ export function PollCreated({ poll, onCreateAnother }: PollCreatedProps) {
                 value={window.location.origin + adminPath}
             />
             <p className="text-sm text-muted-foreground">
-                Save the admin link somewhere safe. This browser can already
-                manage the poll, but the link is the only way to do it from
-                another device or after clearing cookies. It isn't shown again.
+                Save the admin link if you want to access this from another device, 
+                this browser can already manage the poll.
             </p>
             <div className="flex flex-wrap gap-2">
                 <Button asChild>

@@ -28,7 +28,7 @@ export function validateNewPoll(input: unknown): Validation<NewPoll> {
     const { title, options, expectedVoters } = input as Record<string, unknown>
 
     if (typeof title !== 'string' || title.trim() === '')
-        return fail('Title is required')
+        return fail('A question is required')
     if (title.trim().length > POLL_LIMITS.titleLength) {
         return fail(
             `Title must be ${POLL_LIMITS.titleLength} characters or fewer`,

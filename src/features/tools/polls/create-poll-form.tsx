@@ -88,7 +88,7 @@ export function CreatePollForm({
                         id={`${id}-title`}
                         value={title}
                         maxLength={POLL_LIMITS.titleLength}
-                        placeholder="Where should we eat on Friday?"
+                        placeholder="What should our poll be about?"
                         onChange={(event) => setTitle(event.target.value)}
                         className={textInputClass}
                     />
@@ -158,8 +158,7 @@ export function CreatePollForm({
                     />
                 </div>
                 <p className="text-sm text-muted-foreground">
-                    Used to show progress, like “3 of 5 voted.” Extra votes
-                    still count.
+                    Used to show progress, like “3 of 5 voted.”
                 </p>
                 {error && (
                     <p role="alert" className="text-sm text-destructive">
