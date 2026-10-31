@@ -1,26 +1,11 @@
 import type { ReactNode } from 'react'
 import { Link, useParams } from 'react-router'
-import { SectionTitle } from '@/components/section-title'
+import { PollMessage } from './poll-message'
 import { ToolLayout } from '@/components/tool-layout'
 import { Button } from '@/components/ui/button'
 import { useApi } from '@/hooks/use-api'
 import type { PollInfo } from './api-types'
 import { Ballot } from './ballot'
-
-function PollMessage({
-    title,
-    children,
-}: {
-    title: string
-    children: ReactNode
-}) {
-    return (
-        <div className="flex flex-col gap-3 border bg-card p-4">
-            <SectionTitle>{title}</SectionTitle>
-            {children}
-        </div>
-    )
-}
 
 export function BallotPage() {
     const { id = '' } = useParams()

@@ -2,10 +2,10 @@ import {
     computeResults,
     type PollResults,
 } from '../src/features/tools/polls/results'
-import { isAdmin } from './admin'
+import { findAdminToken, isAdmin } from './admin'
 import type { Env } from './env'
 import { errorResponse, type Params } from './http'
-import { isClosed, type PollRow } from './polls'
+import { isClosed, pollCookie, type PollRow } from './polls'
 
 // Server-side only: includes the admin hash and seed, which must never be put in a response as-is
 type PollDetails = Omit<PollRow, 'id' | 'created_at' | 'creator_id_hash'>
@@ -77,6 +77,7 @@ export async function getStatus(
         .first<{ count: number }>()
 
     return Response.json({
+        title: poll.title,
         ballotCount: row?.count ?? 0,
         expectedVoters: poll.expected_voters,
         closed: isClosed(poll, Date.now()),
@@ -117,4 +118,26 @@ export async function getResults(
         expectedVoters: poll.expected_voters,
         results: await ensureResults(env, id, poll),
     })
+}
+
+// Trades the admin link's token for this browser's admin cookie, so the page can take the token
+// out of the address bar, where it could be copied and shared by accident
+export async function claimAdmin(
+    request: Request,
+    env: Env,
+    params: Params,
+): Promise<Response> {
+    const { id } = params
+    const poll = id ? await loadPoll(env, id) : null
+    if (!id || !poll) return errorResponse(404, 'Poll not found')
+
+    const token = findAdminToken(request)
+    if (!token || !(await isAdmin(request, poll.admin_token_hash))) {
+        return errorResponse(403, "This admin link isn't valid")
+    }
+
+    return Response.json(
+        { ok: true },
+        { headers: { 'Set-Cookie': pollCookie('poll_admin', token, id) } },
+    )
 }

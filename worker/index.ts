@@ -1,7 +1,7 @@
 import type { Env } from './env'
 import { errorResponse, type Handler } from './http'
 import { castBallot, createPoll, getPoll, listMyPolls } from './polls'
-import { closePoll, getResults, getStatus } from './results'
+import { claimAdmin, closePoll, getResults, getStatus } from './results'
 import { deleteOldPolls } from './cleanup'
 
 async function health(_request: Request, env: Env): Promise<Response> {
@@ -45,6 +45,11 @@ const routes: { method: string; pattern: URLPattern; handler: Handler }[] = [
         method: 'POST',
         pattern: new URLPattern({ pathname: '/api/polls/:id/close' }),
         handler: closePoll,
+    },
+    {
+        method: 'POST',
+        pattern: new URLPattern({ pathname: '/api/polls/:id/claim' }),
+        handler: claimAdmin,
     },
     {
         method: 'GET',

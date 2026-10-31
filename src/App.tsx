@@ -10,6 +10,7 @@ import { BallotPage } from '@/features/tools/polls/ballot-page'
 import { ImprovingEfficientlyPage } from '@/features/articles/improving-efficiently/improving-efficiently-page'
 import { PortfolioPage } from '@/features/articles/portfolio/portfolio-page'
 import { ComingSoonPage } from '@/pages/coming-soon-page'
+import { AdminPage } from '@/features/tools/polls/admin-page'
 
 function App() {
     const { pathname } = useLocation()
@@ -37,6 +38,10 @@ function App() {
                     />
                     <Route path="/tools/polls" element={<PollsPage />} />
                     <Route path="/tools/polls/:id" element={<BallotPage />} />
+                    <Route
+                        path="/tools/polls/:id/admin"
+                        element={<AdminPage />}
+                    />
                     <Route
                         path="/articles/the-article"
                         element={<ImprovingEfficientlyPage />}

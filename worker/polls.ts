@@ -79,7 +79,11 @@ export async function createPoll(
 }
 
 // Cookies only this poll's API receives, lasting as long as the poll can be open
-function pollCookie(name: string, value: string, pollId: string): string {
+export function pollCookie(
+    name: string,
+    value: string,
+    pollId: string,
+): string {
     return cookie(name, value, `/api/polls/${pollId}`, OPEN_DAYS)
 }
 

@@ -6,15 +6,15 @@ export type ApiState<T> =
     | { status: 'error'; error: string }
     | { status: 'success'; data: T }
 
-/**
- * Loads JSON from our API when the component appears, and again whenever `url` changes.
- * `reload` fetches again, for after something changed the data (like creating a poll).
+/*
+ * Pass `null` as the URL to wait, for when the request depends on something not ready yet.
  */
-export function useApi<T>(url: string) {
+export function useApi<T>(url: string | null) {
     const [state, setState] = useState<ApiState<T>>({ status: 'loading' })
     const [version, setVersion] = useState(0)
 
     useEffect(() => {
+        if (url === null) return
         const controller = new AbortController()
 
         requestJson<T>(url, { signal: controller.signal })
