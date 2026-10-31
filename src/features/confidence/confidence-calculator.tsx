@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { useNumberField } from '@/hooks/use-number-field'
+import { SectionTitle } from '@/components/section-title'
 import {
     CONFIDENCE_MILESTONES,
     chanceAfter,
@@ -35,14 +36,6 @@ const numberInputClass =
 
 const modeItemClass =
     'corner-brackets h-10 border text-muted-foreground hover:bg-transparent hover:text-foreground data-[state=on]:border-primary data-[state=on]:bg-primary/10 data-[state=on]:text-primary'
-
-function SectionTitle({ children }: { children: ReactNode }) {
-    return (
-        <h2 className="flex items-center gap-2 font-heading text-sm font-semibold tracking-eyebrow text-foreground uppercase before:h-0.5 before:w-3.5 before:shrink-0 before:bg-cat-tools">
-            {children}
-        </h2>
-    )
-}
 
 type FieldRowProps = {
     id: string

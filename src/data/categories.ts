@@ -59,10 +59,10 @@ export const categories: Category[] = [
                 icon: IconSquareRoot,
             },
             {
-                title: 'Reverse Borda Poll',
+                title: 'Ranked Choice Poll',
                 description:
                     'Set up a ranked-choice poll to find the option everyone can live with.',
-                href: '/tools/reverse-borda',
+                href: '/tools/polls',
                 icon: RankingIcon,
             },
             {

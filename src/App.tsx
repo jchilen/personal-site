@@ -5,6 +5,7 @@ import { Routes, Route, useLocation } from 'react-router'
 import { HomePage } from '@/pages/home/home-page'
 import { SafeLeadPage } from '@/features/safe-lead/safe-lead-page'
 import { ConfidencePage } from '@/features/confidence/confidence-page'
+import { PollsPage } from '@/features/tools/polls/polls-page'
 import { ImprovingEfficientlyPage } from '@/features/articles/improving-efficiently/improving-efficiently-page'
 import { PortfolioPage } from '@/features/articles/portfolio/portfolio-page'
 import { ComingSoonPage } from '@/pages/coming-soon-page'
@@ -32,6 +33,10 @@ function App() {
                     <Route
                         path="/tools/confidence-calculator"
                         element={<ConfidencePage />}
+                    />
+                    <Route 
+                        path="/tools/polls" 
+                        element={<PollsPage />} 
                     />
                     <Route
                         path="/articles/the-article"
