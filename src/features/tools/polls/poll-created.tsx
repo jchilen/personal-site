@@ -35,7 +35,12 @@ function CopyField({ label, value }: { label: string; value: string }) {
                     onFocus={(event) => event.currentTarget.select()}
                     className={`${underlineInputClass} min-w-0 flex-1 text-sm`}
                 />
-                <Button type="button" variant="outline" size="sm" onClick={copy}>
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={copy}
+                >
                     {copied ? <IconCheck /> : <IconCopy />}
                     {copied ? 'Copied' : 'Copy'}
                 </Button>
@@ -57,12 +62,18 @@ export function PollCreated({ poll, onCreateAnother }: PollCreatedProps) {
     return (
         <div className="flex flex-col gap-4 border bg-card p-4">
             <SectionTitle>Poll created</SectionTitle>
-            <CopyField label="Share with voters" value={window.location.origin + pollPath} />
-            <CopyField label="Your admin link" value={window.location.origin + adminPath} />
+            <CopyField
+                label="Share with voters"
+                value={window.location.origin + pollPath}
+            />
+            <CopyField
+                label="Your admin link"
+                value={window.location.origin + adminPath}
+            />
             <p className="text-sm text-muted-foreground">
-                Save the admin link somewhere safe. This browser can already manage the poll, but the
-                link is the only way to do it from another device or after clearing cookies. It
-                isn't shown again.
+                Save the admin link somewhere safe. This browser can already
+                manage the poll, but the link is the only way to do it from
+                another device or after clearing cookies. It isn't shown again.
             </p>
             <div className="flex flex-wrap gap-2">
                 <Button asChild>

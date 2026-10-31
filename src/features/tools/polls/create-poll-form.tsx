@@ -22,7 +22,11 @@ function newRow(): OptionRow {
 
 const textInputClass = `${underlineInputClass} text-base`
 
-export function CreatePollForm({ onCreated }: { onCreated: (poll: CreatedPoll) => void }) {
+export function CreatePollForm({
+    onCreated,
+}: {
+    onCreated: (poll: CreatedPoll) => void
+}) {
     const id = useId()
     const [title, setTitle] = useState('')
     const [options, setOptions] = useState(() => [newRow(), newRow()])
@@ -31,7 +35,9 @@ export function CreatePollForm({ onCreated }: { onCreated: (poll: CreatedPoll) =
     const [submitting, setSubmitting] = useState(false)
 
     function updateOption(rowId: string, text: string) {
-        setOptions((rows) => rows.map((row) => (row.id === rowId ? { ...row, text } : row)))
+        setOptions((rows) =>
+            rows.map((row) => (row.id === rowId ? { ...row, text } : row)),
+        )
     }
 
     function removeOption(rowId: string) {
@@ -43,7 +49,9 @@ export function CreatePollForm({ onCreated }: { onCreated: (poll: CreatedPoll) =
         // Rows left empty are skipped rather than treated as mistakes
         const check = validateNewPoll({
             title,
-            options: options.map((row) => row.text).filter((text) => text.trim() !== ''),
+            options: options
+                .map((row) => row.text)
+                .filter((text) => text.trim() !== ''),
             expectedVoters: voters.number,
         })
         if (!check.ok) {
@@ -102,7 +110,9 @@ export function CreatePollForm({ onCreated }: { onCreated: (poll: CreatedPoll) =
                                 aria-label={`Option ${index + 1}`}
                                 value={row.text}
                                 maxLength={POLL_LIMITS.optionLength}
-                                onChange={(event) => updateOption(row.id, event.target.value)}
+                                onChange={(event) =>
+                                    updateOption(row.id, event.target.value)
+                                }
                                 className={textInputClass}
                             />
                             {options.length > POLL_LIMITS.minOptions && (
@@ -124,7 +134,9 @@ export function CreatePollForm({ onCreated }: { onCreated: (poll: CreatedPoll) =
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => setOptions((rows) => [...rows, newRow()])}
+                        onClick={() =>
+                            setOptions((rows) => [...rows, newRow()])
+                        }
                         className="self-start"
                     >
                         <IconPlus />
@@ -146,7 +158,8 @@ export function CreatePollForm({ onCreated }: { onCreated: (poll: CreatedPoll) =
                     />
                 </div>
                 <p className="text-sm text-muted-foreground">
-                    Used to show progress, like “3 of 5 voted.” Extra votes still count.
+                    Used to show progress, like “3 of 5 voted.” Extra votes
+                    still count.
                 </p>
                 {error && (
                     <p role="alert" className="text-sm text-destructive">

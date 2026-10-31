@@ -2,14 +2,19 @@
 export class ApiError extends Error {}
 
 /** Calls our API and returns its JSON. Failures become an ApiError with a message for people */
-export async function requestJson<T>(url: string, init?: RequestInit): Promise<T> {
+export async function requestJson<T>(
+    url: string,
+    init?: RequestInit,
+): Promise<T> {
     let response: Response
     try {
         response = await fetch(url, init)
     } catch (error) {
         // A cancelled request isn't a failure; let the caller recognize it
         if (init?.signal?.aborted) throw error
-        throw new ApiError("Couldn't reach the server. Check your connection and try again.")
+        throw new ApiError(
+            "Couldn't reach the server. Check your connection and try again.",
+        )
     }
 
     const body = await response.json()

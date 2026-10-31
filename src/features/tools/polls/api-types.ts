@@ -11,3 +11,12 @@ export type MyPoll = {
 
 export type MyPollsResponse = { polls: MyPoll[] }
 export type CreatedPoll = { id: string; adminToken: string }
+export type PollInfo = {
+    id: string
+    title: string
+    options: string[]
+    expectedVoters: number
+    expiresAt: number
+    closed: boolean
+    hasVoted: boolean
+}
