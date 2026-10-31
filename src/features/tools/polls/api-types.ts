@@ -1,4 +1,5 @@
 // The shapes our API returns, so pages can type what useApi gives them
+import type { PollResults } from './results'
 
 export type MyPoll = {
     id: string
@@ -27,4 +28,11 @@ export type PollStatus = {
     ballotCount: number
     expectedVoters: number
     closed: boolean
+}
+
+export type PollResultsResponse = {
+    title: string
+    options: string[]
+    expectedVoters: number
+    results: PollResults
 }

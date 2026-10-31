@@ -11,6 +11,7 @@ import { ImprovingEfficientlyPage } from '@/features/articles/improving-efficien
 import { PortfolioPage } from '@/features/articles/portfolio/portfolio-page'
 import { ComingSoonPage } from '@/pages/coming-soon-page'
 import { AdminPage } from '@/features/tools/polls/admin-page'
+import { ResultsPage } from '@/features/tools/polls/results-page'
 
 function App() {
     const { pathname } = useLocation()
@@ -41,6 +42,10 @@ function App() {
                     <Route
                         path="/tools/polls/:id/admin"
                         element={<AdminPage />}
+                    />
+                    <Route
+                        path="/tools/polls/:id/results"
+                        element={<ResultsPage />}
                     />
                     <Route
                         path="/articles/the-article"

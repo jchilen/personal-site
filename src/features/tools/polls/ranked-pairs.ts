@@ -126,7 +126,7 @@ export function rankTiers(locked: boolean[][]) {
 export const ORDERING_BUDGET = 1000
 
 // Splits sorted wins into groups of equal strength, strongest group first
-function groupByStrength(sortedWins: Win[]) {
+export function groupByStrength(sortedWins: Win[]) {
     const groups: Win[][] = []
     for (const win of sortedWins) {
         const lastGroup = groups.at(-1)
