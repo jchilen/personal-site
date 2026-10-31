@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { useNumberField } from '@/hooks/use-number-field'
 import { SectionTitle } from '@/components/section-title'
+import { fieldLabelClass, numberInputClass } from '@/components/field-styles'
 import {
     CONFIDENCE_MILESTONES,
     chanceAfter,
@@ -27,12 +28,6 @@ type ConfidenceCalculatorProps = {
     start: CalculatorStart
     onRemove?: () => void
 }
-
-const fieldLabelClass =
-    'font-heading text-xs tracking-eyebrow text-muted-foreground uppercase'
-
-const numberInputClass =
-    'h-auto rounded-none border-0 border-b-2 bg-transparent px-0 py-1 text-right font-heading text-xl font-semibold shadow-none focus-visible:border-cat-tools focus-visible:ring-0 dark:bg-transparent'
 
 const modeItemClass =
     'corner-brackets h-10 border text-muted-foreground hover:bg-transparent hover:text-foreground data-[state=on]:border-primary data-[state=on]:bg-primary/10 data-[state=on]:text-primary'

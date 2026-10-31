@@ -1,11 +1,15 @@
 import { cn } from 'cn'
+import { useState } from 'react'
 import { ToolLayout } from '@/components/tool-layout'
 import { useApi } from '@/hooks/use-api'
-import type { MyPollsResponse } from './api-types'
+import type { CreatedPoll, MyPollsResponse } from './api-types'
 import { YourPolls } from './your-polls'
+import { CreatePollForm } from './create-poll-form'
+import { PollCreated } from './poll-created'
 
 export function PollsPage() {
-    const { state } = useApi<MyPollsResponse>('/api/polls/mine')
+    const { state, reload } = useApi<MyPollsResponse>('/api/polls/mine')
+    const [created, setCreated] = useState<CreatedPoll | null>(null)
     const polls = state.status === 'success' ? state.data.polls : []
     const hasPolls = polls.length > 0
 
@@ -25,9 +29,19 @@ export function PollsPage() {
                             : 'mx-auto max-w-md',
                     )}
                 >
-                    <div className="border bg-card p-4 text-muted-foreground">
-                        The create form goes here next step.
-                    </div>
+                    {created ? (
+                        <PollCreated
+                            poll={created}
+                            onCreateAnother={() => setCreated(null)}
+                        />
+                    ) : (
+                        <CreatePollForm
+                            onCreated={(poll) => {
+                                setCreated(poll)
+                                reload()
+                            }}
+                        />
+                    )}
                     {hasPolls && <YourPolls polls={polls} />}
                 </div>
             )}

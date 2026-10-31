@@ -10,3 +10,4 @@ export type MyPoll = {
 }
 
 export type MyPollsResponse = { polls: MyPoll[] }
+export type CreatedPoll = { id: string; adminToken: string }
