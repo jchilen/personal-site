@@ -6,12 +6,18 @@ export const POLL_LIMITS = {
     maxOptions: 8,
     minVoters: 2,
     maxVoters: 50,
+    minDurationMinutes: 5,
+    maxDurationMinutes: 7 * 24 * 60,
+    durationStepMinutes: 5,
 } as const
+
+export const DEFAULT_DURATION_MINUTES = 24 * 60
 
 export interface NewPoll {
     title: string
     options: string[]
     expectedVoters: number
+    durationMinutes: number
 }
 
 export type Validation<T> =
@@ -25,7 +31,10 @@ function fail(error: string): { ok: false; error: string } {
 export function validateNewPoll(input: unknown): Validation<NewPoll> {
     if (typeof input !== 'object' || input === null)
         return fail('Expected a JSON object')
-    const { title, options, expectedVoters } = input as Record<string, unknown>
+    const { title, options, expectedVoters, durationMinutes } = input as Record<
+        string,
+        unknown
+    >
 
     if (typeof title !== 'string' || title.trim() === '')
         return fail('A question is required')
@@ -77,9 +86,26 @@ export function validateNewPoll(input: unknown): Validation<NewPoll> {
         )
     }
 
+    if (
+        typeof durationMinutes !== 'number' ||
+        !Number.isInteger(durationMinutes) ||
+        durationMinutes % POLL_LIMITS.durationStepMinutes !== 0 ||
+        durationMinutes < POLL_LIMITS.minDurationMinutes ||
+        durationMinutes > POLL_LIMITS.maxDurationMinutes
+    ) {
+        return fail(
+            'Polls can stay open from 5 minutes to 7 days, in steps of 5 minutes',
+        )
+    }
+
     return {
         ok: true,
-        value: { title: title.trim(), options: cleanOptions, expectedVoters },
+        value: {
+            title: title.trim(),
+            options: cleanOptions,
+            expectedVoters,
+            durationMinutes,
+        },
     }
 }
 

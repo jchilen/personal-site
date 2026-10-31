@@ -28,6 +28,7 @@ export type PollStatus = {
     ballotCount: number
     expectedVoters: number
     closed: boolean
+    expiresAt: number
 }
 
 export type PollResultsResponse = {

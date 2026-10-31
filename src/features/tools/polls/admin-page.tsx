@@ -8,6 +8,7 @@ import { useApi } from '@/hooks/use-api'
 import { errorMessage, postJson, requestJson } from '@/lib/api'
 import type { PollStatus } from './api-types'
 import { CopyField } from './copy-field'
+import { formatCloseTime } from './format-time'
 import { PollMessage } from './poll-message'
 
 type PollManagerProps = {
@@ -95,8 +96,11 @@ function PollManager({ id, status, onRefresh }: PollManagerProps) {
             <section className="flex flex-col gap-3 p-4">
                 <SectionTitle>Close the poll</SectionTitle>
                 <p className="text-sm text-muted-foreground">
-                    Closing ends voting and shows the results to everyone. It
-                    can't be undone. Polls close on their own after 7 days.
+                    Closing ends voting and shows the results to everyone.
+                    This poll will close at{' '}
+                    <span className="font-semibold whitespace-nowrap text-foreground">
+                        {formatCloseTime(status.expiresAt)}
+                    </span>
                 </p>
                 {error && (
                     <p role="alert" className="text-sm text-destructive">
@@ -182,7 +186,11 @@ export function AdminPage() {
     return (
         <PollPageLayout
             eyebrow="Manage poll"
-            title={state.status === 'success' ? state.data.title : 'Ranked Choice Poll'}
+            title={
+                state.status === 'success'
+                    ? state.data.title
+                    : 'Ranked Choice Poll'
+            }
             intro="Watch the votes come in, and close the poll when everyone's done."
         >
             {content}

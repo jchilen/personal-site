@@ -5,6 +5,7 @@ const VALID = {
     title: 'Lunch',
     options: ['Tacos', 'Pizza', 'Sushi'],
     expectedVoters: 4,
+    durationMinutes: 24 * 60,
 }
 
 // Copies VALID with some fields replaced, so each test shows only what it changes
@@ -30,6 +31,7 @@ describe('validateNewPoll', () => {
             title: 'x'.repeat(POLL_LIMITS.titleLength),
             options: optionList(POLL_LIMITS.maxOptions),
             expectedVoters: POLL_LIMITS.maxVoters,
+            durationMinutes: POLL_LIMITS.maxDurationMinutes,
         })
         expect(result.ok).toBe(true)
     })
@@ -61,6 +63,13 @@ describe('validateNewPoll', () => {
         ['too few voters', { expectedVoters: POLL_LIMITS.minVoters - 1 }],
         ['too many voters', { expectedVoters: POLL_LIMITS.maxVoters + 1 }],
         ['a voter count sent as text', { expectedVoters: '4' }],
+        ['a poll length under 5 minutes', { durationMinutes: 0 }],
+        [
+            'a poll length over 7 days',
+            { durationMinutes: POLL_LIMITS.maxDurationMinutes + 5 },
+        ],
+        ['a poll length not in steps of 5 minutes', { durationMinutes: 62 }],
+        ['a poll length sent as text', { durationMinutes: '60' }],
     ])('rejects %s', (_name, changes) => {
         expect(validateNewPoll(withChanges(changes)).ok).toBe(false)
     })

@@ -11,7 +11,12 @@ import { Input } from '@/components/ui/input'
 import { useNumberField } from '@/hooks/use-number-field'
 import { errorMessage, postJson } from '@/lib/api'
 import type { CreatedPoll } from './api-types'
-import { POLL_LIMITS, validateNewPoll } from './poll-rules'
+import { DurationField, useDuration } from './duration-field'
+import {
+    DEFAULT_DURATION_MINUTES,
+    POLL_LIMITS,
+    validateNewPoll,
+} from './poll-rules'
 
 type OptionRow = { id: string; text: string }
 
@@ -31,6 +36,7 @@ export function CreatePollForm({
     const [title, setTitle] = useState('')
     const [options, setOptions] = useState(() => [newRow(), newRow()])
     const voters = useNumberField({ max: POLL_LIMITS.maxVoters, initial: 4 })
+    const duration = useDuration(DEFAULT_DURATION_MINUTES)
     const [error, setError] = useState<string | null>(null)
     const [submitting, setSubmitting] = useState(false)
 
@@ -53,6 +59,7 @@ export function CreatePollForm({
                 .map((row) => row.text)
                 .filter((text) => text.trim() !== ''),
             expectedVoters: voters.number,
+            durationMinutes: duration.total,
         })
         if (!check.ok) {
             setError(check.error)
@@ -143,6 +150,11 @@ export function CreatePollForm({
                         Add option
                     </Button>
                 )}
+            </section>
+
+            <section className="flex flex-col gap-3 p-4">
+                <SectionTitle>Poll length</SectionTitle>
+                <DurationField id={`${id}-length`} duration={duration} />
             </section>
 
             <section className="flex flex-col gap-4 p-4">

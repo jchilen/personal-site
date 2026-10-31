@@ -26,8 +26,8 @@ export function PollCreated({ poll, onCreateAnother }: PollCreatedProps) {
                 value={window.location.origin + adminPath}
             />
             <p className="text-sm text-muted-foreground">
-                Save the admin link if you want to access this from another device, 
-                this browser can already manage the poll.
+                Save the admin link if you want to access this from another
+                device, this browser can already manage the poll.
             </p>
             <div className="flex flex-wrap gap-2">
                 <Button asChild>

@@ -78,6 +78,7 @@ export async function getStatus(
 
     return Response.json({
         title: poll.title,
+        expiresAt: poll.expires_at,
         ballotCount: row?.count ?? 0,
         expectedVoters: poll.expected_voters,
         closed: isClosed(poll, Date.now()),

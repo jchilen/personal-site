@@ -1,4 +1,5 @@
 import {
+    POLL_LIMITS,
     validateBallot,
     validateNewPoll,
 } from '../src/features/tools/polls/poll-rules'
@@ -12,10 +13,8 @@ import {
 } from './http'
 import { randomToken, sha256 } from './tokens'
 
-// A poll lasts at most 7 days open plus 30 days of results, so this outlasts every poll it lists.
-// Creating another poll resets the clock.
-const DAY_MS = 24 * 60 * 60 * 1000
-const OPEN_DAYS = 7
+// Admin and voter cookies last as long as the longest possible poll, so they outlive every poll
+const POLL_COOKIE_DAYS = POLL_LIMITS.maxDurationMinutes / (24 * 60)
 const CREATOR_COOKIE_DAYS = 37
 
 export async function createPoll(
@@ -37,7 +36,7 @@ export async function createPoll(
 
     const check = validateNewPoll(body)
     if (!check.ok) return errorResponse(400, check.error)
-    const { title, options, expectedVoters } = check.value
+    const { title, options, expectedVoters, durationMinutes } = check.value
 
     const id = randomToken(8)
     const adminToken = randomToken(32)
@@ -47,7 +46,7 @@ export async function createPoll(
     const creatorIdHash = await sha256(creatorId)
     const seed = randomToken(16)
     const createdAt = Date.now()
-    const expiresAt = createdAt + OPEN_DAYS * DAY_MS
+    const expiresAt = createdAt + durationMinutes * 60 * 1000
 
     await env.DB.prepare(
         `INSERT INTO polls (id, title, options, expected_voters, admin_token_hash, creator_id_hash, seed, created_at, expires_at)
@@ -84,7 +83,7 @@ export function pollCookie(
     value: string,
     pollId: string,
 ): string {
-    return cookie(name, value, `/api/polls/${pollId}`, OPEN_DAYS)
+    return cookie(name, value, `/api/polls/${pollId}`, POLL_COOKIE_DAYS)
 }
 
 // Every column of the polls table. Queries that select fewer columns use Pick<PollRow, ...>

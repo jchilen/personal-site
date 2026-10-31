@@ -81,7 +81,11 @@ export function ResultsPage() {
     return (
         <PollPageLayout
             eyebrow="Poll results"
-            title={state.status === 'success' ? state.data.title : 'Ranked Choice Poll'}
+            title={
+                state.status === 'success'
+                    ? state.data.title
+                    : 'Ranked Choice Poll'
+            }
             intro="Every ballot counted, using Ranked Pairs."
         >
             {content}

@@ -141,8 +141,8 @@ export function Ballot({ poll, onVoted }: BallotProps) {
 
             <section className="flex flex-col gap-3 p-4">
                 <p className="text-sm text-muted-foreground">
-                    Your favorite goes first. Select an already ranked option 
-                    to put it back.
+                    Your favorite goes first. Select an already ranked option to
+                    put it back.
                 </p>
                 {error && (
                     <p role="alert" className="text-sm text-destructive">

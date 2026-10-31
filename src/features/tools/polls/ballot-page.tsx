@@ -50,7 +50,11 @@ export function BallotPage() {
     return (
         <PollPageLayout
             eyebrow="Ranked Choice Poll"
-            title={state.status === 'success' ? state.data.title : 'Ranked Choice Poll'}
+            title={
+                state.status === 'success'
+                    ? state.data.title
+                    : 'Ranked Choice Poll'
+            }
             intro="Rank every option, favorite first."
         >
             {content}

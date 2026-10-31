@@ -12,7 +12,12 @@ type PollPageLayoutProps = {
 
 // The shared frame for a poll's own pages (ballot, admin, results): a link back to Polling Home,
 // kept out of search results, in a narrow column
-export function PollPageLayout({ eyebrow, title, intro, children }: PollPageLayoutProps) {
+export function PollPageLayout({
+    eyebrow,
+    title,
+    intro,
+    children,
+}: PollPageLayoutProps) {
     return (
         <ToolLayout eyebrow={eyebrow} title={title} intro={intro}>
             <meta name="robots" content="noindex" />
@@ -22,7 +27,9 @@ export function PollPageLayout({ eyebrow, title, intro, children }: PollPageLayo
                     className="mb-3 inline-flex items-center gap-1.5 font-heading text-xs tracking-eyebrow text-cat-tools uppercase transition-colors hover:text-foreground"
                 >
                     <IconArrowLeft aria-hidden="true" className="size-3.5" />
-                    <span className="[text-box:trim-both_cap_alphabetic]">Polling Home</span>
+                    <span className="[text-box:trim-both_cap_alphabetic]">
+                        Polling Home
+                    </span>
                 </Link>
                 {children}
             </div>
