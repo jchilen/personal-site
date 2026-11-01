@@ -1,6 +1,12 @@
 import type { Env } from './env'
 import { errorResponse, type Handler } from './http'
-import { castBallot, createPoll, getPoll, listMyPolls } from './polls'
+import {
+    castBallot,
+    createPoll,
+    getPoll,
+    listMyPolls,
+    listVotedPolls,
+} from './polls'
 import { claimAdmin, closePoll, getResults, getStatus } from './results'
 import { deleteOldPolls } from './cleanup'
 
@@ -25,6 +31,11 @@ const routes: { method: string; pattern: URLPattern; handler: Handler }[] = [
         method: 'GET',
         pattern: new URLPattern({ pathname: '/api/polls/mine' }),
         handler: listMyPolls,
+    },
+    {
+        method: 'GET',
+        pattern: new URLPattern({ pathname: '/api/polls/voted' }),
+        handler: listVotedPolls,
     },
     {
         method: 'GET',

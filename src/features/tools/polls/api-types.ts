@@ -37,3 +37,7 @@ export type PollResultsResponse = {
     expectedVoters: number
     results: PollResults
 }
+
+export type VotedPoll = { id: string; title: string; closed: boolean }
+
+export type VotedPollsResponse = { polls: VotedPoll[] }

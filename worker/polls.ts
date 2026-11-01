@@ -13,9 +13,10 @@ import {
 } from './http'
 import { randomToken, sha256 } from './tokens'
 
-// Admin and voter cookies last as long as the longest possible poll, so they outlive every poll
+// The cookies behind Polling Home's two lists. A poll lasts at most 7 days open plus 30 days of
+// results, so this outlasts every poll they list. Creating or voting resets the clock
+const LIST_COOKIE_DAYS = 37
 const POLL_COOKIE_DAYS = POLL_LIMITS.maxDurationMinutes / (24 * 60)
-const CREATOR_COOKIE_DAYS = 37
 
 export async function createPoll(
     request: Request,
@@ -71,7 +72,7 @@ export async function createPoll(
     headers.append('Set-Cookie', pollCookie('poll_admin', adminToken, id))
     headers.append(
         'Set-Cookie',
-        cookie('poll_creator', creatorId, '/api/polls', CREATOR_COOKIE_DAYS),
+        cookie('poll_creator', creatorId, '/api/polls', LIST_COOKIE_DAYS),
     )
 
     return Response.json({ id, adminToken }, { status: 201, headers })
@@ -135,12 +136,12 @@ export async function getPoll(
     if (!row) return errorResponse(404, 'Poll not found')
 
     // Whether this browser has a ballot in this poll (no cookie means it never voted)
-    const voterId = getCookie(request, 'poll_voter')
+    const voterId = getCookie(request, 'poll_voter_id')
     const ballot = voterId
         ? await env.DB.prepare(
               'SELECT 1 FROM ballots WHERE poll_id = ? AND voter_id = ?',
           )
-              .bind(id, voterId)
+              .bind(id, await sha256(voterId))
               .first()
         : null
 
@@ -190,8 +191,10 @@ export async function castBallot(
     const check = validateBallot(body, JSON.parse(row.options) as string[])
     if (!check.ok) return errorResponse(400, check.error)
 
-    // This browser's voter ID, or a new one on its first vote in this poll
-    const voterId = getCookie(request, 'poll_voter') || randomToken(16)
+    // One voter ID for this browser across every poll, so Polling Home can list where it voted.
+    // Only its hash is stored, like the creator ID
+    const voterId = getCookie(request, 'poll_voter_id') || randomToken(32)
+    const voterIdHash = await sha256(voterId)
 
     // One statement that only inserts while the poll is open, and skips a second ballot from the same browser
     const result = await env.DB.prepare(
@@ -200,7 +203,7 @@ export async function castBallot(
          WHERE id = ? AND closed_at IS NULL AND expires_at > ?
          ON CONFLICT (poll_id, voter_id) DO NOTHING`,
     )
-        .bind(voterId, JSON.stringify(check.value), now, id, now)
+        .bind(voterIdHash, JSON.stringify(check.value), now, id, now)
         .run()
 
     if (result.meta.changes === 0) {
@@ -214,7 +217,14 @@ export async function castBallot(
         { ok: true },
         {
             status: 201,
-            headers: { 'Set-Cookie': pollCookie('poll_voter', voterId, id) },
+            headers: {
+                'Set-Cookie': cookie(
+                    'poll_voter_id',
+                    voterId,
+                    '/api/polls',
+                    LIST_COOKIE_DAYS,
+                ),
+            },
         },
     )
 }
@@ -255,6 +265,40 @@ export async function listMyPolls(
             expectedVoters: row.expected_voters,
             ballotCount: row.ballot_count,
             createdAt: row.created_at,
+            closed: isClosed(row, now),
+        })),
+    })
+}
+
+type VotedPollRow = Pick<PollRow, 'id' | 'title' | 'expires_at' | 'closed_at'>
+
+export async function listVotedPolls(
+    request: Request,
+    env: Env,
+): Promise<Response> {
+    const voterId = getCookie(request, 'poll_voter_id')
+    if (!voterId) return Response.json({ polls: [] })
+
+    // Polls this browser created are already in Your polls, so they're left out here
+    const creatorId = getCookie(request, 'poll_creator')
+    const creatorIdHash = creatorId ? await sha256(creatorId) : null
+
+    const { results: rows } = await env.DB.prepare(
+        `SELECT polls.id, polls.title, polls.expires_at, polls.closed_at
+         FROM ballots
+         JOIN polls ON polls.id = ballots.poll_id
+         WHERE ballots.voter_id = ?
+           AND (polls.creator_id_hash IS NULL OR polls.creator_id_hash IS NOT ?)
+         ORDER BY ballots.created_at DESC`,
+    )
+        .bind(await sha256(voterId), creatorIdHash)
+        .all<VotedPollRow>()
+
+    const now = Date.now()
+    return Response.json({
+        polls: rows.map((row) => ({
+            id: row.id,
+            title: row.title,
             closed: isClosed(row, now),
         })),
     })
