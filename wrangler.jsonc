@@ -11,11 +11,11 @@
         "not_found_handling": "single-page-application",
         "run_worker_first": ["/api/*"],
     },
-    "d1_databases": [
+        "d1_databases": [
         {
             "binding": "DB",
-            "database_name": "icenine-polls",
-            "database_id": "530d7eb4-faf9-46da-a761-5fd48984cf57",
+            "database_name": "icenine-db",
+            "database_id": "b1a651af-26ea-4238-9863-94249b68a25a",
         },
     ],
     "ratelimits": [
