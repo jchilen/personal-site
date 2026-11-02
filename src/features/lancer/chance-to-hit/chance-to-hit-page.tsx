@@ -5,6 +5,7 @@ import type { LancerNpc, LancerNpcSets } from './npc-types'
 import { attackOdds, attackTotals, averageOdds, targetDefense } from './odds'
 import { AverageResult, FeaturedResult } from './results'
 import { NpcPicker } from './npc-picker'
+import { NpcChart } from './npc-chart'
 import { SetupBar } from './setup-bar'
 import { usePageState } from './use-page-state'
 import { TargetEffects, YourEffects } from './effects-cards'
@@ -61,6 +62,15 @@ export function ChanceToHitPage() {
                 <AverageResult
                     label={`All ${list.length} ${RULESET_NAMES[settings.ruleset]} NPCs · Average`}
                     odds={averageOdds(list.map(oddsAgainst))}
+                />
+                <NpcChart
+                    npcs={list}
+                    featured={featured.name}
+                    settings={settings}
+                    totals={totals}
+                    rulesetName={RULESET_NAMES[settings.ruleset]}
+                    oddsAgainst={oddsAgainst}
+                    onPick={(name) => update({ featured: name })}
                 />
             </>
         )

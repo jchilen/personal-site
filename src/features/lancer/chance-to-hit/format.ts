@@ -8,3 +8,19 @@ export function signed(value: number): string {
     if (value < 0) return `−${-value}`
     return '0'
 }
+
+const RED = 29
+const YELLOW = 100
+const GREEN = 145
+
+/**
+ * A color for a chance to hit: red at 0%, yellow at 50%, green at 100%, blending in between.
+ * Built from the same lightness and chroma tokens as the portfolio cards, so it adjusts for dark mode
+ */
+export function chanceColor(chance: number): string {
+    const hue =
+        chance < 0.5
+            ? RED + (YELLOW - RED) * (chance / 0.5)
+            : YELLOW + (GREEN - YELLOW) * ((chance - 0.5) / 0.5)
+    return `oklch(var(--hue-lightness) var(--hue-chroma) ${hue.toFixed(1)})`
+}

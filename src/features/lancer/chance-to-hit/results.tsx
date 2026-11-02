@@ -4,8 +4,7 @@ import { SectionTitle } from '@/components/section-title'
 import type { LancerNpc } from './npc-types'
 import { targetDefense, type AttackOdds } from './odds'
 import type { PageState } from './settings'
-
-import { percent } from './format'
+import { chanceColor, percent } from './format'
 
 type FeaturedResultProps = {
     npc: LancerNpc
@@ -37,7 +36,10 @@ export function FeaturedResult({
             </p>
             <div className="mt-3 flex flex-wrap items-end gap-x-10 gap-y-3">
                 <p>
-                    <span className="block font-heading text-5xl font-semibold text-cat-lancer">
+                    <span
+                        className="block font-heading text-5xl font-semibold"
+                        style={{ color: chanceColor(odds.hit) }}
+                    >
                         {percent(odds.hit)}
                     </span>
                     <span className={fieldLabelClass}>To hit</span>

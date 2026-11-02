@@ -2,8 +2,8 @@ import type { ReactNode } from 'react'
 
 type SectionTitleProps = {
     children: ReactNode
-    // Which heading level to render; defaults to h2. Headings nested under another h2 use h3
-    as?: 'h2' | 'h3'
+    // Which element to render; defaults to h2. Nested headings use h3; inside a button, use span
+    as?: 'h2' | 'h3' | 'span'
 }
 
 export function SectionTitle({

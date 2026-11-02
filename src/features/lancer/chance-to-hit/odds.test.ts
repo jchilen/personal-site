@@ -9,6 +9,7 @@ import {
     netDieOutcomes,
     targetDefense,
     type AttackSettings,
+    groupByDefense,
 } from './odds'
 
 // A plain weapon attack with nothing on
@@ -221,5 +222,39 @@ describe('averageOdds', () => {
 
     test('an empty list averages to 0, instead of dividing by zero', () => {
         expect(averageOdds([])).toEqual({ hit: 0, crit: 0 })
+    })
+})
+
+describe('groupByDefense', () => {
+    const a: LancerNpc = {
+        name: 'A',
+        role: 'Striker',
+        evasion: [8, 10, 12],
+        eDefense: [6, 6, 6],
+    }
+    const b: LancerNpc = {
+        name: 'B',
+        role: 'Striker',
+        evasion: [6, 10, 14],
+        eDefense: [9, 9, 9],
+    }
+    const c: LancerNpc = {
+        name: 'C',
+        role: 'Support',
+        evasion: [8, 8, 8],
+        eDefense: [6, 7, 8],
+    }
+
+    test('groups NPCs sharing a defense, lowest first, keeping list order inside each group', () => {
+        expect(groupByDefense([a, b, c], 'weapon', 1)).toEqual([
+            { defense: 6, npcs: [b] },
+            { defense: 8, npcs: [a, c] },
+        ])
+    })
+
+    test('uses E-Defense for Smart weapons and tech attacks', () => {
+        expect(
+            groupByDefense([a, b, c], 'tech', 1).map((group) => group.defense),
+        ).toEqual([6, 9])
     })
 })

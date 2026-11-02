@@ -165,3 +165,19 @@ export function averageOdds(list: AttackOdds[]): AttackOdds {
         crit: list.reduce((sum, odds) => sum + odds.crit, 0) / list.length,
     }
 }
+
+/** NPCs grouped by the defense an attack rolls against, lowest first. Everyone in a group has the same odds */
+export function groupByDefense(
+    npcs: LancerNpc[],
+    attackType: AttackType,
+    tier: Tier,
+): { defense: number; npcs: LancerNpc[] }[] {
+    const groups = new Map<number, LancerNpc[]>()
+    for (const npc of npcs) {
+        const defense = targetDefense(npc, attackType, tier)
+        groups.set(defense, [...(groups.get(defense) ?? []), npc])
+    }
+    return [...groups]
+        .sort(([a], [b]) => a - b)
+        .map(([defense, members]) => ({ defense, npcs: members }))
+}
