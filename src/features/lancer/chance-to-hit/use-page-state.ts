@@ -28,7 +28,8 @@ export function usePageState() {
 
     // Change only the given settings, keeping the rest
     const update = useCallback(
-        (changes: Partial<PageState>) => setState((current) => ({ ...current, ...changes })),
+        (changes: Partial<PageState>) =>
+            setState((current) => ({ ...current, ...changes })),
         [],
     )
 

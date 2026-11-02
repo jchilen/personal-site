@@ -12,6 +12,7 @@ import { PortfolioPage } from '@/features/articles/portfolio/portfolio-page'
 import { ComingSoonPage } from '@/pages/coming-soon-page'
 import { AdminPage } from '@/features/tools/polls/admin-page'
 import { ResultsPage } from '@/features/tools/polls/results-page'
+import { ChanceToHitPage } from '@/features/lancer/chance-to-hit/chance-to-hit-page'
 
 function App() {
     const { pathname } = useLocation()
@@ -46,6 +47,10 @@ function App() {
                     <Route
                         path="/tools/polls/:id/results"
                         element={<ResultsPage />}
+                    />
+                    <Route
+                        path="/lancer/chance-to-hit"
+                        element={<ChanceToHitPage />}
                     />
                     <Route
                         path="/articles/the-article"

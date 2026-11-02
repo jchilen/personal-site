@@ -1,12 +1,11 @@
 import { useState } from 'react'
 import { cn } from 'cn'
-import { IconMinus, IconPlus } from '@tabler/icons-react'
-import { fieldLabelClass, numberInputClass } from '@/components/field-styles'
-import { Button } from '@/components/ui/button'
+import { numberInputClass } from '@/components/field-styles'
 import { Input } from '@/components/ui/input'
 import { useNumberField } from '@/hooks/use-number-field'
 import { formatCloseTime } from './format-time'
 import { POLL_LIMITS } from './poll-rules'
+import { Stepper } from '@/components/stepper'
 
 const MINUTES_PER_HOUR = 60
 const MINUTES_PER_DAY = 24 * 60
@@ -78,39 +77,23 @@ function StepperRow({
     const unit = label.toLowerCase()
 
     return (
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
-            <label htmlFor={id} className={fieldLabelClass}>
-                {label}
-            </label>
-            <div className="flex items-center gap-1">
-                <Button
-                    type="button"
-                    variant="outline"
-                    size="icon-sm"
-                    aria-label={`Fewer ${unit}`}
-                    disabled={!canSubtract}
-                    onClick={() => field.setNumber(down)}
-                >
-                    <IconMinus />
-                </Button>
-                <Input
-                    id={id}
-                    inputMode="numeric"
-                    {...field.inputProps}
-                    className={cn(numberInputClass, 'w-12 text-center')}
-                />
-                <Button
-                    type="button"
-                    variant="outline"
-                    size="icon-sm"
-                    aria-label={`More ${unit}`}
-                    disabled={!canAdd}
-                    onClick={() => field.setNumber(up)}
-                >
-                    <IconPlus />
-                </Button>
-            </div>
-        </div>
+        <Stepper
+            label={label}
+            labelFor={id}
+            decreaseLabel={`Fewer ${unit}`}
+            increaseLabel={`More ${unit}`}
+            canDecrease={canSubtract}
+            canIncrease={canAdd}
+            onDecrease={() => field.setNumber(down)}
+            onIncrease={() => field.setNumber(up)}
+        >
+            <Input
+                id={id}
+                inputMode="numeric"
+                {...field.inputProps}
+                className={cn(numberInputClass, 'w-12 text-center')}
+            />
+        </Stepper>
     )
 }
 

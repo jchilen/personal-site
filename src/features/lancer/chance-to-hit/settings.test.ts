@@ -28,7 +28,12 @@ describe('restoreState', () => {
     })
 
     test('one bad value resets only itself', () => {
-        const restored = restoreState({ ...DEFAULT_STATE, licenseLevel: 40, tier: 2, lockOn: true })
+        const restored = restoreState({
+            ...DEFAULT_STATE,
+            licenseLevel: 40,
+            tier: 2,
+            lockOn: true,
+        })
         expect(restored.licenseLevel).toBe(DEFAULT_STATE.licenseLevel)
         expect(restored.tier).toBe(2)
         expect(restored.lockOn).toBe(true)

@@ -6,3 +6,7 @@ export const underlineInputClass =
     'h-auto rounded-none border-0 border-b-2 bg-transparent px-0 py-1 shadow-none focus-visible:border-cat-tools focus-visible:ring-0 dark:bg-transparent'
 
 export const numberInputClass = `${underlineInputClass} text-right font-heading text-xl font-semibold`
+
+// A choice in a ToggleGroup: outlined, gold when selected
+export const choiceItemClass =
+    'corner-brackets h-10 border text-muted-foreground hover:bg-transparent hover:text-foreground data-[state=on]:border-primary data-[state=on]:bg-primary/10 data-[state=on]:text-primary'

@@ -38,7 +38,11 @@ export const DEFAULT_STATE: PageState = {
 }
 
 // The value if it's one of the allowed options, otherwise the fallback
-function oneOf<T extends string | number>(value: unknown, options: readonly T[], fallback: T): T {
+function oneOf<T extends string | number>(
+    value: unknown,
+    options: readonly T[],
+    fallback: T,
+): T {
     return options.includes(value as T) ? (value as T) : fallback
 }
 
@@ -53,20 +57,37 @@ export function restoreState(saved: unknown): PageState {
     const whole = (key: keyof typeof LIMITS): number => {
         const value = s[key]
         const { min, max } = LIMITS[key]
-        return typeof value === 'number' && Number.isInteger(value) && value >= min && value <= max
+        return typeof value === 'number' &&
+            Number.isInteger(value) &&
+            value >= min &&
+            value <= max
             ? value
             : DEFAULT_STATE[key]
     }
-    const flag = (key: 'impaired' | 'engaged' | 'lockOn' | 'prone' | 'invisible'): boolean => {
+    const flag = (
+        key: 'impaired' | 'engaged' | 'lockOn' | 'prone' | 'invisible',
+    ): boolean => {
         const value = s[key]
         return typeof value === 'boolean' ? value : DEFAULT_STATE[key]
     }
 
     return {
-        attackType: oneOf(s.attackType, ['weapon', 'smart', 'tech'] as const, DEFAULT_STATE.attackType),
-        ruleset: oneOf(s.ruleset, ['original', 'rebake'] as const, DEFAULT_STATE.ruleset),
+        attackType: oneOf(
+            s.attackType,
+            ['weapon', 'smart', 'tech'] as const,
+            DEFAULT_STATE.attackType,
+        ),
+        ruleset: oneOf(
+            s.ruleset,
+            ['original', 'rebake'] as const,
+            DEFAULT_STATE.ruleset,
+        ),
         tier: oneOf(s.tier, [1, 2, 3] as const, DEFAULT_STATE.tier),
-        cover: oneOf(s.cover, ['none', 'soft', 'hard'] as const, DEFAULT_STATE.cover),
+        cover: oneOf(
+            s.cover,
+            ['none', 'soft', 'hard'] as const,
+            DEFAULT_STATE.cover,
+        ),
         licenseLevel: whole('licenseLevel'),
         frameTechAttack: whole('frameTechAttack'),
         systems: whole('systems'),

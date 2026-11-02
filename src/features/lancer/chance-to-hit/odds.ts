@@ -46,7 +46,9 @@ export function averageHighestD6(count: number): number {
  * Every value the Accuracy or Difficulty dice can add, with its chance. Positive `net` adds the
  * highest of that many d6; negative subtracts it; zero rolls nothing
  */
-export function netDieOutcomes(net: number): { value: number; chance: number }[] {
+export function netDieOutcomes(
+    net: number,
+): { value: number; chance: number }[] {
     if (net === 0) return [{ value: 0, chance: 1 }]
     const count = Math.abs(net)
     const sign = Math.sign(net)
@@ -69,8 +71,13 @@ type AttackInput = {
  * result. A hit meets or beats the target; a crit is a hit with a total of 20 or more.
  * Invisible targets make half of all attacks miss before the roll
  */
-export function attackOdds({ target, bonus, netAccuracy, invisible }: AttackInput): AttackOdds {
-        let hit = 0
+export function attackOdds({
+    target,
+    bonus,
+    netAccuracy,
+    invisible,
+}: AttackInput): AttackOdds {
+    let hit = 0
     let crit = 0
     for (const { value, chance } of netDieOutcomes(netAccuracy)) {
         // Count the d20 faces that hit and crit as whole numbers, then weight them once
@@ -101,7 +108,10 @@ function total(entries: [string, number][]): Total {
     const sources = entries
         .filter(([, value]) => value !== 0)
         .map(([label, value]) => ({ label, value }))
-    return { total: sources.reduce((sum, source) => sum + source.value, 0), sources }
+    return {
+        total: sources.reduce((sum, source) => sum + source.value, 0),
+        sources,
+    }
 }
 
 /** The totals the page shows, each with the sources that add up to it */
@@ -130,11 +140,20 @@ export function attackTotals(settings: AttackSettings) {
         ['Flat bonus', settings.flatBonus],
     ])
 
-    return { accuracy, difficulty, bonus, netAccuracy: accuracy.total - difficulty.total }
+    return {
+        accuracy,
+        difficulty,
+        bonus,
+        netAccuracy: accuracy.total - difficulty.total,
+    }
 }
 
 /** The defense an attack rolls against: Evasion for weapons, E-Defense for Smart weapons and tech */
-export function targetDefense(npc: LancerNpc, attackType: AttackType, tier: Tier): number {
+export function targetDefense(
+    npc: LancerNpc,
+    attackType: AttackType,
+    tier: Tier,
+): number {
     return (attackType === 'weapon' ? npc.evasion : npc.eDefense)[tier - 1]
 }
 

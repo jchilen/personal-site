@@ -5,7 +5,11 @@ import { Input } from '@/components/ui/input'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { useNumberField } from '@/hooks/use-number-field'
 import { SectionTitle } from '@/components/section-title'
-import { fieldLabelClass, numberInputClass } from '@/components/field-styles'
+import {
+    choiceItemClass,
+    fieldLabelClass,
+    numberInputClass,
+} from '@/components/field-styles'
 import {
     CONFIDENCE_MILESTONES,
     chanceAfter,
@@ -28,9 +32,6 @@ type ConfidenceCalculatorProps = {
     start: CalculatorStart
     onRemove?: () => void
 }
-
-const modeItemClass =
-    'corner-brackets h-10 border text-muted-foreground hover:bg-transparent hover:text-foreground data-[state=on]:border-primary data-[state=on]:bg-primary/10 data-[state=on]:text-primary'
 
 type FieldRowProps = {
     id: string
@@ -198,10 +199,10 @@ export function ConfidenceCalculator({
                     }}
                     className="grid w-full grid-cols-2 gap-2"
                 >
-                    <ToggleGroupItem value="kills" className={modeItemClass}>
+                    <ToggleGroupItem value="kills" className={choiceItemClass}>
                         Kills needed
                     </ToggleGroupItem>
-                    <ToggleGroupItem value="chance" className={modeItemClass}>
+                    <ToggleGroupItem value="chance" className={choiceItemClass}>
                         Chance after N
                     </ToggleGroupItem>
                 </ToggleGroup>
