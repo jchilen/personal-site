@@ -134,9 +134,17 @@ function PickerBody({ npcs, featured, oddsAgainst, onPick }: PickerBodyProps) {
     )
 }
 
-export function NpcPicker({ tier, rulesetName, ...bodyProps }: NpcPickerProps) {
+export function NpcPicker({
+    tier,
+    rulesetName,
+    onPick,
+    ...bodyProps
+}: NpcPickerProps) {
+    // Controlled here, instead of left to Radix, so picking an NPC (by click or Enter) can close it
+    const [open, setOpen] = useState(false)
+
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button type="button" variant="outline" size="sm">
                     Change NPC
@@ -151,7 +159,13 @@ export function NpcPicker({ tier, rulesetName, ...bodyProps }: NpcPickerProps) {
                         current settings. Pick one to feature it.
                     </DialogDescription>
                 </DialogHeader>
-                <PickerBody {...bodyProps} />
+                <PickerBody
+                    {...bodyProps}
+                    onPick={(name) => {
+                        onPick(name)
+                        setOpen(false)
+                    }}
+                />
             </DialogContent>
         </Dialog>
     )
