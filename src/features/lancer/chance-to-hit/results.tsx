@@ -1,4 +1,5 @@
 import { fieldLabelClass } from '@/components/field-styles'
+import type { ReactNode } from 'react'
 import { SectionTitle } from '@/components/section-title'
 import type { LancerNpc } from './npc-types'
 import { targetDefense, type AttackOdds } from './odds'
@@ -10,17 +11,26 @@ type FeaturedResultProps = {
     npc: LancerNpc
     settings: PageState
     odds: AttackOdds
+    action?: ReactNode
 }
 
-export function FeaturedResult({ npc, settings, odds }: FeaturedResultProps) {
+export function FeaturedResult({
+    npc,
+    settings,
+    odds,
+    action,
+}: FeaturedResultProps) {
     const defenseName =
         settings.attackType === 'weapon' ? 'Evasion' : 'E-Defense'
 
     return (
         <section aria-live="polite" className="border bg-card p-4">
-            <SectionTitle>
-                {npc.name} · T{settings.tier}
-            </SectionTitle>
+            <div className="flex items-start justify-between gap-3">
+                <SectionTitle>
+                    {npc.name} · T{settings.tier}
+                </SectionTitle>
+                {action}
+            </div>
             <p className="mt-1 text-sm text-muted-foreground">
                 {npc.role} · {defenseName}{' '}
                 {targetDefense(npc, settings.attackType, settings.tier)}
