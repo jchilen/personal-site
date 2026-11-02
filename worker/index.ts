@@ -9,6 +9,7 @@ import {
 } from './polls'
 import { claimAdmin, closePoll, getResults, getStatus } from './results'
 import { deleteOldPolls } from './cleanup'
+import { listLancerNpcs } from './lancer'
 
 async function health(_request: Request, env: Env): Promise<Response> {
     const row = await env.DB.prepare('SELECT 1 AS ok').first<{ ok: number }>()
@@ -66,6 +67,11 @@ const routes: { method: string; pattern: URLPattern; handler: Handler }[] = [
         method: 'GET',
         pattern: new URLPattern({ pathname: '/api/polls/:id/results' }),
         handler: getResults,
+    },
+    {
+        method: 'GET',
+        pattern: new URLPattern({ pathname: '/api/lancer/npcs' }),
+        handler: listLancerNpcs,
     },
 ]
 
