@@ -4,9 +4,7 @@ import type { LancerNpc } from './npc-types'
 import { targetDefense, type AttackOdds } from './odds'
 import type { PageState } from './settings'
 
-export function percent(chance: number): string {
-    return `${(chance * 100).toFixed(1)}%`
-}
+import { percent } from './format'
 
 type FeaturedResultProps = {
     npc: LancerNpc
@@ -29,7 +27,7 @@ export function FeaturedResult({ npc, settings, odds }: FeaturedResultProps) {
             </p>
             <div className="mt-3 flex flex-wrap items-end gap-x-10 gap-y-3">
                 <p>
-                    <span className="block font-heading text-5xl font-semibold text-(--cat-lancer)">
+                    <span className="block font-heading text-5xl font-semibold text-cat-lancer">
                         {percent(odds.hit)}
                     </span>
                     <span className={fieldLabelClass}>To hit</span>

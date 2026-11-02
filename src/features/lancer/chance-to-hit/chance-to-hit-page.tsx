@@ -6,12 +6,15 @@ import { attackOdds, attackTotals, averageOdds, targetDefense } from './odds'
 import { AverageResult, FeaturedResult } from './results'
 import { SetupBar } from './setup-bar'
 import { usePageState } from './use-page-state'
+import { TargetEffects, YourEffects } from './effects-cards'
+import { TotalsCard } from './totals-card'
 
 const RULESET_NAMES = { original: 'Original', rebake: 'Rebake' } as const
 
 export function ChanceToHitPage() {
     const npcs = useApi<LancerNpcSets>('/api/lancer/npcs')
     const { state: settings, update } = usePageState()
+    const totals = attackTotals(settings)
 
     let results: ReactNode = null
     if (npcs.state.status === 'error') {
@@ -25,7 +28,6 @@ export function ChanceToHitPage() {
         )
     } else if (npcs.state.status === 'success') {
         const list = npcs.state.data[settings.ruleset]
-        const totals = attackTotals(settings)
         const oddsAgainst = (npc: LancerNpc) =>
             attackOdds({
                 target: targetDefense(npc, settings.attackType, settings.tier),
@@ -63,10 +65,9 @@ export function ChanceToHitPage() {
                 <SetupBar settings={settings} update={update} />
                 <div className="grid items-start gap-4 @2xl:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
                     <div className="flex flex-col gap-4">
-                        <p className="border border-dashed p-4 text-sm text-muted-foreground">
-                            Your Effects, Your Target's Effects, and the totals
-                            go here next step.
-                        </p>
+                        <YourEffects settings={settings} update={update} />
+                        <TargetEffects settings={settings} update={update} />
+                        <TotalsCard totals={totals} />
                     </div>
                     <div className="flex flex-col gap-4">{results}</div>
                 </div>

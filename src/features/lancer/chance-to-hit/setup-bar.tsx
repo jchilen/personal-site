@@ -1,49 +1,6 @@
-import { cn } from 'cn'
-import { choiceItemClass, fieldLabelClass } from '@/components/field-styles'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Choice } from './choice'
 import type { Tier } from './odds'
 import type { PageState } from './settings'
-
-type ChoiceProps<T extends string> = {
-    label: string
-    value: T
-    options: [T, string][]
-    onChange: (value: T) => void
-}
-
-// A labeled row of buttons where exactly one is selected
-function Choice<T extends string>({
-    label,
-    value,
-    options,
-    onChange,
-}: ChoiceProps<T>) {
-    return (
-        <div className="flex flex-col gap-1.5">
-            <span className={fieldLabelClass}>{label}</span>
-            <ToggleGroup
-                type="single"
-                aria-label={label}
-                value={value}
-                onValueChange={(next) => {
-                    // Clicking the selected button again sends '', which would leave nothing selected
-                    if (next) onChange(next as T)
-                }}
-                className="flex flex-wrap gap-2"
-            >
-                {options.map(([option, text]) => (
-                    <ToggleGroupItem
-                        key={option}
-                        value={option}
-                        className={cn(choiceItemClass, 'px-3')}
-                    >
-                        {text}
-                    </ToggleGroupItem>
-                ))}
-            </ToggleGroup>
-        </div>
-    )
-}
 
 type SetupBarProps = {
     settings: PageState
