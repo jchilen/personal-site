@@ -1,3 +1,4 @@
+import { SectionTitle } from '@/components/section-title'
 import { Choice } from './choice'
 import type { Tier } from './odds'
 import type { PageState } from './settings'
@@ -9,7 +10,8 @@ type SetupBarProps = {
 
 export function SetupBar({ settings, update }: SetupBarProps) {
     return (
-        <div className="flex flex-wrap gap-x-8 gap-y-4 border bg-card p-4">
+        <section className="flex flex-col gap-4 border bg-card p-4">
+            <SectionTitle number={1}>Setup</SectionTitle>
             <Choice
                 label="Attack"
                 value={settings.attackType}
@@ -39,6 +41,6 @@ export function SetupBar({ settings, update }: SetupBarProps) {
                 ]}
                 onChange={(tier) => update({ tier: Number(tier) as Tier })}
             />
-        </div>
+        </section>
     )
 }

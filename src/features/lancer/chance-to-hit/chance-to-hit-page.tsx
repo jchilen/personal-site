@@ -84,10 +84,14 @@ export function ChanceToHitPage() {
             intro="Find out your likelihood of hitting a given Lancer enemy."
         >
             <div className="@container flex flex-col gap-4">
-                <SetupBar settings={settings} update={update} />
+                {/* No items-start here, so both cards stretch to the taller one's height */}
+                <div className="grid gap-4 @2xl:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+                    <SetupBar settings={settings} update={update} />
+                    <YourEffects settings={settings} update={update} />
+                </div>
+                {/* Temporary until Steps D and E replace these with sections 03 and 04 */}
                 <div className="grid items-start gap-4 @2xl:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
                     <div className="flex flex-col gap-4">
-                        <YourEffects settings={settings} update={update} />
                         <TargetEffects settings={settings} update={update} />
                         <TotalsCard totals={totals} />
                     </div>

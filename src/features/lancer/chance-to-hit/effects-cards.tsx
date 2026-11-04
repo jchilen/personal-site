@@ -22,6 +22,8 @@ type NumberStepperProps = {
     limits: { min: number; max: number }
     onChange: (value: number) => void
     showSign?: boolean
+    // A smaller number, for the less common modifiers
+    compact?: boolean
 }
 
 // A stepper with a read-only number in the middle, kept within its limits
@@ -32,6 +34,7 @@ function NumberStepper({
     limits,
     onChange,
     showSign = false,
+    compact = false,
 }: NumberStepperProps) {
     return (
         <Stepper
@@ -43,7 +46,12 @@ function NumberStepper({
             onDecrease={() => onChange(value - 1)}
             onIncrease={() => onChange(value + 1)}
         >
-            <output className="w-10 text-center font-heading text-xl font-semibold tabular-nums">
+            <output
+                className={cn(
+                    'text-center font-heading font-semibold tabular-nums',
+                    compact ? 'w-8 text-base' : 'w-10 text-xl',
+                )}
+            >
                 {showSign ? signed(value) : value}
             </output>
         </Stepper>
@@ -93,90 +101,95 @@ export function YourEffects({ settings, update }: CardProps) {
     const tech = settings.attackType === 'tech'
 
     return (
-        <section className="flex flex-col gap-3 border bg-card p-4">
+        // Its own container, so its two columns split based on this card's width, not the page's
+        <section className="@container flex flex-col gap-3 border bg-card p-4">
             <SectionTitle number={2}>Your effects</SectionTitle>
-            <NumberStepper
-                label={
-                    <>
-                        License Level{' '}
-                        <span className="text-foreground">
-                            · Grit {signed(grit(settings.licenseLevel))}
-                        </span>
-                    </>
-                }
-                name="License Level"
-                value={settings.licenseLevel}
-                limits={LIMITS.licenseLevel}
-                onChange={(licenseLevel) => update({ licenseLevel })}
-            />
-            {tech && (
-                <>
+            <div className="grid gap-x-5 gap-y-3 @sm:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+                <div className="flex flex-col gap-3">
                     <NumberStepper
-                        label="Frame Tech Attack"
-                        name="Frame Tech Attack"
-                        value={settings.frameTechAttack}
-                        limits={LIMITS.frameTechAttack}
-                        onChange={(frameTechAttack) =>
-                            update({ frameTechAttack })
+                        label={
+                            <>
+                                License Level{' '}
+                                <span className="text-foreground">
+                                    · Grit {signed(grit(settings.licenseLevel))}
+                                </span>
+                            </>
                         }
-                        showSign
+                        name="License Level"
+                        value={settings.licenseLevel}
+                        limits={LIMITS.licenseLevel}
+                        onChange={(licenseLevel) => update({ licenseLevel })}
+                    />
+                    {tech && (
+                        <>
+                            <NumberStepper
+                                label="Frame Tech Attack"
+                                name="Frame Tech Attack"
+                                value={settings.frameTechAttack}
+                                limits={LIMITS.frameTechAttack}
+                                onChange={(frameTechAttack) =>
+                                    update({ frameTechAttack })
+                                }
+                                showSign
+                            />
+                            <NumberStepper
+                                label="Systems"
+                                name="Systems"
+                                value={settings.systems}
+                                limits={LIMITS.systems}
+                                onChange={(systems) => update({ systems })}
+                            />
+                        </>
+                    )}
+                    <div className="flex flex-wrap gap-2">
+                        <EffectToggle
+                            label="Impaired"
+                            pressed={settings.impaired}
+                            onChange={(impaired) => update({ impaired })}
+                        />
+                        <EffectToggle
+                            label="Engaged"
+                            pressed={!tech && settings.engaged}
+                            onChange={(engaged) => update({ engaged })}
+                            locked={tech}
+                        />
+                    </div>
+                    {tech && (
+                        <LockedNote>
+                            Engaged doesn't affect tech attacks.
+                        </LockedNote>
+                    )}
+                </div>
+                {/* The less common modifiers: smaller, and set apart by a line */}
+                <div className="flex flex-col gap-2 border-t pt-3 @sm:border-t-0 @sm:border-l @sm:pt-0 @sm:pl-5">
+                    <NumberStepper
+                        label="Other accuracy"
+                        name="other accuracy"
+                        value={settings.otherAccuracy}
+                        limits={LIMITS.otherAccuracy}
+                        onChange={(otherAccuracy) => update({ otherAccuracy })}
+                        compact
                     />
                     <NumberStepper
-                        label="Systems"
-                        name="Systems"
-                        value={settings.systems}
-                        limits={LIMITS.systems}
-                        onChange={(systems) => update({ systems })}
+                        label="Other difficulty"
+                        name="other difficulty"
+                        value={settings.otherDifficulty}
+                        limits={LIMITS.otherDifficulty}
+                        onChange={(otherDifficulty) =>
+                            update({ otherDifficulty })
+                        }
+                        compact
                     />
-                </>
-            )}
-            <div className="flex flex-wrap gap-2">
-                <EffectToggle
-                    label="Impaired"
-                    pressed={settings.impaired}
-                    onChange={(impaired) => update({ impaired })}
-                />
-                <EffectToggle
-                    label="Engaged"
-                    pressed={!tech && settings.engaged}
-                    onChange={(engaged) => update({ engaged })}
-                    locked={tech}
-                />
-            </div>
-            {tech && (
-                <LockedNote>Engaged doesn't affect tech attacks.</LockedNote>
-            )}
-            <NumberStepper
-                label="Other accuracy"
-                name="other accuracy"
-                value={settings.otherAccuracy}
-                limits={LIMITS.otherAccuracy}
-                onChange={(otherAccuracy) => update({ otherAccuracy })}
-            />
-            <NumberStepper
-                label="Other difficulty"
-                name="other difficulty"
-                value={settings.otherDifficulty}
-                limits={LIMITS.otherDifficulty}
-                onChange={(otherDifficulty) => update({ otherDifficulty })}
-            />
-            {/* Rare, so it's dimmed to stay out of the way until someone needs it */}
-            <div className="opacity-75">
-                <NumberStepper
-                    label={
-                        <>
-                            Flat bonus{' '}
-                            <span className="tracking-normal normal-case">
-                                (rare)
-                            </span>
-                        </>
-                    }
-                    name="flat bonus"
-                    value={settings.flatBonus}
-                    limits={LIMITS.flatBonus}
-                    onChange={(flatBonus) => update({ flatBonus })}
-                    showSign
-                />
+                    <NumberStepper
+                        label="Flat bonus"
+                        name="flat bonus"
+                        value={settings.flatBonus}
+                        limits={LIMITS.flatBonus}
+                        onChange={(flatBonus) => update({ flatBonus })}
+                        showSign
+                        compact
+                    />
+                </div>
             </div>
         </section>
     )

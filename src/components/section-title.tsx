@@ -34,7 +34,7 @@ function TitleMarker({
         return (
             <span
                 aria-hidden="true"
-                className="font-mono text-cat-lancer tabular-nums"
+                className="font-mono text-primary tabular-nums"
             >
                 {String(number).padStart(2, '0')}
             </span>
@@ -44,7 +44,7 @@ function TitleMarker({
         return (
             <span
                 aria-hidden="true"
-                                className="h-3.5 w-3 shrink-0 -translate-y-px bg-cat-tools [clip-path:polygon(50%_0,100%_25%,100%_75%,50%_100%,0_75%,0_25%)]"
+                className="h-3.5 w-3 shrink-0 -translate-y-px bg-cat-tools [clip-path:polygon(50%_0,100%_25%,100%_75%,50%_100%,0_75%,0_25%)]"
             />
         )
     }
