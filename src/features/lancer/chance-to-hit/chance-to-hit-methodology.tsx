@@ -22,10 +22,10 @@ export function ChanceToHitMethodology() {
                 the time, but it falls apart when you reach the extremes.
             </p>
             <p>
-                Say your d20 rolls a 1 against a 6 evasion target, but you have +1 Accuracy. 
-                In the shortcut version, this always misses
-                because your roll becomes 4.5, but we know that isn't right
-                since a 5 or 6 still makes it hit by bringing your attack up to 6 or 7.
+                Say your d20 rolls a 1 against a 6 evasion target, but you have
+                +1 Accuracy. In the shortcut version, this always misses because
+                your roll becomes 4.5, but we know that isn't right since a 5 or
+                6 still makes it hit by bringing your attack up to 6 or 7.
             </p>
             <p>
                 So this calculator checks every combination instead - each
@@ -39,7 +39,10 @@ export function ChanceToHitMethodology() {
                 instead. Against the same 6 Evasion target, 5d6 Accuracy would
                 result in a 99.2% chance of hitting.
             </p>
-            <p>Hopefully this tool helps your tactical decisions in Lancer.</p>
+            <p>
+                Hopefully this tool helps you make better tactical decisions in
+                Lancer.
+            </p>
         </>
     )
 }
