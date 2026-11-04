@@ -42,18 +42,6 @@ export function grit(licenseLevel: number): number {
 }
 
 /**
- * The average of the highest die when rolling `count` d6, as for Accuracy or Difficulty.
- * The highest die is at most k with chance (k/6)^count, and the average of a die roll
- * adds up the chance of beating each value from 0 to 5.
- */
-export function averageHighestD6(count: number): number {
-    if (count === 0) return 0
-    let average = 6
-    for (let k = 1; k <= 5; k++) average -= (k / 6) ** count
-    return average
-}
-
-/**
  * Every value the Accuracy or Difficulty dice can add, with its chance. Positive `net` adds the
  * highest of that many d6; negative subtracts it; zero rolls nothing
  */
@@ -174,27 +162,11 @@ export function targetDefense(
     return (attackType === 'weapon' ? npc.evasion : npc.eDefense)[tier - 1]
 }
 
-/** The average chance across a list, for the "all NPCs" result */
+/** The average chance across a list, for the picker's average across the whole ruleset */
 export function averageOdds(list: AttackOdds[]): AttackOdds {
     if (list.length === 0) return { hit: 0, crit: 0 }
     return {
         hit: list.reduce((sum, odds) => sum + odds.hit, 0) / list.length,
         crit: list.reduce((sum, odds) => sum + odds.crit, 0) / list.length,
     }
-}
-
-/** NPCs grouped by the defense an attack rolls against, lowest first. Everyone in a group has the same odds */
-export function groupByDefense(
-    npcs: LancerNpc[],
-    attackType: AttackType,
-    tier: Tier,
-): { defense: number; npcs: LancerNpc[] }[] {
-    const groups = new Map<number, LancerNpc[]>()
-    for (const npc of npcs) {
-        const defense = targetDefense(npc, attackType, tier)
-        groups.set(defense, [...(groups.get(defense) ?? []), npc])
-    }
-    return [...groups]
-        .sort(([a], [b]) => a - b)
-        .map(([defense, members]) => ({ defense, npcs: members }))
 }

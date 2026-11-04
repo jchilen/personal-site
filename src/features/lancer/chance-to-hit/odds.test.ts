@@ -3,14 +3,12 @@ import type { LancerNpc } from './npc-types'
 import {
     attackOdds,
     attackTotals,
-    averageHighestD6,
     averageOdds,
     grit,
     netDieOutcomes,
     targetDefense,
     NO_TARGET_EFFECTS,
     type YourSettings,
-    groupByDefense,
 } from './odds'
 
 // A plain weapon attack with nothing on
@@ -34,20 +32,6 @@ function plain(target: number, bonus: number) {
 describe('grit', () => {
     test('is half the License Level, rounded up', () => {
         expect([0, 1, 2, 3, 4, 12].map(grit)).toEqual([0, 1, 1, 2, 2, 6])
-    })
-})
-
-describe('averageHighestD6', () => {
-    test('no dice adds nothing', () => {
-        expect(averageHighestD6(0)).toBe(0)
-    })
-
-    test('matches the averages shown on the page, to 3 decimals', () => {
-        expect(averageHighestD6(1)).toBeCloseTo(3.5, 3)
-        expect(averageHighestD6(2)).toBeCloseTo(4.472, 3)
-        expect(averageHighestD6(3)).toBeCloseTo(4.958, 3)
-        expect(averageHighestD6(4)).toBeCloseTo(5.245, 3)
-        expect(averageHighestD6(5)).toBeCloseTo(5.431, 3)
     })
 })
 
@@ -218,39 +202,5 @@ describe('averageOdds', () => {
 
     test('an empty list averages to 0, instead of dividing by zero', () => {
         expect(averageOdds([])).toEqual({ hit: 0, crit: 0 })
-    })
-})
-
-describe('groupByDefense', () => {
-    const a: LancerNpc = {
-        name: 'A',
-        role: 'Striker',
-        evasion: [8, 10, 12],
-        eDefense: [6, 6, 6],
-    }
-    const b: LancerNpc = {
-        name: 'B',
-        role: 'Striker',
-        evasion: [6, 10, 14],
-        eDefense: [9, 9, 9],
-    }
-    const c: LancerNpc = {
-        name: 'C',
-        role: 'Support',
-        evasion: [8, 8, 8],
-        eDefense: [6, 7, 8],
-    }
-
-    test('groups NPCs sharing a defense, lowest first, keeping list order inside each group', () => {
-        expect(groupByDefense([a, b, c], 'weapon', 1)).toEqual([
-            { defense: 6, npcs: [b] },
-            { defense: 8, npcs: [a, c] },
-        ])
-    })
-
-    test('uses E-Defense for Smart weapons and tech attacks', () => {
-        expect(
-            groupByDefense([a, b, c], 'tech', 1).map((group) => group.defense),
-        ).toEqual([6, 9])
     })
 })
