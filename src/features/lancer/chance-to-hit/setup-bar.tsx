@@ -22,25 +22,27 @@ export function SetupBar({ settings, update }: SetupBarProps) {
                 ]}
                 onChange={(attackType) => update({ attackType })}
             />
-            <Choice
-                label="NPCs"
-                value={settings.ruleset}
-                options={[
-                    ['original', 'Original'],
-                    ['rebake', 'Rebake'],
-                ]}
-                onChange={(ruleset) => update({ ruleset })}
-            />
-            <Choice
-                label="Tier"
-                value={String(settings.tier)}
-                options={[
-                    ['1', 'T1'],
-                    ['2', 'T2'],
-                    ['3', 'T3'],
-                ]}
-                onChange={(tier) => update({ tier: Number(tier) as Tier })}
-            />
+            <div className="flex flex-wrap gap-x-6 gap-y-4">
+                <Choice
+                    label="NPCs"
+                    value={settings.ruleset}
+                    options={[
+                        ['original', 'Original'],
+                        ['rebake', 'Rebake'],
+                    ]}
+                    onChange={(ruleset) => update({ ruleset })}
+                />
+                <Choice
+                    label="Tier"
+                    value={String(settings.tier)}
+                    options={[
+                        ['1', 'T1'],
+                        ['2', 'T2'],
+                        ['3', 'T3'],
+                    ]}
+                    onChange={(tier) => update({ tier: Number(tier) as Tier })}
+                />
+            </div>
         </section>
     )
 }

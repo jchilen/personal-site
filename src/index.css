@@ -144,6 +144,26 @@
     --animate-scan-reveal: scan-reveal 350ms linear both;
     --animate-scan-line: scan-line 350ms linear both;
 
+    /* Two quick blinks in gold, then settles to the normal muted text */
+    @keyframes flash {
+        0%,
+        50% {
+            color: var(--primary);
+        }
+        20%,
+        40% {
+            opacity: 0.3;
+        }
+        10%,
+        30% {
+            opacity: 1;
+        }
+        100% {
+            color: var(--muted-foreground);
+        }
+    }
+    --animate-flash: flash 1s ease-out both;
+
     @keyframes scan-conceal {
         from {
             clip-path: inset(-4px 0 0 0);

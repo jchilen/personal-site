@@ -1,7 +1,11 @@
 import type { ReactNode } from 'react'
 import { cn } from 'cn'
 import { IconLock } from '@tabler/icons-react'
-import { choiceItemClass, lockedClass } from '@/components/field-styles'
+import {
+    choiceItemClass,
+    fieldLabelClass,
+    lockedClass,
+} from '@/components/field-styles'
 import { SectionTitle } from '@/components/section-title'
 import { Stepper } from '@/components/stepper'
 import { Toggle } from '@/components/ui/toggle'
@@ -24,6 +28,8 @@ type NumberStepperProps = {
     showSign?: boolean
     // A smaller number, for the less common modifiers
     compact?: boolean
+    after?: ReactNode
+    stacked?: boolean
 }
 
 // A stepper with a read-only number in the middle, kept within its limits
@@ -35,6 +41,8 @@ function NumberStepper({
     onChange,
     showSign = false,
     compact = false,
+    after,
+    stacked = false,
 }: NumberStepperProps) {
     return (
         <Stepper
@@ -45,6 +53,8 @@ function NumberStepper({
             canIncrease={value < limits.max}
             onDecrease={() => onChange(value - 1)}
             onIncrease={() => onChange(value + 1)}
+            after={after}
+            stacked={stacked}
         >
             <output
                 className={cn(
@@ -104,15 +114,22 @@ export function YourEffects({ settings, update }: CardProps) {
         // Its own container, so its two columns split based on this card's width, not the page's
         <section className="@container flex flex-col gap-3 border bg-card p-4">
             <SectionTitle number={2}>Your effects</SectionTitle>
-            <div className="grid gap-x-5 gap-y-3 @sm:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
-                <div className="flex flex-col gap-3">
+            <div className="grid gap-y-3 @lg:grid-cols-2">
+                <div className="flex flex-col gap-3 @lg:pr-5">
                     <NumberStepper
-                        label={
+                        label="License Level"
+                        stacked
+                        after={
                             <>
-                                License Level{' '}
-                                <span className="text-foreground">
-                                    · Grit {signed(grit(settings.licenseLevel))}
+                                <span
+                                    aria-hidden="true"
+                                    className="text-muted-foreground"
+                                >
+                                    =
                                 </span>
+                                <output className="border border-primary px-2 py-1 font-heading text-xs font-semibold tracking-widest text-primary uppercase">
+                                    Grit {signed(grit(settings.licenseLevel))}
+                                </output>
                             </>
                         }
                         name="License Level"
@@ -131,6 +148,7 @@ export function YourEffects({ settings, update }: CardProps) {
                                     update({ frameTechAttack })
                                 }
                                 showSign
+                                stacked
                             />
                             <NumberStepper
                                 label="Systems"
@@ -138,6 +156,7 @@ export function YourEffects({ settings, update }: CardProps) {
                                 value={settings.systems}
                                 limits={LIMITS.systems}
                                 onChange={(systems) => update({ systems })}
+                                stacked
                             />
                         </>
                     )}
@@ -161,18 +180,26 @@ export function YourEffects({ settings, update }: CardProps) {
                     )}
                 </div>
                 {/* The less common modifiers: smaller, and set apart by a line */}
-                <div className="flex flex-col gap-2 border-t pt-3 @sm:border-t-0 @sm:border-l @sm:pt-0 @sm:pl-5">
+                <div className="flex flex-col gap-2 border-t pt-3 @lg:border-t-0 @lg:border-l @lg:pt-0 @lg:pl-5">
+                    <h3
+                        className={cn(
+                            fieldLabelClass,
+                            'font-semibold text-foreground',
+                        )}
+                    >
+                        Other effects
+                    </h3>
                     <NumberStepper
-                        label="Other accuracy"
-                        name="other accuracy"
+                        label="accuracy"
+                        name="accuracy"
                         value={settings.otherAccuracy}
                         limits={LIMITS.otherAccuracy}
                         onChange={(otherAccuracy) => update({ otherAccuracy })}
                         compact
                     />
                     <NumberStepper
-                        label="Other difficulty"
-                        name="other difficulty"
+                        label="difficulty"
+                        name="difficulty"
                         value={settings.otherDifficulty}
                         limits={LIMITS.otherDifficulty}
                         onChange={(otherDifficulty) =>

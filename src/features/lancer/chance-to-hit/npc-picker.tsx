@@ -1,21 +1,12 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { cn } from 'cn'
-import { IconChevronDown } from '@tabler/icons-react'
 import { underlineInputClass } from '@/components/field-styles'
 import { SectionTitle } from '@/components/section-title'
-import { Button } from '@/components/ui/button'
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { percent } from './format'
 import type { LancerNpc } from './npc-types'
-import type { AttackOdds, Tier } from './odds'
+import type { AttackOdds } from './odds'
+import { MAX_TARGETS } from './settings'
 
 const ROLE_ORDER = [
     'Striker',
@@ -41,18 +32,25 @@ function groupByRole(npcs: LancerNpc[]): [string, LancerNpc[]][] {
 
 type NpcPickerProps = {
     npcs: LancerNpc[]
-    featured: string
-    tier: Tier
-    rulesetName: string
+    // Names with at least one enemy card
+    selected: Set<string>
+    // At the most cards allowed, so names that aren't selected can't be added
+    full: boolean
     oddsAgainst: (npc: LancerNpc) => AttackOdds
-    onPick: (name: string) => void
+    onToggle: (name: string) => void
 }
 
-type PickerBodyProps = Omit<NpcPickerProps, 'tier' | 'rulesetName'>
-
-// The dialog's contents, as their own component so the search box starts empty each time it opens
-function PickerBody({ npcs, featured, oddsAgainst, onPick }: PickerBodyProps) {
+/** Section 03: every enemy in the ruleset, by role. Pick a name to add its card; pick it again to remove it */
+export function NpcPicker({
+    npcs,
+    selected,
+    full,
+    oddsAgainst,
+    onToggle,
+}: NpcPickerProps) {
     const [query, setQuery] = useState('')
+    // How many times an unavailable name was picked. Each new number remounts the warning, replaying its flash
+    const [flashes, setFlashes] = useState(0)
     const search = query.trim().toLowerCase()
     const searching = search !== ''
 
@@ -60,23 +58,57 @@ function PickerBody({ npcs, featured, oddsAgainst, onPick }: PickerBodyProps) {
     const isMatch = (npc: LancerNpc) =>
         searching && npc.name.toLowerCase().includes(search)
     const matches = npcs.filter(isMatch)
-    const groups = groupByRole(npcs)
+    const first = matches.at(0)
+    const unavailable = (npc: LancerNpc) => full && !selected.has(npc.name)
+
+    // Adds or removes an enemy, and says whether it did. At the limit, a new name flashes the warning instead
+    function pick(npc: LancerNpc): boolean {
+        if (unavailable(npc)) {
+            setFlashes((count) => count + 1)
+            return false
+        }
+        setFlashes(0)
+        onToggle(npc.name)
+        return true
+    }
+
+    let status: ReactNode = null
+    if (full && flashes > 0) {
+        status = (
+            <span
+                key={flashes}
+                className="animate-flash motion-reduce:animate-none"
+            >
+                {MAX_TARGETS} chosen: unselect one to choose another.
+            </span>
+        )
+    } else if (searching) {
+        status = first
+            ? `${matches.length} ${matches.length === 1 ? 'match' : 'matches'}. Press Enter to ${selected.has(first.name) ? 'remove' : 'select'} ${first.name}.`
+            : 'No enemy matches that name.'
+    }
 
     return (
-        <>
+        // Its own container, so the number of columns follows this card's width
+        <section className="@container flex flex-col gap-3 border bg-card p-4">
+            <div>
+                <SectionTitle number={3}>Enemies</SectionTitle>
+                <p className="mt-1 text-sm text-muted-foreground">
+                    Pick up to {MAX_TARGETS}. Percentages use your effects only.
+                </p>
+            </div>
             <div className="flex flex-col gap-1.5">
                 <Input
                     type="search"
-                    placeholder="Search NPCs"
-                    aria-label="Search NPCs"
+                    placeholder="Search enemies"
+                    aria-label="Search enemies"
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
                     onKeyDown={(event) => {
-                        // Enter features the first match, so you can pick without the mouse
-                        if (event.key === 'Enter' && matches.length > 0) {
+                        // Enter picks the first match, so you can choose without the mouse
+                        if (event.key === 'Enter' && first) {
                             event.preventDefault()
-                            onPick(matches[0].name)
-                            setQuery('')
+                            if (pick(first)) setQuery('')
                         }
                     }}
                     className={underlineInputClass}
@@ -85,31 +117,31 @@ function PickerBody({ npcs, featured, oddsAgainst, onPick }: PickerBodyProps) {
                     aria-live="polite"
                     className="min-h-4 text-xs text-muted-foreground"
                 >
-                    {searching &&
-                        (matches.length === 0
-                            ? 'No NPC matches that name.'
-                            : `${matches.length} ${matches.length === 1 ? 'match' : 'matches'}. Press Enter to feature ${matches[0].name}.`)}
+                    {status}
                 </p>
             </div>
             {/* Balanced columns: each role group flows into the next column instead of leaving gaps */}
-            <div className="columns-1 gap-6 sm:columns-2 md:columns-3">
-                {groups.map(([role, members]) => (
-                    <section key={role} className="mb-5 break-inside-avoid">
-                        <div className="mb-2 flex items-baseline justify-between gap-2 border-b pb-1.5">
-                            <SectionTitle as="h3">{role}</SectionTitle>
+            <div className="columns-2 gap-4 @xl:columns-3">
+                {groupByRole(npcs).map(([role, members]) => (
+                    <section key={role} className="mb-4 break-inside-avoid">
+                        <div className="mb-1.5 flex items-baseline justify-between gap-2 border-b pb-1">
+                            <SectionTitle as="h3" marker="hex">
+                                {role}
+                            </SectionTitle>
                             <span className="text-xs text-muted-foreground">
                                 {members.length}
                             </span>
                         </div>
-                        <ul className="flex flex-col gap-1.5">
+                        <ul className="flex flex-col gap-1">
                             {members.map((npc) => (
                                 <li key={npc.name}>
                                     <button
                                         type="button"
-                                        aria-pressed={npc.name === featured}
-                                        onClick={() => onPick(npc.name)}
+                                        aria-pressed={selected.has(npc.name)}
+                                        aria-disabled={unavailable(npc)}
+                                        onClick={() => pick(npc)}
                                         className={cn(
-                                            'flex w-full items-center justify-between gap-3 border bg-background px-3 py-2 text-left text-sm transition hover:border-primary aria-pressed:border-primary aria-pressed:bg-primary/10 aria-pressed:text-primary aria-pressed:shadow-[inset_3px_0_0_var(--primary)]',
+                                            'flex w-full items-center justify-between gap-2 border bg-background px-2 py-1 text-left text-sm transition hover:border-primary aria-disabled:cursor-not-allowed aria-disabled:text-muted-foreground aria-disabled:hover:border-border aria-pressed:border-primary aria-pressed:bg-primary/10 aria-pressed:text-primary aria-pressed:shadow-[inset_3px_0_0_var(--primary)]',
                                             searching &&
                                                 !isMatch(npc) &&
                                                 'opacity-30',
@@ -130,43 +162,6 @@ function PickerBody({ npcs, featured, oddsAgainst, onPick }: PickerBodyProps) {
                     </section>
                 ))}
             </div>
-        </>
-    )
-}
-
-export function NpcPicker({
-    tier,
-    rulesetName,
-    onPick,
-    ...bodyProps
-}: NpcPickerProps) {
-    // Controlled here, instead of left to Radix, so picking an NPC (by click or Enter) can close it
-    const [open, setOpen] = useState(false)
-
-    return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-                <Button type="button" variant="outline" size="sm">
-                    Change NPC
-                    <IconChevronDown data-icon="inline-end" />
-                </Button>
-            </DialogTrigger>
-            <DialogContent className="max-h-[85svh] overflow-y-auto sm:max-w-3xl">
-                <DialogHeader>
-                    <DialogTitle>Choose an NPC · T{tier}</DialogTitle>
-                    <DialogDescription>
-                        {rulesetName} NPCs, with your chance to hit using the
-                        current settings. Pick one to feature it.
-                    </DialogDescription>
-                </DialogHeader>
-                <PickerBody
-                    {...bodyProps}
-                    onPick={(name) => {
-                        onPick(name)
-                        setOpen(false)
-                    }}
-                />
-            </DialogContent>
-        </Dialog>
+        </section>
     )
 }
