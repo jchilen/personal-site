@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react'
 import { ToolLayout } from '@/components/tool-layout'
+import { MethodologyLayout } from '@/components/methodology-layout'
 import { useApi } from '@/hooks/use-api'
 import { YourEffects } from './effects-cards'
+import { ChanceToHitMethodology } from './chance-to-hit-methodology'
 import { EnemyCards, type EnemyCardData } from './enemy-cards'
 import { percent } from './format'
 import { NpcPicker } from './npc-picker'
@@ -150,14 +152,20 @@ export function ChanceToHitPage() {
             title="Chance-to-Hit Calculator"
             intro="Find out your likelihood of hitting a given Lancer enemy."
         >
-            <div className="@container flex flex-col gap-4">
-                {/* No items-start here, so both cards stretch to the taller one's height */}
-                <div className="grid gap-4 @2xl:grid-cols-[auto_minmax(0,1fr)]">
-                    <SetupBar settings={settings} update={update} />
-                    <YourEffects settings={settings} update={update} />
+            <MethodologyLayout
+                title="How the odds are worked out"
+                methodology={<ChanceToHitMethodology />}
+                wide
+            >
+                <div className="flex flex-col gap-4">
+                    {/* No items-start here, so both cards stretch to the taller one's height */}
+                    <div className="grid gap-4 @2xl:grid-cols-[auto_minmax(0,1fr)]">
+                        <SetupBar settings={settings} update={update} />
+                        <YourEffects settings={settings} update={update} />
+                    </div>
+                    {enemies}
                 </div>
-                {enemies}
-            </div>
+            </MethodologyLayout>
         </ToolLayout>
     )
 }
