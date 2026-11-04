@@ -4,8 +4,8 @@ export type AttackType = 'weapon' | 'smart' | 'tech'
 export type Cover = 'none' | 'soft' | 'hard'
 export type Tier = 1 | 2 | 3
 
-/** Everything the player sets on the page that affects the roll */
-export type AttackSettings = {
+/** Your side of the roll: the same against every enemy */
+export type YourSettings = {
     attackType: AttackType
     licenseLevel: number
     frameTechAttack: number
@@ -15,10 +15,21 @@ export type AttackSettings = {
     otherDifficulty: number
     impaired: boolean
     engaged: boolean
+}
+
+/** One enemy's own effects, which only apply to attacks against that enemy */
+export type TargetEffects = {
     cover: Cover
     lockOn: boolean
     prone: boolean
     invisible: boolean
+}
+
+export const NO_TARGET_EFFECTS: TargetEffects = {
+    cover: 'none',
+    lockOn: false,
+    prone: false,
+    invisible: false,
 }
 
 export type Source = { label: string; value: number }
@@ -114,30 +125,36 @@ function total(entries: [string, number][]): Total {
     }
 }
 
-/** The totals the page shows, each with the sources that add up to it */
-export function attackTotals(settings: AttackSettings) {
-    const tech = settings.attackType === 'tech'
+/**
+ * The totals for an attack against one enemy: your effects, which apply to every enemy, plus that
+ * enemy's own. Each total lists the sources that add up to it
+ */
+export function attackTotals(
+    you: YourSettings,
+    target: TargetEffects = NO_TARGET_EFFECTS,
+) {
+    const tech = you.attackType === 'tech'
     // Tech attacks ignore cover and aren't affected by Engaged, so both count as off
-    const cover = tech ? 'none' : settings.cover
-    const engaged = tech ? false : settings.engaged
+    const cover = tech ? 'none' : target.cover
+    const engaged = tech ? false : you.engaged
 
     const accuracy = total([
-        ['Lock On', settings.lockOn ? 1 : 0],
-        ['Prone', settings.prone ? 1 : 0],
-        ['Other', settings.otherAccuracy],
+        ['Lock On', target.lockOn ? 1 : 0],
+        ['Prone', target.prone ? 1 : 0],
+        ['Other', you.otherAccuracy],
     ])
     const difficulty = total([
         ['Soft cover', cover === 'soft' ? 1 : 0],
         ['Hard cover', cover === 'hard' ? 2 : 0],
-        ['Impaired', settings.impaired ? 1 : 0],
+        ['Impaired', you.impaired ? 1 : 0],
         ['Engaged', engaged ? 1 : 0],
-        ['Other', settings.otherDifficulty],
+        ['Other', you.otherDifficulty],
     ])
     const bonus = total([
-        ['Grit', grit(settings.licenseLevel)],
-        ['Frame Tech Attack', tech ? settings.frameTechAttack : 0],
-        ['Systems', tech ? settings.systems : 0],
-        ['Flat bonus', settings.flatBonus],
+        ['Grit', grit(you.licenseLevel)],
+        ['Frame Tech Attack', tech ? you.frameTechAttack : 0],
+        ['Systems', tech ? you.systems : 0],
+        ['Flat bonus', you.flatBonus],
     ])
 
     return {

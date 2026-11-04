@@ -8,12 +8,13 @@ import {
     grit,
     netDieOutcomes,
     targetDefense,
-    type AttackSettings,
+    NO_TARGET_EFFECTS,
+    type YourSettings,
     groupByDefense,
 } from './odds'
 
 // A plain weapon attack with nothing on
-const BASE: AttackSettings = {
+const BASE: YourSettings = {
     attackType: 'weapon',
     licenseLevel: 0,
     frameTechAttack: 0,
@@ -23,10 +24,6 @@ const BASE: AttackSettings = {
     otherDifficulty: 0,
     impaired: false,
     engaged: false,
-    cover: 'none',
-    lockOn: false,
-    prone: false,
-    invisible: false,
 }
 
 // Odds with no dice and no invisibility, for tests that only change the target and bonus
@@ -145,13 +142,10 @@ describe('attackTotals', () => {
     })
 
     test('lists each source that adds up to a total', () => {
-        const totals = attackTotals({
-            ...BASE,
-            lockOn: true,
-            prone: true,
-            otherAccuracy: 1,
-            cover: 'hard',
-        })
+        const totals = attackTotals(
+            { ...BASE, otherAccuracy: 1 },
+            { ...NO_TARGET_EFFECTS, lockOn: true, prone: true, cover: 'hard' },
+        )
         expect(totals.accuracy).toEqual({
             total: 3,
             sources: [
@@ -181,15 +175,17 @@ describe('attackTotals', () => {
     })
 
     test('tech attacks add Frame Tech Attack and Systems, and ignore cover and Engaged', () => {
-        const totals = attackTotals({
-            ...BASE,
-            attackType: 'tech',
-            licenseLevel: 5,
-            frameTechAttack: -2,
-            systems: 3,
-            cover: 'hard',
-            engaged: true,
-        })
+        const totals = attackTotals(
+            {
+                ...BASE,
+                attackType: 'tech',
+                licenseLevel: 5,
+                frameTechAttack: -2,
+                systems: 3,
+                engaged: true,
+            },
+            { ...NO_TARGET_EFFECTS, cover: 'hard' },
+        )
         expect(totals.bonus.total).toBe(3 - 2 + 3)
         expect(totals.difficulty).toEqual({ total: 0, sources: [] })
     })

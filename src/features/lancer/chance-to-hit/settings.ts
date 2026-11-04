@@ -1,12 +1,25 @@
 import type { Ruleset } from './npc-types'
-import type { AttackSettings, Tier } from './odds'
+import type { TargetEffects, Tier, YourSettings } from './odds'
 
-/** Everything the page remembers between visits */
-export type PageState = AttackSettings & {
-    ruleset: Ruleset
-    tier: Tier
-    featured: string | null // the featured NPC's name; null until someone picks one
-}
+export const MAX_TARGETS = 3
+
+/**
+ * One enemy card and its own effects. The same enemy can appear more than once, so each card has
+ * its own id, to tell copies apart
+ */
+export type Target = TargetEffects & { id: string; name: string }
+
+/**
+ * Everything the page remembers between visits.
+ * The TargetEffects fields and `featured` are the old single-enemy design; Step E removes them
+ */
+export type PageState = YourSettings &
+    TargetEffects & {
+        ruleset: Ruleset
+        tier: Tier
+        featured: string | null
+        targets: Target[]
+    }
 
 /** The range of each stepper, shared by the page's controls and by restoreState */
 export const LIMITS = {
@@ -35,6 +48,21 @@ export const DEFAULT_STATE: PageState = {
     prone: false,
     invisible: false,
     featured: null,
+    targets: [],
+}
+
+const COVERS = ['none', 'soft', 'hard'] as const
+
+/** A new enemy card with none of its own effects, or a copy of an existing card's effects */
+export function newTarget(name: string, effects?: TargetEffects): Target {
+    return {
+        id: crypto.randomUUID(),
+        name,
+        cover: effects?.cover ?? 'none',
+        lockOn: effects?.lockOn ?? false,
+        prone: effects?.prone ?? false,
+        invisible: effects?.invisible ?? false,
+    }
 }
 
 // The value if it's one of the allowed options, otherwise the fallback
@@ -44,6 +72,49 @@ function oneOf<T extends string | number>(
     fallback: T,
 ): T {
     return options.includes(value as T) ? (value as T) : fallback
+}
+
+// One saved enemy card, or null if it has no usable name. Missing or broken effects fall back to
+// none/off, and a missing id gets a new one
+function restoreTarget(value: unknown): Target | null {
+    if (typeof value !== 'object' || value === null) return null
+    const t = value as Record<string, unknown>
+    if (typeof t.name !== 'string' || t.name === '') return null
+
+    return {
+        id:
+            typeof t.id === 'string' && t.id !== ''
+                ? t.id
+                : crypto.randomUUID(),
+        name: t.name,
+        cover: oneOf(t.cover, COVERS, 'none'),
+        lockOn: t.lockOn === true,
+        prone: t.prone === true,
+        invisible: t.invisible === true,
+    }
+}
+
+// The saved enemy cards: valid entries only, no two sharing an id, and at most MAX_TARGETS
+function restoreTargets(s: Record<string, unknown>): Target[] {
+    // Saves from before multiple enemies had one featured NPC, with the target effects stored
+    // beside it, so that NPC becomes the first card and keeps those effects
+    const saved: unknown[] = Array.isArray(s.targets)
+        ? s.targets
+        : typeof s.featured === 'string'
+          ? [{ ...s, name: s.featured }]
+          : []
+
+    const targets: Target[] = []
+    for (const item of saved) {
+        const target = restoreTarget(item)
+        if (!target) continue
+        // Two cards sharing an id would confuse the page about which one you clicked; give the
+        // later one a fresh id. Copies of the same enemy are fine: they just need different ids
+        if (targets.some((existing) => existing.id === target.id))
+            target.id = crypto.randomUUID()
+        targets.push(target)
+    }
+    return targets.slice(0, MAX_TARGETS)
 }
 
 /**
@@ -83,11 +154,7 @@ export function restoreState(saved: unknown): PageState {
             DEFAULT_STATE.ruleset,
         ),
         tier: oneOf(s.tier, [1, 2, 3] as const, DEFAULT_STATE.tier),
-        cover: oneOf(
-            s.cover,
-            ['none', 'soft', 'hard'] as const,
-            DEFAULT_STATE.cover,
-        ),
+        cover: oneOf(s.cover, COVERS, DEFAULT_STATE.cover),
         licenseLevel: whole('licenseLevel'),
         frameTechAttack: whole('frameTechAttack'),
         systems: whole('systems'),
@@ -100,5 +167,6 @@ export function restoreState(saved: unknown): PageState {
         prone: flag('prone'),
         invisible: flag('invisible'),
         featured: typeof s.featured === 'string' ? s.featured : null,
+        targets: restoreTargets(s),
     }
 }

@@ -16,7 +16,8 @@ const RULESET_NAMES = { original: 'Original', rebake: 'Rebake' } as const
 export function ChanceToHitPage() {
     const npcs = useApi<LancerNpcSets>('/api/lancer/npcs')
     const { state: settings, update } = usePageState()
-    const totals = attackTotals(settings)
+    // Temporary until Step E: the page still has one set of target effects, stored in settings itself
+    const totals = attackTotals(settings, settings)
 
     let results: ReactNode = null
     if (npcs.state.status === 'error') {
