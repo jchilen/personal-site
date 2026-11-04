@@ -9,7 +9,6 @@ import {
 import { SectionTitle } from '@/components/section-title'
 import { Stepper } from '@/components/stepper'
 import { Toggle } from '@/components/ui/toggle'
-import { Choice } from './choice'
 import { signed } from './format'
 import { grit } from './odds'
 import { LIMITS, type PageState } from './settings'
@@ -76,7 +75,7 @@ type EffectToggleProps = {
 }
 
 // An on/off effect, styled like the other choices
-function EffectToggle({
+export function EffectToggle({
     label,
     pressed,
     onChange,
@@ -87,15 +86,19 @@ function EffectToggle({
             pressed={pressed}
             onPressedChange={onChange}
             disabled={locked}
-            className={cn(choiceItemClass, 'px-3', locked && lockedClass)}
+            className={cn(
+                choiceItemClass,
+                'px-3',
+                locked ? lockedClass : 'text-foreground/80',
+            )}
         >
             {label}
         </Toggle>
     )
 }
 
-// Explains why a control is locked, so a dashed, unclickable button never looks broken
-function LockedNote({ children }: { children: ReactNode }) {
+// Explains why a control is locked, so a faded, unclickable button never looks broken
+export function LockedNote({ children }: { children: ReactNode }) {
     return (
         <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
             <IconLock
@@ -217,45 +220,6 @@ export function YourEffects({ settings, update }: CardProps) {
                         compact
                     />
                 </div>
-            </div>
-        </section>
-    )
-}
-
-export function TargetEffects({ settings, update }: CardProps) {
-    const tech = settings.attackType === 'tech'
-
-    return (
-        <section className="flex flex-col gap-3 border bg-card p-4">
-            <SectionTitle marker="hex">Your target's effects</SectionTitle>
-            <Choice
-                label="Cover"
-                value={tech ? 'none' : settings.cover}
-                options={[
-                    ['none', 'None'],
-                    ['soft', 'Soft'],
-                    ['hard', 'Hard'],
-                ]}
-                onChange={(cover) => update({ cover })}
-                locked={tech}
-            />
-            {tech && <LockedNote>Tech attacks ignore cover.</LockedNote>}
-            <div className="flex flex-wrap gap-2">
-                <EffectToggle
-                    label="Lock On"
-                    pressed={settings.lockOn}
-                    onChange={(lockOn) => update({ lockOn })}
-                />
-                <EffectToggle
-                    label="Prone"
-                    pressed={settings.prone}
-                    onChange={(prone) => update({ prone })}
-                />
-                <EffectToggle
-                    label="Invisible"
-                    pressed={settings.invisible}
-                    onChange={(invisible) => update({ invisible })}
-                />
             </div>
         </section>
     )

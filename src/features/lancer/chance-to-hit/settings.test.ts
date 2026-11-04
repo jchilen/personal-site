@@ -25,9 +25,7 @@ describe('restoreState', () => {
             licenseLevel: 7,
             frameTechAttack: -2,
             systems: 4,
-            cover: 'soft',
-            lockOn: true,
-            featured: 'Witch',
+            impaired: true,
             targets: [
                 {
                     id: 'a',
@@ -63,21 +61,20 @@ describe('restoreState', () => {
             ...DEFAULT_STATE,
             licenseLevel: 40,
             tier: 2,
-            lockOn: true,
+            impaired: true,
         })
         expect(restored.licenseLevel).toBe(DEFAULT_STATE.licenseLevel)
         expect(restored.tier).toBe(2)
-        expect(restored.lockOn).toBe(true)
+        expect(restored.impaired).toBe(true)
     })
 
     test('wrong types and unknown options fall back to the defaults', () => {
         const restored = restoreState({
             attackType: 'laser',
-            cover: 'diagonal',
             systems: 2.5,
-            prone: 'yes',
+            impaired: 'yes',
             tier: '3',
-            featured: 7,
+            targets: 'none',
         })
         expect(restored).toEqual(DEFAULT_STATE)
     })
@@ -131,7 +128,7 @@ describe('restoreState', () => {
         ])
     })
 
-    test('a save from the single-enemy design becomes one target with its effects', () => {
+    test('a save from the single-enemy design becomes one target with its effects, and the old fields are dropped', () => {
         const restored = restoreState({
             featured: 'Sniper',
             cover: 'hard',
@@ -147,6 +144,8 @@ describe('restoreState', () => {
                 invisible: false,
             },
         ])
+        expect(restored).not.toHaveProperty('featured')
+        expect(restored).not.toHaveProperty('cover')
     })
 })
 

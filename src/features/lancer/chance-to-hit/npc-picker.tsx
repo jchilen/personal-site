@@ -8,26 +8,34 @@ import type { LancerNpc } from './npc-types'
 import type { AttackOdds } from './odds'
 import { MAX_TARGETS } from './settings'
 
-const ROLE_ORDER = [
-    'Striker',
-    'Controller',
-    'Defender',
-    'Support',
-    'Artillery',
-    'Biological',
+// Where each role sits: three columns, with the bigger roles across the top
+const ROLE_COLUMNS = [
+    ['Striker', 'Biological'],
+    ['Controller', 'Support'],
+    ['Defender', 'Artillery'],
 ]
 
-// Roles in the order above; any role the table gains later goes at the end instead of disappearing
-function roleRank(role: string): number {
-    const index = ROLE_ORDER.indexOf(role)
-    return index === -1 ? ROLE_ORDER.length : index
-}
-
-function groupByRole(npcs: LancerNpc[]): [string, LancerNpc[]][] {
-    const roles = [...new Set(npcs.map((npc) => npc.role))].sort(
-        (a, b) => roleRank(a) - roleRank(b),
+/**
+ * Each column's roles with their NPCs, skipping roles this ruleset doesn't have (Rebake has no
+ * Biological). Any role the table gains later goes at the bottom of the last column instead of
+ * disappearing
+ */
+function roleColumns(npcs: LancerNpc[]): [string, LancerNpc[]][][] {
+    const known = ROLE_COLUMNS.flat()
+    const extra = [...new Set(npcs.map((npc) => npc.role))].filter(
+        (role) => !known.includes(role),
     )
-    return roles.map((role) => [role, npcs.filter((npc) => npc.role === role)])
+    const columns = ROLE_COLUMNS.map((roles, index) =>
+        index === ROLE_COLUMNS.length - 1 ? [...roles, ...extra] : roles,
+    )
+    return columns.map((roles) =>
+        roles
+            .map((role): [string, LancerNpc[]] => [
+                role,
+                npcs.filter((npc) => npc.role === role),
+            ])
+            .filter(([, members]) => members.length > 0),
+    )
 }
 
 type NpcPickerProps = {
@@ -38,6 +46,8 @@ type NpcPickerProps = {
     full: boolean
     oddsAgainst: (npc: LancerNpc) => AttackOdds
     onToggle: (name: string) => void
+    // Shown at the far right of the title row
+    aside?: ReactNode
 }
 
 /** Section 03: every enemy in the ruleset, by role. Pick a name to add its card; pick it again to remove it */
@@ -47,10 +57,13 @@ export function NpcPicker({
     full,
     oddsAgainst,
     onToggle,
+    aside,
 }: NpcPickerProps) {
     const [query, setQuery] = useState('')
     // How many times an unavailable name was picked. Each new number remounts the warning, replaying its flash
     const [flashes, setFlashes] = useState(0)
+    // Once there's room again, forget earlier flashes, so filling up later doesn't show a stale warning
+    if (!full && flashes !== 0) setFlashes(0)
     const search = query.trim().toLowerCase()
     const searching = search !== ''
 
@@ -89,13 +102,17 @@ export function NpcPicker({
     }
 
     return (
-        // Its own container, so the number of columns follows this card's width
+        // Its own container, so the columns follow this card's width
         <section className="@container flex flex-col gap-3 border bg-card p-4">
-            <div>
-                <SectionTitle number={3}>Enemies</SectionTitle>
-                <p className="mt-1 text-sm text-muted-foreground">
-                    Pick up to {MAX_TARGETS}. Percentages use your effects only.
-                </p>
+            <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+                <div>
+                    <SectionTitle number={3}>Enemies</SectionTitle>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                        Pick up to {MAX_TARGETS}. Percentages use your effects
+                        only.
+                    </p>
+                </div>
+                {aside}
             </div>
             <div className="flex flex-col gap-1.5">
                 <Input
@@ -120,46 +137,54 @@ export function NpcPicker({
                     {status}
                 </p>
             </div>
-            {/* Balanced columns: each role group flows into the next column instead of leaving gaps */}
-            <div className="columns-2 gap-4 @xl:columns-3">
-                {groupByRole(npcs).map(([role, members]) => (
-                    <section key={role} className="mb-4 break-inside-avoid">
-                        <div className="mb-1.5 flex items-baseline justify-between gap-2 border-b pb-1">
-                            <SectionTitle as="h3" marker="hex">
-                                {role}
-                            </SectionTitle>
-                            <span className="text-xs text-muted-foreground">
-                                {members.length}
-                            </span>
-                        </div>
-                        <ul className="flex flex-col gap-1">
-                            {members.map((npc) => (
-                                <li key={npc.name}>
-                                    <button
-                                        type="button"
-                                        aria-pressed={selected.has(npc.name)}
-                                        aria-disabled={unavailable(npc)}
-                                        onClick={() => pick(npc)}
-                                        className={cn(
-                                            'flex w-full items-center justify-between gap-2 border bg-background px-2 py-1 text-left text-sm transition hover:border-primary aria-disabled:cursor-not-allowed aria-disabled:text-muted-foreground aria-disabled:hover:border-border aria-pressed:border-primary aria-pressed:bg-primary/10 aria-pressed:text-primary aria-pressed:shadow-[inset_3px_0_0_var(--primary)]',
-                                            searching &&
-                                                !isMatch(npc) &&
-                                                'opacity-30',
-                                            isMatch(npc) &&
-                                                'ring-2 ring-foreground',
-                                        )}
-                                    >
-                                        <span className="truncate">
-                                            {npc.name}
-                                        </span>
-                                        <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
-                                            {percent(oddsAgainst(npc).hit)}
-                                        </span>
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                    </section>
+            <div className="grid gap-x-4 @xl:grid-cols-3">
+                {roleColumns(npcs).map((column, index) => (
+                    // The columns never reorder, so their position works as a key
+                    <div key={index} className="flex flex-col">
+                        {column.map(([role, members]) => (
+                            <section key={role} className="mb-4">
+                                <div className="mb-1.5 flex items-baseline justify-between gap-2 border-b pb-1">
+                                    <SectionTitle as="h3" marker="hex">
+                                        {role}
+                                    </SectionTitle>
+                                    <span className="text-xs text-muted-foreground">
+                                        {members.length}
+                                    </span>
+                                </div>
+                                <ul className="flex flex-col gap-1">
+                                    {members.map((npc) => (
+                                        <li key={npc.name}>
+                                            <button
+                                                type="button"
+                                                aria-pressed={selected.has(
+                                                    npc.name,
+                                                )}
+                                                aria-disabled={unavailable(npc)}
+                                                onClick={() => pick(npc)}
+                                                className={cn(
+                                                    'flex w-full items-center justify-between gap-2 border bg-background px-2 py-1 text-left text-sm transition hover:border-primary aria-disabled:cursor-not-allowed aria-disabled:text-muted-foreground aria-disabled:hover:border-border aria-pressed:border-primary aria-pressed:bg-primary/10 aria-pressed:text-primary aria-pressed:shadow-[inset_3px_0_0_var(--primary)]',
+                                                    searching &&
+                                                        !isMatch(npc) &&
+                                                        'opacity-30',
+                                                    isMatch(npc) &&
+                                                        'ring-2 ring-foreground',
+                                                )}
+                                            >
+                                                <span className="truncate">
+                                                    {npc.name}
+                                                </span>
+                                                <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
+                                                    {percent(
+                                                        oddsAgainst(npc).hit,
+                                                    )}
+                                                </span>
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </section>
+                        ))}
+                    </div>
                 ))}
             </div>
         </section>

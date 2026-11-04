@@ -9,17 +9,12 @@ export const MAX_TARGETS = 3
  */
 export type Target = TargetEffects & { id: string; name: string }
 
-/**
- * Everything the page remembers between visits.
- * The TargetEffects fields and `featured` are the old single-enemy design; Step E removes them
- */
-export type PageState = YourSettings &
-    TargetEffects & {
-        ruleset: Ruleset
-        tier: Tier
-        featured: string | null
-        targets: Target[]
-    }
+/** Everything the page remembers between visits */
+export type PageState = YourSettings & {
+    ruleset: Ruleset
+    tier: Tier
+    targets: Target[]
+}
 
 /** The range of each stepper, shared by the page's controls and by restoreState */
 export const LIMITS = {
@@ -43,11 +38,6 @@ export const DEFAULT_STATE: PageState = {
     otherDifficulty: 0,
     impaired: false,
     engaged: false,
-    cover: 'none',
-    lockOn: false,
-    prone: false,
-    invisible: false,
-    featured: null,
     targets: [],
 }
 
@@ -135,9 +125,7 @@ export function restoreState(saved: unknown): PageState {
             ? value
             : DEFAULT_STATE[key]
     }
-    const flag = (
-        key: 'impaired' | 'engaged' | 'lockOn' | 'prone' | 'invisible',
-    ): boolean => {
+    const flag = (key: 'impaired' | 'engaged'): boolean => {
         const value = s[key]
         return typeof value === 'boolean' ? value : DEFAULT_STATE[key]
     }
@@ -154,7 +142,6 @@ export function restoreState(saved: unknown): PageState {
             DEFAULT_STATE.ruleset,
         ),
         tier: oneOf(s.tier, [1, 2, 3] as const, DEFAULT_STATE.tier),
-        cover: oneOf(s.cover, COVERS, DEFAULT_STATE.cover),
         licenseLevel: whole('licenseLevel'),
         frameTechAttack: whole('frameTechAttack'),
         systems: whole('systems'),
@@ -163,10 +150,6 @@ export function restoreState(saved: unknown): PageState {
         otherDifficulty: whole('otherDifficulty'),
         impaired: flag('impaired'),
         engaged: flag('engaged'),
-        lockOn: flag('lockOn'),
-        prone: flag('prone'),
-        invisible: flag('invisible'),
-        featured: typeof s.featured === 'string' ? s.featured : null,
         targets: restoreTargets(s),
     }
 }

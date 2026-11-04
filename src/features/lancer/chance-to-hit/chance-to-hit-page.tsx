@@ -1,14 +1,20 @@
 import type { ReactNode } from 'react'
 import { ToolLayout } from '@/components/tool-layout'
 import { useApi } from '@/hooks/use-api'
-import { TargetEffects, YourEffects } from './effects-cards'
+import { YourEffects } from './effects-cards'
+import { EnemyCards, type EnemyCardData } from './enemy-cards'
+import { percent } from './format'
 import { NpcPicker } from './npc-picker'
 import type { LancerNpc, LancerNpcSets } from './npc-types'
-import { attackOdds, attackTotals, averageOdds, targetDefense } from './odds'
-import { AverageResult, FeaturedResult } from './results'
+import {
+    attackOdds,
+    attackTotals,
+    averageOdds,
+    targetDefense,
+    type TargetEffects,
+} from './odds'
 import { MAX_TARGETS, newTarget, type PageState } from './settings'
 import { SetupBar } from './setup-bar'
-import { TotalsCard } from './totals-card'
 import { usePageState } from './use-page-state'
 
 const RULESET_NAMES = { original: 'Original', rebake: 'Rebake' } as const
@@ -31,8 +37,6 @@ function oddsFor(
 export function ChanceToHitPage() {
     const npcs = useApi<LancerNpcSets>('/api/lancer/npcs')
     const { state: settings, update } = usePageState()
-    // Temporary until Step E: the page still has one set of target effects, stored in settings itself
-    const totals = attackTotals(settings, settings)
 
     let enemies: ReactNode = null
     if (npcs.state.status === 'error') {
@@ -48,27 +52,68 @@ export function ChanceToHitPage() {
         const list = npcs.state.data[settings.ruleset]
         const byName = new Map(list.map((npc) => [npc.name, npc]))
         // Each saved card with its NPC. Cards for enemies missing from this ruleset are skipped
-        const cards = settings.targets.flatMap((target) => {
+        const shown = settings.targets.flatMap((target) => {
             const npc = byName.get(target.name)
             return npc ? [{ target, npc }] : []
         })
-        const targets = cards.map((card) => card.target)
+        const targets = shown.map(({ target }) => target)
         const full = targets.length >= MAX_TARGETS
 
-        // The picker uses your effects alone, since each enemy's own effects apply only to its card
-        const pickerOdds = oddsFor(settings, attackTotals(settings), false)
-        const cardOdds = oddsFor(settings, totals, settings.invisible)
+        // Your effects alone: for the picker and the average, since each enemy's own effects
+        // apply only to its card
+        const yourOdds = oddsFor(settings, attackTotals(settings), false)
+        const average = averageOdds(list.map(yourOdds))
 
-        // Adds an enemy, or removes it, copies and all. Saving the shown cards also drops any skipped ones
+        const cards: EnemyCardData[] = shown.map(({ target, npc }, index) => {
+            const totals = attackTotals(settings, target)
+            // Copies are numbered in order: Sniper, Sniper (2), Sniper (3)
+            const copy =
+                shown
+                    .slice(0, index)
+                    .filter((other) => other.target.name === target.name)
+                    .length + 1
+            return {
+                target,
+                npc,
+                title: copy === 1 ? npc.name : `${npc.name} (${copy})`,
+                odds: oddsFor(settings, totals, target.invisible)(npc),
+                netAccuracy: totals.netAccuracy,
+            }
+        })
+
+        // Every change saves the shown cards, which also drops any skipped ones
+        const setTargets = (next: typeof targets) => update({ targets: next })
+
+        // Adds an enemy, or removes it, copies and all
         const toggle = (name: string) => {
             if (targets.some((target) => target.name === name)) {
-                update({
-                    targets: targets.filter((target) => target.name !== name),
-                })
+                setTargets(targets.filter((target) => target.name !== name))
             } else if (!full) {
-                update({ targets: [...targets, newTarget(name)] })
+                setTargets([...targets, newTarget(name)])
             }
         }
+
+        const changeTarget = (id: string, changes: Partial<TargetEffects>) =>
+            setTargets(
+                targets.map((target) =>
+                    target.id === id ? { ...target, ...changes } : target,
+                ),
+            )
+
+        // The copy goes right after the card it was copied from
+        const duplicate = (id: string) => {
+            const index = targets.findIndex((target) => target.id === id)
+            if (index === -1 || full) return
+            const copy = newTarget(targets[index].name, targets[index])
+            setTargets([
+                ...targets.slice(0, index + 1),
+                copy,
+                ...targets.slice(index + 1),
+            ])
+        }
+
+        const remove = (id: string) =>
+            setTargets(targets.filter((target) => target.id !== id))
 
         enemies = (
             <>
@@ -76,38 +121,25 @@ export function ChanceToHitPage() {
                     npcs={list}
                     selected={new Set(targets.map((target) => target.name))}
                     full={full}
-                    oddsAgainst={pickerOdds}
+                    oddsAgainst={yourOdds}
                     onToggle={toggle}
+                    aside={
+                        <p className="text-xs text-muted-foreground">
+                            Average across all {list.length}{' '}
+                            {RULESET_NAMES[settings.ruleset]} NPCs at T
+                            {settings.tier}: {percent(average.hit)} to hit,{' '}
+                            {percent(average.crit)} to crit.
+                        </p>
+                    }
                 />
-                {/* Temporary until Step E replaces these with the section 04 cards */}
-                <div className="grid items-start gap-4 @2xl:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
-                    <div className="flex flex-col gap-4">
-                        <TargetEffects settings={settings} update={update} />
-                        <TotalsCard totals={totals} />
-                    </div>
-                    <div className="flex flex-col gap-4">
-                        {cards.length === 0 ? (
-                            <p className="border bg-card p-4 text-muted-foreground">
-                                No enemies selected, select up to {MAX_TARGETS}{' '}
-                                enemies above to see your chance of hitting
-                                each.
-                            </p>
-                        ) : (
-                            cards.map(({ target, npc }) => (
-                                <FeaturedResult
-                                    key={target.id}
-                                    npc={npc}
-                                    settings={settings}
-                                    odds={cardOdds(npc)}
-                                />
-                            ))
-                        )}
-                        <AverageResult
-                            label={`All ${list.length} ${RULESET_NAMES[settings.ruleset]} NPCs · Average`}
-                            odds={averageOdds(list.map(cardOdds))}
-                        />
-                    </div>
-                </div>
+                <EnemyCards
+                    cards={cards}
+                    attackType={settings.attackType}
+                    tier={settings.tier}
+                    onChange={changeTarget}
+                    onDuplicate={duplicate}
+                    onRemove={remove}
+                />
             </>
         )
     }

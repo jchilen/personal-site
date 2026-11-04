@@ -11,7 +11,7 @@ type ChoiceProps<T extends string> = {
     value: T
     options: [T, string][]
     onChange: (value: T) => void
-    // Shown but unchangeable, with dashed borders, for settings that don't apply right now
+    // Shown but unchangeable, faded and striped, for settings that don't apply right now
     locked?: boolean
 }
 
@@ -44,7 +44,8 @@ export function Choice<T extends string>({
                         className={cn(
                             choiceItemClass,
                             'px-3',
-                            locked && lockedClass,
+                            // Unlocked choices are a little brighter, so the faded locked ones stand apart
+                            locked ? lockedClass : 'text-foreground/80',
                         )}
                     >
                         {text}
