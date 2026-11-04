@@ -106,11 +106,9 @@ export function NpcPicker({
         <section className="@container flex flex-col gap-3 border bg-card p-4">
             <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
                 <div>
-                    <SectionTitle number={3}>Enemies</SectionTitle>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                        Pick up to {MAX_TARGETS}. Percentages use your effects
-                        only.
-                    </p>
+                    <SectionTitle number={3}>
+                        Enemies - Pick up to {MAX_TARGETS}
+                    </SectionTitle>
                 </div>
                 {aside}
             </div>
@@ -144,7 +142,7 @@ export function NpcPicker({
                         {column.map(([role, members]) => (
                             <section key={role} className="mb-4">
                                 <div className="mb-1.5 flex items-baseline justify-between gap-2 border-b pb-1">
-                                    <SectionTitle as="h3" marker="hex">
+                                    <SectionTitle as="h3" marker="slash">
                                         {role}
                                     </SectionTitle>
                                     <span className="text-xs text-muted-foreground">

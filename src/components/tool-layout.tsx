@@ -5,7 +5,7 @@ import { Eyebrow } from '@/components/eyebrow'
 type ToolLayoutProps = {
     eyebrow: string
     title: string
-    intro: string
+    intro?: string
     children: ReactNode
 }
 
@@ -25,7 +25,9 @@ export function ToolLayout({
                     <h1 className="mt-3 font-heading text-3xl font-semibold tracking-widest uppercase sm:text-5xl">
                         {title}
                     </h1>
-                    <p className="mt-4 text-muted-foreground">{intro}</p>
+                    {intro && (
+                        <p className="mt-4 text-muted-foreground">{intro}</p>
+                    )}
                 </header>
                 <div className="mt-10">{children}</div>
             </section>

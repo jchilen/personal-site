@@ -1,5 +1,7 @@
 import { SectionTitle } from '@/components/section-title'
 import { Choice } from './choice'
+import { IconInfoCircle } from '@tabler/icons-react'
+import { Note } from './effects-cards'
 import type { Tier } from './odds'
 import type { PageState } from './settings'
 
@@ -24,7 +26,7 @@ export function SetupBar({ settings, update }: SetupBarProps) {
             />
             <div className="flex flex-wrap gap-x-6 gap-y-4">
                 <Choice
-                    label="NPCs"
+                    label="NPC type"
                     value={settings.ruleset}
                     options={[
                         ['original', 'Original'],
@@ -43,6 +45,17 @@ export function SetupBar({ settings, update }: SetupBarProps) {
                     onChange={(tier) => update({ tier: Number(tier) as Tier })}
                 />
             </div>
+            {settings.attackType === 'tech' && (
+                // w-0 min-w-full: as wide as the card, without making the card any wider
+                <div className="flex w-0 min-w-full flex-col gap-1 border-t pt-3">
+                    <Note>Tech attacks ignore cover.</Note>
+                    <Note>Engaged doesn't affect tech attacks.</Note>
+                    <Note icon={IconInfoCircle}>
+                        Tech attacks can only crit with certain Frontier Foundry
+                        abilities.
+                    </Note>
+                </div>
+            )}
         </section>
     )
 }

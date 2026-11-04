@@ -51,7 +51,13 @@ export function Stepper({
             ) : (
                 <span className={fieldLabelClass}>{label}</span>
             )}
-            <div className="flex items-center gap-2.5">
+            <div
+                className={cn(
+                    'flex items-center gap-2.5',
+                    // The same height as a row of choice buttons, so the two line up side by side
+                    stacked && 'min-h-10',
+                )}
+            >
                 <div className="flex items-center gap-1">
                     <Button
                         type="button"

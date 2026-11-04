@@ -6,8 +6,8 @@ type SectionTitleProps = {
     as?: 'h2' | 'h3' | 'span'
     // The section's place on the page, shown as "01", "02"... in place of the marker
     number?: number
-    // The small mark before the title. The rest of the site uses the dash; the hex replaces it later
-    marker?: 'dash' | 'hex'
+    // The small mark before the title. The rest of the site uses the dash; the slash replaces it later
+    marker?: 'dash' | 'slash'
 }
 
 export function SectionTitle({
@@ -40,12 +40,14 @@ function TitleMarker({
             </span>
         )
     }
-    if (marker === 'hex') {
+    if (marker === 'slash') {
         return (
             <span
                 aria-hidden="true"
-                className="h-3.5 w-3 shrink-0 -translate-y-px bg-cat-tools [clip-path:polygon(50%_0,100%_25%,100%_75%,50%_100%,0_75%,0_25%)]"
-            />
+                className="font-mono tracking-normal text-primary"
+            >
+                //
+            </span>
         )
     }
     return (

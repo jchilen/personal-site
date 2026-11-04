@@ -4,7 +4,7 @@ import { fieldLabelClass } from '@/components/field-styles'
 import { SectionTitle } from '@/components/section-title'
 import { Button } from '@/components/ui/button'
 import { Choice } from './choice'
-import { EffectToggle, LockedNote } from './effects-cards'
+import { EffectToggle } from './effects-cards'
 import { chanceColor, percent } from './format'
 import type { LancerNpc } from './npc-types'
 import {
@@ -78,7 +78,7 @@ function EnemyCard({
         <article className="flex flex-col gap-3 border bg-background p-4">
             <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                    <SectionTitle as="h3" marker="hex">
+                    <SectionTitle as="h3" marker="slash">
                         {title} · T{tier}
                     </SectionTitle>
                     <p className="mt-1 text-sm text-muted-foreground">
@@ -171,7 +171,6 @@ type EnemyCardsProps = {
     cards: EnemyCardData[]
     attackType: AttackType
     tier: Tier
-    // The average across the whole ruleset, with your effects only
     onChange: (id: string, changes: Partial<TargetEffects>) => void
     onDuplicate: (id: string) => void
     onRemove: (id: string) => void
@@ -188,7 +187,6 @@ export function EnemyCards({
 }: EnemyCardsProps) {
     const [flashes, setFlashes] = useState(0)
     const full = cards.length >= MAX_TARGETS
-    const tech = attackType === 'tech'
 
     // Once there's room again, forget earlier flashes, so filling up later doesn't show a stale warning
     if (!full && flashes !== 0) setFlashes(0)
@@ -218,15 +216,6 @@ export function EnemyCards({
                     )}
                 </p>
             </div>
-            {tech && (
-                <div className="flex flex-col gap-1">
-                    <LockedNote>Tech attacks ignore cover.</LockedNote>
-                    <p className="text-sm text-muted-foreground">
-                        Tech attacks can only crit with certain Frontier Foundry
-                        abilities.
-                    </p>
-                </div>
-            )}
             {cards.length === 0 ? (
                 <p className="text-muted-foreground">
                     No enemies selected, select up to {MAX_TARGETS} enemies

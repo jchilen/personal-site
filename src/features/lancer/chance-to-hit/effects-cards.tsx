@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { cn } from 'cn'
-import { IconLock } from '@tabler/icons-react'
+import { IconLock, type Icon } from '@tabler/icons-react'
 import {
     choiceItemClass,
     fieldLabelClass,
@@ -97,13 +97,19 @@ export function EffectToggle({
     )
 }
 
-// Explains why a control is locked, so a faded, unclickable button never looks broken
-export function LockedNote({ children }: { children: ReactNode }) {
+type NoteProps = {
+    // Defaults to the lock, for notes that explain why a control is locked
+    icon?: Icon
+    children: ReactNode
+}
+
+// A short note beside the controls, so a faded, unclickable button never looks broken
+export function Note({ icon: NoteIcon = IconLock, children }: NoteProps) {
     return (
-        <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <IconLock
+        <p className="flex items-start gap-1.5 text-sm text-muted-foreground">
+            <NoteIcon
                 aria-hidden="true"
-                className="size-4 shrink-0 text-primary"
+                className="mt-0.5 size-4 shrink-0 text-primary"
             />
             {children}
         </p>
@@ -116,9 +122,9 @@ export function YourEffects({ settings, update }: CardProps) {
     return (
         // Its own container, so its two columns split based on this card's width, not the page's
         <section className="@container flex flex-col gap-3 border bg-card p-4">
-            <SectionTitle number={2}>Your effects</SectionTitle>
             <div className="grid gap-y-3 @lg:grid-cols-2">
-                <div className="flex flex-col gap-3 @lg:pr-5">
+                <div className="flex flex-col gap-4 @lg:pr-5">
+                    <SectionTitle number={2}>Your primary effects</SectionTitle>
                     <NumberStepper
                         label="License Level"
                         stacked
@@ -163,34 +169,34 @@ export function YourEffects({ settings, update }: CardProps) {
                             />
                         </>
                     )}
-                    <div className="flex flex-wrap gap-2">
-                        <EffectToggle
-                            label="Impaired"
-                            pressed={settings.impaired}
-                            onChange={(impaired) => update({ impaired })}
-                        />
-                        <EffectToggle
-                            label="Engaged"
-                            pressed={!tech && settings.engaged}
-                            onChange={(engaged) => update({ engaged })}
-                            locked={tech}
-                        />
+                    <div className="flex flex-col gap-1.5">
+                        <span className={fieldLabelClass}>
+                            Statuses and conditions
+                        </span>
+                        <div className="flex flex-wrap gap-2">
+                            <EffectToggle
+                                label="Impaired"
+                                pressed={settings.impaired}
+                                onChange={(impaired) => update({ impaired })}
+                            />
+                            <EffectToggle
+                                label="Engaged"
+                                pressed={!tech && settings.engaged}
+                                onChange={(engaged) => update({ engaged })}
+                                locked={tech}
+                            />
+                        </div>
                     </div>
-                    {tech && (
-                        <LockedNote>
-                            Engaged doesn't affect tech attacks.
-                        </LockedNote>
-                    )}
                 </div>
                 {/* The less common modifiers: smaller, and set apart by a line */}
                 <div className="flex flex-col gap-2 border-t pt-3 @lg:border-t-0 @lg:border-l @lg:pt-0 @lg:pl-5">
                     <h3
                         className={cn(
                             fieldLabelClass,
-                            'font-semibold text-foreground',
+                            'leading-5 font-semibold text-foreground',
                         )}
                     >
-                        Other effects
+                        Your other effects
                     </h3>
                     <NumberStepper
                         label="accuracy"

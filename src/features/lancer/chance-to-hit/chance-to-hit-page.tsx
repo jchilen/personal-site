@@ -147,11 +147,7 @@ export function ChanceToHitPage() {
     }
 
     return (
-        <ToolLayout
-            eyebrow="Lancer"
-            title="Chance-to-Hit Calculator"
-            intro="Find out your likelihood of hitting a given Lancer enemy."
-        >
+        <ToolLayout eyebrow="Lancer" title="Chance-to-Hit Calculator">
             <MethodologyLayout
                 title="How the odds are worked out"
                 methodology={<ChanceToHitMethodology />}
