@@ -22,10 +22,10 @@ export function ChanceToHitMethodology() {
                 the time, but it falls apart when you reach the extremes.
             </p>
             <p>
-                Say you roll a 1 against a 6 evasion target and need a 6 on your
-                Accuracy to hit. In the shortcut version, this always misses
+                Say your d20 rolls a 1 against a 6 evasion target, but you have +1 Accuracy. 
+                In the shortcut version, this always misses
                 because your roll becomes 4.5, but we know that isn't right
-                since a 5 or 6 still makes it hit.
+                since a 5 or 6 still makes it hit by bringing your attack up to 6 or 7.
             </p>
             <p>
                 So this calculator checks every combination instead - each
