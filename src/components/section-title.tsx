@@ -4,15 +4,54 @@ type SectionTitleProps = {
     children: ReactNode
     // Which element to render; defaults to h2. Nested headings use h3; inside a button, use span
     as?: 'h2' | 'h3' | 'span'
+    // The section's place on the page, shown as "01", "02"... in place of the marker
+    number?: number
+    // The small mark before the title. The rest of the site uses the dash; the hex replaces it later
+    marker?: 'dash' | 'hex'
 }
 
 export function SectionTitle({
     children,
     as: Heading = 'h2',
+    number,
+    marker = 'dash',
 }: SectionTitleProps) {
     return (
-        <Heading className="flex items-center gap-2 font-heading text-sm font-semibold tracking-eyebrow text-foreground uppercase before:h-0.5 before:w-3.5 before:shrink-0 before:bg-cat-tools">
+        <Heading className="flex items-center gap-2 font-heading text-sm font-semibold tracking-eyebrow text-foreground uppercase">
+            <TitleMarker number={number} marker={marker} />
             {children}
         </Heading>
+    )
+}
+
+// What sits before the title: the section number if there is one, otherwise the marker.
+// All three are decorative, so screen readers skip them and just read the title
+function TitleMarker({
+    number,
+    marker,
+}: Pick<SectionTitleProps, 'number' | 'marker'>) {
+    if (number !== undefined) {
+        return (
+            <span
+                aria-hidden="true"
+                className="font-mono text-cat-lancer tabular-nums"
+            >
+                {String(number).padStart(2, '0')}
+            </span>
+        )
+    }
+    if (marker === 'hex') {
+        return (
+            <span
+                aria-hidden="true"
+                                className="h-3.5 w-3 shrink-0 -translate-y-px bg-cat-tools [clip-path:polygon(50%_0,100%_25%,100%_75%,50%_100%,0_75%,0_25%)]"
+            />
+        )
+    }
+    return (
+        <span
+            aria-hidden="true"
+            className="h-0.5 w-3.5 shrink-0 bg-cat-tools"
+        />
     )
 }

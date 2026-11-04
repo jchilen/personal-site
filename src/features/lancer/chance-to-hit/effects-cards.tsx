@@ -94,7 +94,7 @@ export function YourEffects({ settings, update }: CardProps) {
 
     return (
         <section className="flex flex-col gap-3 border bg-card p-4">
-            <SectionTitle>Your effects</SectionTitle>
+            <SectionTitle number={2}>Your effects</SectionTitle>
             <NumberStepper
                 label={
                     <>
@@ -187,7 +187,7 @@ export function TargetEffects({ settings, update }: CardProps) {
 
     return (
         <section className="flex flex-col gap-3 border bg-card p-4">
-            <SectionTitle>Your target's effects</SectionTitle>
+            <SectionTitle marker="hex">Your target's effects</SectionTitle>
             <Choice
                 label="Cover"
                 value={tech ? 'none' : settings.cover}

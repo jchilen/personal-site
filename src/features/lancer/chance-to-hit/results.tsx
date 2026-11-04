@@ -25,7 +25,7 @@ export function FeaturedResult({
     return (
         <section aria-live="polite" className="border bg-card p-4">
             <div className="flex items-start justify-between gap-3">
-                <SectionTitle>
+                <SectionTitle marker="hex">
                     {npc.name} · T{settings.tier}
                 </SectionTitle>
                 {action}
@@ -74,7 +74,7 @@ type AverageResultProps = {
 export function AverageResult({ label, odds }: AverageResultProps) {
     return (
         <section className="border bg-card p-4">
-            <SectionTitle>{label}</SectionTitle>
+            <SectionTitle marker="hex">{label}</SectionTitle>
             <p className="mt-2 flex flex-wrap items-baseline gap-x-8 gap-y-1">
                 <span>
                     <span className="font-heading text-2xl font-semibold">
