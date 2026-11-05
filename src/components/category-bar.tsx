@@ -13,6 +13,7 @@ import { categories } from '@/data/categories'
 import { toggleVariants } from '@/components/ui/toggle'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { ProjectCard } from '@/components/project-card'
+import { floatingShadowClass } from '@/components/shadow-styles'
 
 type CategoryBarProps = {
     floating?: boolean
@@ -77,7 +78,7 @@ function HexShape() {
         <svg
             aria-hidden="true"
             viewBox="0 0 104 120"
-            className="absolute inset-0 -z-10 size-full overflow-visible fill-card stroke-current drop-shadow-[0_2px_6px_rgb(3_20_34/0.75)] dark:drop-shadow-[0_0_8px_rgb(0_0_0/0.99)]"
+            className={`absolute inset-0 -z-10 size-full overflow-visible fill-card stroke-current ${floatingShadowClass}`}
         >
             <polygon
                 points="52,0 104,30 104,90 52,120 0,90 0,30"

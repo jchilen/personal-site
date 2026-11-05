@@ -7,6 +7,7 @@ import { ContactSection } from './contact-section'
 import { HexField } from './hex-field'
 import { CategoryBar } from '@/components/category-bar'
 import { Button } from '@/components/ui/button'
+import { floatingShadowClass } from '@/components/shadow-styles'
 
 const SECTIONS = [
     { id: 'about', title: 'About' },
@@ -33,7 +34,7 @@ export function HomePage() {
                             asChild
                             variant="outline"
                             size="sm"
-                            className="pointer-events-auto bg-card drop-shadow-[0_2px_6px_rgb(3_20_34/0.75)] hover:border-primary hover:bg-card dark:drop-shadow-[0_0_8px_rgb(0_0_0/0.99)] dark:hover:bg-card"
+                            className={`pointer-events-auto bg-card hover:border-primary hover:bg-card dark:hover:bg-card ${floatingShadowClass}`}
                         >
                             <a href={`#${section.id}`}>
                                 {section.title}
