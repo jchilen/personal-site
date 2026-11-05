@@ -4,6 +4,7 @@ import { ToolLayout } from '@/components/tool-layout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { fieldLabelClass, underlineInputClass } from '@/components/field-styles'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { PanelHeader } from '@/components/panel-header'
 import { calculateSafeLead, type Possession } from './safe-lead'
@@ -13,11 +14,8 @@ import { MethodologyLayout } from '@/components/methodology-layout'
 import { SafeLeadMethodology } from './safe-lead-methodology'
 import { InlineLink } from '@/components/inline-link'
 
-const fieldLabelClass =
-    'font-heading text-xs tracking-eyebrow text-muted-foreground uppercase'
-
-const numberInputClass =
-    'h-auto rounded-none border-0 border-b-2 bg-transparent px-0 py-1 text-center font-heading text-2xl font-semibold shadow-none focus-visible:border-cat-tools focus-visible:ring-0 dark:bg-transparent'
+// The shared underline input, centered and larger, for the lead and clock
+const numberInputClass = `${underlineInputClass} text-center font-heading text-2xl font-semibold`
 
 const possessionItemClass =
     'corner-brackets h-10 border text-muted-foreground hover:bg-transparent hover:text-cat-tools data-[state=on]:bg-transparent data-[state=on]:text-cat-tools'
