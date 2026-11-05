@@ -12,12 +12,16 @@ export function ModeToggle({ className }: { className?: string }) {
 
     return (
         <Button
-            variant="inverse"
+            variant="framed"
             size="sm"
             className={className}
             onClick={() => setTheme(isDark ? 'light' : 'dark')}
         >
-            {isDark ? <IconSun /> : <IconMoon />}
+            {isDark ? (
+                <IconSun data-icon="inline-start" />
+            ) : (
+                <IconMoon data-icon="inline-start" />
+            )}
             {isDark ? 'Light Mode' : 'Dark Mode'}
         </Button>
     )
