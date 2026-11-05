@@ -78,7 +78,7 @@ function EnemyCard({
         <article className="flex flex-col gap-3 border bg-background p-4">
             <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                    <SectionTitle as="h3" marker="slash">
+                    <SectionTitle as="h3">
                         {title} · T{tier}
                     </SectionTitle>
                     <p className="mt-1 text-sm text-muted-foreground">

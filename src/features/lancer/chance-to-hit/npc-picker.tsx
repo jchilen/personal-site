@@ -142,9 +142,7 @@ export function NpcPicker({
                         {column.map(([role, members]) => (
                             <section key={role} className="mb-4">
                                 <div className="mb-1.5 flex items-baseline justify-between gap-2 border-b pb-1">
-                                    <SectionTitle as="h3" marker="slash">
-                                        {role}
-                                    </SectionTitle>
+                                    <SectionTitle as="h3">{role}</SectionTitle>
                                     <span className="text-xs text-muted-foreground">
                                         {members.length}
                                     </span>
