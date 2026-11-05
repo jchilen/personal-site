@@ -48,7 +48,7 @@ export function SafeLeadPage() {
             >
                 <div className="grid gap-4 @xl:grid-cols-2">
                     <Card size="sm" className="border shadow-none ring-0">
-                        <PanelHeader label="Input" number="01" />
+                        <PanelHeader label="Input" number={1} />
                         <CardContent className="flex flex-col gap-5">
                             <div className="grid grid-cols-[4.5rem_minmax(0,1fr)] items-center gap-3">
                                 <label

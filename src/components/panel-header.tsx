@@ -1,18 +1,17 @@
 import { CardHeader } from '@/components/ui/card'
-import { Eyebrow } from '@/components/eyebrow'
+import { SectionTitle } from '@/components/section-title'
 
 type PanelHeaderProps = {
     label: string
-    number: string
+    // The panel's place on the page, shown as "01", "02"...
+    number: number
 }
 
+/** A card's header row: its numbered title, above a dividing line */
 export function PanelHeader({ label, number }: PanelHeaderProps) {
     return (
         <CardHeader className="border-b">
-            <div className="flex justify-between">
-                <Eyebrow>{label}</Eyebrow>
-                <Eyebrow>{number}</Eyebrow>
-            </div>
+            <SectionTitle number={number}>{label}</SectionTitle>
         </CardHeader>
     )
 }

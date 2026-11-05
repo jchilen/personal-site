@@ -90,7 +90,7 @@ export function SafeLeadOutput({
             className="border shadow-none ring-0"
             aria-live="polite"
         >
-            <PanelHeader label="Output" number="02" />
+            <PanelHeader label="Input" number={1} />
             <CardContent className="flex flex-1 flex-col justify-center gap-5">
                 <div>
                     <p

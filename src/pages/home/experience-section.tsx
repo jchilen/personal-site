@@ -97,7 +97,7 @@ function ExperienceCard({
                 isDimmed && 'opacity-50',
             )}
         >
-            <PanelHeader label={entry.org} number={number} />
+            <PanelHeader label={entry.org} number={Number(number)} />
             <CardContent>
                 <CardTitle className="text-base">{entry.title}</CardTitle>
                 <p className="mt-3">{entry.summary}</p>
