@@ -3,6 +3,8 @@
     "name": "personal-site",
     "main": "./worker/index.ts",
     "compatibility_date": "2026-10-24",
+    "workers_dev": false,
+    "preview_urls": false,
     "routes": [
         { "pattern": "icenine.dev", "custom_domain": true },
         { "pattern": "www.icenine.dev", "custom_domain": true },
