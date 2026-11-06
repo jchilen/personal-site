@@ -174,9 +174,14 @@ export function NpcPicker({
                                                     npc.name,
                                                 )}
                                                 aria-disabled={unavailable(npc)}
-                                                // Like Enter, a successful pick clears the search
+                                                // Picking one of the search's matches clears the search, like Enter.
+                                                // Picking a faded name keeps it, so you can carry on with the same search
                                                 onClick={() => {
-                                                    if (pick(npc)) setQuery('')
+                                                    if (
+                                                        pick(npc) &&
+                                                        isMatch(npc)
+                                                    )
+                                                        setQuery('')
                                                 }}
                                                 className={cn(
                                                     'flex w-full items-center justify-between gap-2 border bg-background px-2 py-1 text-left text-sm transition hover:border-primary aria-disabled:cursor-not-allowed aria-disabled:text-muted-foreground aria-disabled:hover:border-border aria-pressed:border-primary aria-pressed:bg-primary/10 aria-pressed:text-primary aria-pressed:shadow-[inset_3px_0_0_var(--primary)]',
