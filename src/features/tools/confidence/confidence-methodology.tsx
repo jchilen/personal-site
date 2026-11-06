@@ -1,3 +1,5 @@
+import { eyebrowClass } from '@/components/text-styles'
+
 export function ConfidenceMethodology() {
     return (
         <>
@@ -17,9 +19,7 @@ export function ConfidenceMethodology() {
                 is what's left over:
             </p>
             <figure className="border bg-card px-5 py-4">
-                <figcaption className="font-heading text-xs tracking-eyebrow text-muted-foreground uppercase">
-                    The formula
-                </figcaption>
+                <figcaption className={eyebrowClass}>The formula</figcaption>
                 <p className="mt-3 text-center font-heading text-2xl font-semibold tracking-wide">
                     C = 1 − (1 − p)<sup>n</sup>
                 </p>
@@ -38,7 +38,7 @@ export function ConfidenceMethodology() {
                 backwards. Solving for n takes a logarithm:
             </p>
             <figure className="border bg-card px-5 py-4">
-                <figcaption className="font-heading text-xs tracking-eyebrow text-muted-foreground uppercase">
+                <figcaption className={eyebrowClass}>
                     Solving for kills
                 </figcaption>
                 <div className="mt-3 flex items-center justify-center gap-3 font-heading text-2xl font-semibold tracking-wide">

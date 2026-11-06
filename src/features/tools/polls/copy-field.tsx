@@ -1,8 +1,9 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { IconCheck, IconCopy } from '@tabler/icons-react'
-import { fieldLabelClass, underlineInputClass } from '@/components/field-styles'
+import { underlineInputClass } from '@/components/field-styles'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { eyebrowClass } from '@/components/text-styles'
 
 export function CopyField({ label, value }: { label: string; value: string }) {
     const id = useId()
@@ -27,7 +28,7 @@ export function CopyField({ label, value }: { label: string; value: string }) {
 
     return (
         <div>
-            <label htmlFor={id} className={fieldLabelClass}>
+            <label htmlFor={id} className={eyebrowClass}>
                 {label}
             </label>
             <div className="mt-1 flex items-center gap-2">

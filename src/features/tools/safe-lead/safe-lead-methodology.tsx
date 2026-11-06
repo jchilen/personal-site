@@ -1,4 +1,5 @@
 import { InlineLink } from '@/components/inline-link'
+import { eyebrowClass } from '@/components/text-styles'
 
 export function SafeLeadMethodology() {
     return (
@@ -31,9 +32,7 @@ export function SafeLeadMethodology() {
                 </li>
             </ol>
             <figure className="border bg-card px-5 py-4">
-                <figcaption className="font-heading text-xs tracking-eyebrow text-muted-foreground uppercase">
-                    The formula
-                </figcaption>
+                <figcaption className={eyebrowClass}>The formula</figcaption>
                 <p className="mt-3 text-center font-heading text-2xl font-semibold tracking-wide">
                     (L − 3 ± 0.5)<sup>2</sup> {'>'} T
                 </p>

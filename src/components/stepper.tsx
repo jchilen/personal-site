@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react'
 import { IconMinus, IconPlus } from '@tabler/icons-react'
 import { cn } from 'cn'
-import { fieldLabelClass } from '@/components/field-styles'
 import { Button } from '@/components/ui/button'
+import { eyebrowClass } from '@/components/text-styles'
 
 type StepperProps = {
     label: ReactNode
@@ -45,11 +45,11 @@ export function Stepper({
             )}
         >
             {labelFor ? (
-                <label htmlFor={labelFor} className={fieldLabelClass}>
+                <label htmlFor={labelFor} className={eyebrowClass}>
                     {label}
                 </label>
             ) : (
-                <span className={fieldLabelClass}>{label}</span>
+                <span className={eyebrowClass}>{label}</span>
             )}
             <div
                 className={cn(

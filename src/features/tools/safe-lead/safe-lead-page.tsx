@@ -4,9 +4,10 @@ import { ToolLayout } from '@/components/tool-layout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { fieldLabelClass, underlineInputClass } from '@/components/field-styles'
+import { underlineInputClass } from '@/components/field-styles'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { PanelHeader } from '@/components/panel-header'
+import { flatCardClass } from '@/components/card-styles'
 import { calculateSafeLead, POSSESSIONS, type Possession } from './safe-lead'
 import { isOneOf } from '@/lib/one-of'
 import { SafeLeadOutput } from './safe-lead-output'
@@ -14,9 +15,14 @@ import { useNumberField } from '@/hooks/use-number-field'
 import { MethodologyLayout } from '@/components/methodology-layout'
 import { SafeLeadMethodology } from './safe-lead-methodology'
 import { InlineLink } from '@/components/inline-link'
+import { eyebrowClass } from '@/components/text-styles'
 
-// The shared underline input, centered and larger, for the lead and clock
-const numberInputClass = `${underlineInputClass} text-center font-heading text-2xl font-semibold`
+// The shared underline input, centered and larger, for the lead and clock. Named apart from the
+// shared numberInputClass, which is right-aligned and smaller
+const largeNumberInputClass = `${underlineInputClass} text-center font-heading text-2xl font-semibold`
+
+// One input row with a fixed label column, so Lead, Ball, and Clock line up
+const rowClass = 'grid grid-cols-[4.5rem_minmax(0,1fr)] items-center gap-3'
 
 const possessionItemClass =
     'corner-brackets h-10 border text-muted-foreground hover:bg-transparent hover:text-cat-tools data-[state=on]:bg-transparent data-[state=on]:text-cat-tools'
@@ -46,13 +52,13 @@ export function SafeLeadPage() {
                 methodology={<SafeLeadMethodology />}
             >
                 <div className="grid gap-4 @xl:grid-cols-2">
-                    <Card size="sm" className="border shadow-none ring-0">
+                    <Card size="sm" className={flatCardClass}>
                         <PanelHeader label="Input" number={1} />
                         <CardContent className="flex flex-col gap-5">
-                            <div className="grid grid-cols-[4.5rem_minmax(0,1fr)] items-center gap-3">
+                            <div className={rowClass}>
                                 <label
                                     htmlFor="points-ahead"
-                                    className={fieldLabelClass}
+                                    className={eyebrowClass}
                                 >
                                     Lead
                                 </label>
@@ -72,7 +78,7 @@ export function SafeLeadPage() {
                                         id="points-ahead"
                                         inputMode="numeric"
                                         {...lead.inputProps}
-                                        className={numberInputClass}
+                                        className={largeNumberInputClass}
                                     />
                                     <Button
                                         variant="outline"
@@ -88,10 +94,10 @@ export function SafeLeadPage() {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-[4.5rem_minmax(0,1fr)] items-center gap-3">
+                            <div className={rowClass}>
                                 <span
                                     id="possession-label"
-                                    className={fieldLabelClass}
+                                    className={eyebrowClass}
                                 >
                                     Ball
                                 </span>
@@ -120,14 +126,14 @@ export function SafeLeadPage() {
                                 </ToggleGroup>
                             </div>
 
-                            <div className="grid grid-cols-[4.5rem_minmax(0,1fr)] items-center gap-3">
-                                <span className={fieldLabelClass}>Clock</span>
+                            <div className={rowClass}>
+                                <span className={eyebrowClass}>Clock</span>
                                 <div className="flex items-center gap-2">
                                     <Input
                                         aria-label="Minutes"
                                         inputMode="numeric"
                                         {...minutes.inputProps}
-                                        className={numberInputClass}
+                                        className={largeNumberInputClass}
                                     />
                                     <span
                                         aria-hidden="true"
@@ -139,7 +145,7 @@ export function SafeLeadPage() {
                                         aria-label="Seconds"
                                         inputMode="numeric"
                                         {...seconds.inputProps}
-                                        className={numberInputClass}
+                                        className={largeNumberInputClass}
                                     />
                                 </div>
                             </div>

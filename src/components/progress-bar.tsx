@@ -1,4 +1,5 @@
 import { cn } from 'cn'
+import { eyebrowClass } from './text-styles'
 
 type ProgressBarProps = {
     // 0 to 100
@@ -42,7 +43,7 @@ export function LabeledProgressBar({
 }: LabeledProgressBarProps) {
     return (
         <div>
-            <div className="flex justify-between font-heading text-xs tracking-eyebrow text-muted-foreground uppercase">
+            <div className={cn('flex justify-between', eyebrowClass)}>
                 <span>{label}</span>
                 <span className="tracking-normal text-foreground normal-case">
                     {value}

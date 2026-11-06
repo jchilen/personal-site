@@ -10,6 +10,7 @@ import {
 import { findWins, groupByStrength, sortWins } from './ranked-pairs'
 import type { PollResults } from './results'
 import { describeTiebreak } from './results-text'
+import { Eyebrow } from '@/components/eyebrow'
 
 type ResultsDetailsProps = {
     options: string[]
@@ -121,9 +122,7 @@ export function ResultsDetails({ options, results }: ResultsDetailsProps) {
                                     )}
                                 >
                                     {group.length > 1 && (
-                                        <p className="font-heading text-xs tracking-eyebrow text-muted-foreground uppercase">
-                                            Equally strong
-                                        </p>
+                                        <Eyebrow>Equally strong</Eyebrow>
                                     )}
                                     {group.map((win) => (
                                         <p key={`${win.winner}-${win.loser}`}>

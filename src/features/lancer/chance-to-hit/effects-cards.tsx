@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react'
 import { cn } from 'cn'
-import { fieldLabelClass } from '@/components/field-styles'
 import { SectionTitle } from '@/components/section-title'
 import { Stepper } from '@/components/stepper'
 import { EffectToggle } from './effect-toggle'
 import { signed } from './format'
 import { grit } from './odds'
 import { LIMITS, type SettingsProps } from './settings'
+import { eyebrowClass } from '@/components/text-styles'
 
 type NumberStepperProps = {
     label: ReactNode
@@ -111,7 +111,7 @@ export function YourEffects({ settings, update }: SettingsProps) {
                         </>
                     )}
                     <div className="flex flex-col gap-1.5">
-                        <span className={fieldLabelClass}>
+                        <span className={eyebrowClass}>
                             Statuses and conditions
                         </span>
                         <div className="flex flex-wrap gap-2">
@@ -133,7 +133,7 @@ export function YourEffects({ settings, update }: SettingsProps) {
                 <div className="flex flex-col gap-2 border-t pt-3 @lg:border-t-0 @lg:border-l @lg:pt-0 @lg:pl-5">
                     <h3
                         className={cn(
-                            fieldLabelClass,
+                            eyebrowClass,
                             'leading-5 font-semibold text-foreground',
                         )}
                     >

@@ -1,3 +1,5 @@
+import { eyebrowClass } from '@/components/text-styles'
+
 const subheadingClass =
     'font-heading text-base font-semibold tracking-eyebrow uppercase'
 
@@ -27,7 +29,7 @@ export function PollsMethodology() {
                 agreed on.
             </p>
             <figure className="border bg-card px-5 py-4 text-base">
-                <figcaption className="font-heading text-xs tracking-eyebrow text-muted-foreground uppercase">
+                <figcaption className={eyebrowClass}>
                     Example: 9 voters
                 </figcaption>
                 <ul className="mt-3 space-y-1">

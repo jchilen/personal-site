@@ -14,11 +14,15 @@ import {
     type ExperienceEntry,
     type StageId,
 } from './experience'
+import { flatCardClass } from '@/components/card-styles'
+import { eyebrowClass } from '@/components/text-styles'
 
 const STAGE_IDS = CAREER_STAGES.map((stage) => stage.id)
 
-const stageItemClass =
-    'corner-brackets h-auto gap-2 px-3 py-2 font-heading text-xs tracking-eyebrow text-muted-foreground uppercase hover:bg-transparent hover:text-foreground data-[state=on]:bg-transparent data-[state=on]:text-foreground dark:data-[state=on]:text-primary'
+const stageItemClass = cn(
+    eyebrowClass,
+    'corner-brackets h-auto gap-2 px-3 py-2 hover:bg-transparent hover:text-foreground data-[state=on]:bg-transparent data-[state=on]:text-foreground dark:data-[state=on]:text-primary',
+)
 
 export function ExperienceSection() {
     const [selectedStage, setSelectedStage] = useState<StageId | null>(null)
@@ -96,7 +100,8 @@ function ExperienceCard({
             size="sm"
             onClick={() => setIsOpen(!isOpen)}
             className={cn(
-                'cursor-pointer border shadow-none ring-0 transition-[opacity,border-color] duration-200 hover:border-muted-foreground/50',
+                flatCardClass,
+                'cursor-pointer transition-[opacity,border-color] duration-200 hover:border-muted-foreground/50',
                 isHighlighted && 'border-primary hover:border-primary',
                 isDimmed && 'opacity-50',
             )}

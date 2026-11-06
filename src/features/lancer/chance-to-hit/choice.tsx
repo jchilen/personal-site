@@ -1,10 +1,7 @@
 import { cn } from 'cn'
-import {
-    choiceItemClass,
-    fieldLabelClass,
-    lockedClass,
-} from '@/components/field-styles'
+import { choiceItemClass, lockedClass } from '@/components/field-styles'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { eyebrowClass } from '@/components/text-styles'
 
 type ChoiceProps<T extends string> = {
     label: string
@@ -26,7 +23,7 @@ export function Choice<T extends string>({
 }: ChoiceProps<T>) {
     return (
         <div className="flex flex-col gap-1.5">
-            <span className={fieldLabelClass}>{label}</span>
+            <span className={eyebrowClass}>{label}</span>
             <ToggleGroup
                 type="single"
                 aria-label={label}

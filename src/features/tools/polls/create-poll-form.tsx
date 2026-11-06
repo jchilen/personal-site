@@ -1,7 +1,6 @@
 import { useId, useState } from 'react'
 import { IconPlus, IconX } from '@tabler/icons-react'
 import {
-    fieldLabelClass,
     numberInputClass,
     underlineInputClass,
 } from '@/components/field-styles'
@@ -19,6 +18,7 @@ import {
     POLL_LIMITS,
     validateNewPoll,
 } from './poll-rules'
+import { eyebrowClass } from '@/components/text-styles'
 
 type OptionRow = { id: string; text: string }
 
@@ -90,7 +90,7 @@ export function CreatePollForm({
             <section className="flex flex-col gap-3 p-4">
                 <SectionTitle>New poll</SectionTitle>
                 <div>
-                    <label htmlFor={`${id}-title`} className={fieldLabelClass}>
+                    <label htmlFor={`${id}-title`} className={eyebrowClass}>
                         Question
                     </label>
                     <Input
@@ -161,7 +161,7 @@ export function CreatePollForm({
 
             <section className="flex flex-col gap-4 p-4">
                 <div className="grid grid-cols-[minmax(0,1fr)_5rem] items-center gap-3">
-                    <label htmlFor={`${id}-voters`} className={fieldLabelClass}>
+                    <label htmlFor={`${id}-voters`} className={eyebrowClass}>
                         Expected voters
                     </label>
                     <Input

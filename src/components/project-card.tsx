@@ -11,6 +11,8 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card'
+import { flatCardClass } from './card-styles'
+import { eyebrowClass } from './text-styles'
 
 type ProjectCardProps = {
     item: CardItem
@@ -49,14 +51,15 @@ export function ProjectCard({
             <Card
                 size="sm"
                 className={cn(
-                    'h-full gap-4 border shadow-none ring-0 motion-reduce:animate-none',
+                    flatCardClass,
+                    'h-full gap-4 motion-reduce:animate-none',
                     header && 'pt-0!',
                     isLeaving ? 'animate-scan-conceal' : 'animate-scan-reveal',
                 )}
             >
                 {header}
                 <CardHeader className="gap-3">
-                    <div className="flex justify-between font-heading text-xs tracking-eyebrow text-muted-foreground uppercase">
+                    <div className={cn('flex justify-between', eyebrowClass)}>
                         <span>{label}</span>
                         <span>{number}</span>
                     </div>

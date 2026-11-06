@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { PanelHeader } from '@/components/panel-header'
 import { LabeledProgressBar } from '@/components/progress-bar'
 import type { Possession, SafeLeadResult } from './safe-lead'
+import { flatCardClass } from '@/components/card-styles'
 
 type Status = 'empty' | 'safe' | 'unsafe'
 
@@ -52,11 +53,7 @@ export function SafeLeadOutput({
           : `${result.safePercent}%`
 
     return (
-        <Card
-            size="sm"
-            className="border shadow-none ring-0"
-            aria-live="polite"
-        >
+        <Card size="sm" className={flatCardClass} aria-live="polite">
             <PanelHeader label="Result" number={2} />
             <CardContent className="flex flex-1 flex-col justify-center gap-5">
                 <div>

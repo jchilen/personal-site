@@ -1,5 +1,4 @@
 import { IconCopy, IconX } from '@tabler/icons-react'
-import { fieldLabelClass } from '@/components/field-styles'
 import { SectionTitle } from '@/components/section-title'
 import { Button } from '@/components/ui/button'
 import { Choice } from './choice'
@@ -15,6 +14,7 @@ import {
 } from './odds'
 import { MAX_TARGETS, type Target } from './settings'
 import { useLimitFlash } from './use-limit-flash'
+import { eyebrowClass } from '@/components/text-styles'
 
 /** Everything one enemy card shows */
 export type EnemyCardData = {
@@ -164,13 +164,13 @@ function EnemyCard({
                     >
                         {percent(odds.hit)}
                     </span>
-                    <span className={fieldLabelClass}>To hit</span>
+                    <span className={eyebrowClass}>To hit</span>
                 </p>
                 <p>
                     <span className="block font-heading text-3xl font-semibold">
                         {percent(odds.crit)}
                     </span>
-                    <span className={fieldLabelClass}>To crit</span>
+                    <span className={eyebrowClass}>To crit</span>
                 </p>
                 <NetDice net={netAccuracy} />
             </div>

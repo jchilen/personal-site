@@ -7,17 +7,14 @@ import { useNumberField, type NumberField } from '@/hooks/use-number-field'
 import { isOneOf } from '@/lib/one-of'
 import { LabeledProgressBar } from '@/components/progress-bar'
 import { SectionTitle } from '@/components/section-title'
-import {
-    choiceItemClass,
-    fieldLabelClass,
-    numberInputClass,
-} from '@/components/field-styles'
+import { choiceItemClass, numberInputClass } from '@/components/field-styles'
 import {
     chanceSummary,
     killsNeededSummary,
     type Summary,
 } from './calculator-summary'
 import { chanceAfter, formatPercent, percentToFraction } from './confidence'
+import { eyebrowClass } from '@/components/text-styles'
 
 const MODES = ['kills', 'chance'] as const
 type Mode = (typeof MODES)[number]
@@ -45,7 +42,7 @@ type FieldRowProps = {
 function FieldRow({ id, label, suffix, inputMode, field }: FieldRowProps) {
     return (
         <div className="grid grid-cols-[minmax(0,1fr)_7rem] items-center gap-3">
-            <label htmlFor={id} className={fieldLabelClass}>
+            <label htmlFor={id} className={eyebrowClass}>
                 {label}
             </label>
             <div className="flex items-baseline gap-1">
