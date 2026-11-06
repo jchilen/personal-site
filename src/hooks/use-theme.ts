@@ -16,11 +16,6 @@ const initialState: ThemeProviderState = {
 export const ThemeProviderContext =
     createContext<ThemeProviderState>(initialState)
 
-export function useTheme() {
-    const context = useContext(ThemeProviderContext)
-
-    if (context === undefined)
-        throw new Error('useTheme must be used within a ThemeProvider')
-
-    return context
+export function useTheme(): ThemeProviderState {
+    return useContext(ThemeProviderContext)
 }

@@ -33,9 +33,6 @@
     --ring: #ad9742;
     --radius: 0.625rem;
 
-    --brand: #465e9e;
-    --gold: #ad9742;
-    --gold-light: #c4ba40;
     --safe: #1b6b50;
     --unsafe: #b3261e;
 
@@ -75,7 +72,6 @@
     --input: #1e3a5f;
     --ring: #c4ba40;
 
-    --brand: #c4ba40;
     --safe: #5fd3b0;
     --unsafe: #f07f6f;
 
@@ -173,9 +169,6 @@
         }
     }
 
-    --color-brand: var(--brand);
-    --color-gold: var(--gold);
-    --color-gold-light: var(--gold-light);
     --color-safe: var(--safe);
     --color-unsafe: var(--unsafe);
     --color-cat-home: var(--cat-home);

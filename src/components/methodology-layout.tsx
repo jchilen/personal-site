@@ -34,7 +34,6 @@ const LAYOUTS = {
 type MethodologyLayoutProps = {
     title: string
     methodology: ReactNode
-    backLabel?: string
     defaultOpen?: boolean
     // Keeps the tool at the full page width, with the methodology opening beside it on big screens
     wide?: boolean
@@ -44,7 +43,6 @@ type MethodologyLayoutProps = {
 export function MethodologyLayout({
     title,
     methodology,
-    backLabel = 'Back to tool',
     defaultOpen = false,
     wide = false,
     children,
@@ -117,7 +115,7 @@ export function MethodologyLayout({
                             className={cn('mt-6 h-auto p-0', layout.belowOnly)}
                             onClick={() => toolRef.current?.scrollIntoView()}
                         >
-                            {backLabel}
+                            Back to tool
                             <IconArrowUp data-icon="inline-end" />
                         </Button>
                     </article>

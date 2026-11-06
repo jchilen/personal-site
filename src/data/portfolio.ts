@@ -21,7 +21,6 @@ export type PortfolioItem = CardItem & {
 }
 
 export const portfolio: PortfolioItem[] = [
-    // Note: "Analytical Article for SAP"
     {
         title: "W33's Windranger: Analyzing Shackleshot",
         source: 'Team Liquid',

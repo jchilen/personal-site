@@ -9,7 +9,7 @@ import { IconContext } from '@phosphor-icons/react'
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <BrowserRouter>
-            <ThemeProvider defaultTheme="system" storageKey="theme">
+            <ThemeProvider>
                 <IconContext.Provider value={{ weight: 'light' }}>
                     <App />
                 </IconContext.Provider>
