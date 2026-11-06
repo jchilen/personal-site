@@ -112,28 +112,31 @@ export function NpcPicker({
                 </div>
                 {aside}
             </div>
-            <div className="flex flex-col gap-1.5">
-                <Input
-                    type="search"
-                    placeholder="Search enemies"
-                    aria-label="Search enemies"
-                    value={query}
-                    onChange={(event) => setQuery(event.target.value)}
-                    onKeyDown={(event) => {
-                        // Enter picks the first match, so you can choose without the mouse
-                        if (event.key === 'Enter' && first) {
-                            event.preventDefault()
-                            if (pick(first)) setQuery('')
-                        }
-                    }}
-                    className={underlineInputClass}
-                />
-                <p
-                    aria-live="polite"
-                    className="min-h-4 text-xs text-muted-foreground"
-                >
-                    {status}
-                </p>
+            {/* The same three columns as the roles below, so the search box ends where Striker's names do */}
+            <div className="grid gap-x-4 @xl:grid-cols-3">
+                <div className="flex flex-col gap-1.5">
+                    <Input
+                        type="search"
+                        placeholder="Search enemies"
+                        aria-label="Search enemies"
+                        value={query}
+                        onChange={(event) => setQuery(event.target.value)}
+                        onKeyDown={(event) => {
+                            // Enter picks the first match, so you can choose without the mouse
+                            if (event.key === 'Enter' && first) {
+                                event.preventDefault()
+                                if (pick(first)) setQuery('')
+                            }
+                        }}
+                        className={underlineInputClass}
+                    />
+                    <p
+                        aria-live="polite"
+                        className="min-h-4 text-xs text-muted-foreground"
+                    >
+                        {status}
+                    </p>
+                </div>
             </div>
             <div className="grid gap-x-4 gap-y-1 @xl:grid-cols-3">
                 {roleColumns(npcs).map((column, index) => (
