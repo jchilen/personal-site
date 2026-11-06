@@ -48,7 +48,7 @@ export function HomePage() {
             <HomeSection id="about" number="01" title="About">
                 <p className="text-center text-lg">
                     I'm a software developer moving from test automation into
-                    full-time development. Bulding tools, automating drudgery,
+                    full-time development. Building tools, automating drudgery,
                     and enabling those around me to do what they love are the
                     things I do best.
                 </p>

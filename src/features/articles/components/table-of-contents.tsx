@@ -32,6 +32,8 @@ export function TableOfContents({ toc }: { toc: Toc }) {
             setActiveId(current)
         }
 
+        // Once on load too, for pages opened partway down (like a link to a heading)
+        updateActive()
         window.addEventListener('scroll', updateActive, { passive: true })
         return () => window.removeEventListener('scroll', updateActive)
     }, [toc])
