@@ -1,14 +1,9 @@
 import type { ReactNode } from 'react'
 import { cn } from 'cn'
-import { IconLock, type Icon } from '@tabler/icons-react'
-import {
-    choiceItemClass,
-    fieldLabelClass,
-    lockedClass,
-} from '@/components/field-styles'
+import { fieldLabelClass } from '@/components/field-styles'
 import { SectionTitle } from '@/components/section-title'
 import { Stepper } from '@/components/stepper'
-import { Toggle } from '@/components/ui/toggle'
+import { EffectToggle } from './effect-toggle'
 import { signed } from './format'
 import { grit } from './odds'
 import { LIMITS, type SettingsProps } from './settings'
@@ -59,61 +54,6 @@ function NumberStepper({
                 {showSign ? signed(value) : value}
             </output>
         </Stepper>
-    )
-}
-
-type EffectToggleProps = {
-    label: string
-    pressed: boolean
-    onChange: (pressed: boolean) => void
-    locked?: boolean
-}
-
-// An on/off effect, styled like the other choices
-export function EffectToggle({
-    label,
-    pressed,
-    onChange,
-    locked = false,
-}: EffectToggleProps) {
-    return (
-        <Toggle
-            pressed={pressed}
-            // A locked toggle can't change, so clicks (and Space or Enter) are ignored
-            onPressedChange={(next) => {
-                if (!locked) onChange(next)
-            }}
-            aria-disabled={locked}
-            className={cn(
-                choiceItemClass,
-                'px-3',
-                // Hovering a selected toggle softens its gold, a hint that clicking turns it off
-                locked
-                    ? lockedClass
-                    : 'text-foreground/80 data-[state=on]:hover:border-primary/60 data-[state=on]:hover:bg-primary/5',
-            )}
-        >
-            {label}
-        </Toggle>
-    )
-}
-
-type NoteProps = {
-    // Defaults to the lock, for notes that explain why a control is locked
-    icon?: Icon
-    children: ReactNode
-}
-
-// A short note beside the controls, so a faded, unclickable button never looks broken
-export function Note({ icon: NoteIcon = IconLock, children }: NoteProps) {
-    return (
-        <p className="flex items-start gap-1.5 text-sm text-muted-foreground">
-            <NoteIcon
-                aria-hidden="true"
-                className="mt-0.5 size-4 shrink-0 text-primary"
-            />
-            {children}
-        </p>
     )
 }
 

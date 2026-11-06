@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { useNumberField, type NumberField } from '@/hooks/use-number-field'
 import { isOneOf } from '@/lib/one-of'
+import { LabeledProgressBar } from '@/components/progress-bar'
 import { SectionTitle } from '@/components/section-title'
 import {
     choiceItemClass,
@@ -14,7 +15,6 @@ import {
 import {
     chanceSummary,
     killsNeededSummary,
-    type Milestone,
     type Summary,
 } from './calculator-summary'
 import { chanceAfter, formatPercent, percentToFraction } from './confidence'
@@ -60,25 +60,6 @@ function FieldRow({ id, label, suffix, inputMode, field }: FieldRowProps) {
                         {suffix}
                     </span>
                 )}
-            </div>
-        </div>
-    )
-}
-
-function MilestoneBar({ label, value, percent }: Milestone) {
-    return (
-        <div>
-            <div className="flex justify-between font-heading text-xs tracking-eyebrow text-muted-foreground uppercase">
-                <span>{label}</span>
-                <span className="tracking-normal text-foreground normal-case">
-                    {value}
-                </span>
-            </div>
-            <div aria-hidden="true" className="mt-1.5 h-2 bg-muted">
-                <div
-                    className="h-full bg-cat-tools transition-[width] duration-500 ease-out motion-reduce:transition-none"
-                    style={{ width: `${percent}%` }}
-                />
             </div>
         </div>
     )
@@ -208,9 +189,10 @@ export function ConfidenceCalculator({
                 {milestones.length > 0 ? (
                     <div className="mt-3 flex flex-col gap-3">
                         {milestones.map((milestone) => (
-                            <MilestoneBar
+                            <LabeledProgressBar
                                 key={milestone.label}
                                 {...milestone}
+                                fillClass="bg-cat-tools"
                             />
                         ))}
                     </div>

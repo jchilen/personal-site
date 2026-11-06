@@ -1,6 +1,7 @@
 import { cn } from 'cn'
 import { Card, CardContent } from '@/components/ui/card'
 import { PanelHeader } from '@/components/panel-header'
+import { LabeledProgressBar } from '@/components/progress-bar'
 import type { Possession, SafeLeadResult } from './safe-lead'
 
 type Status = 'empty' | 'safe' | 'unsafe'
@@ -24,40 +25,6 @@ const STATUS_FILL = {
     safe: 'bg-safe',
     unsafe: 'bg-unsafe',
 } satisfies Record<Status, string>
-
-type ComparisonBarProps = {
-    label: string
-    value: string
-    percent: number
-    fillClass: string
-}
-
-function ComparisonBar({
-    label,
-    value,
-    percent,
-    fillClass,
-}: ComparisonBarProps) {
-    return (
-        <div>
-            <div className="flex justify-between font-heading text-xs tracking-eyebrow text-muted-foreground uppercase">
-                <span>{label}</span>
-                <span className="tracking-normal text-foreground normal-case">
-                    {value}
-                </span>
-            </div>
-            <div aria-hidden="true" className="mt-1.5 h-2 bg-muted">
-                <div
-                    className={cn(
-                        'h-full transition-[width] duration-500 ease-out motion-reduce:transition-none',
-                        fillClass,
-                    )}
-                    style={{ width: `${percent}%` }}
-                />
-            </div>
-        </div>
-    )
-}
 
 export function SafeLeadOutput({
     result,
@@ -107,13 +74,13 @@ export function SafeLeadOutput({
                 </div>
 
                 <div className="flex flex-col gap-3">
-                    <ComparisonBar
+                    <LabeledProgressBar
                         label="Lead holds for"
                         value={result ? `${result.threshold.toFixed(2)}s` : '—'}
                         percent={holdsPercent}
                         fillClass={STATUS_FILL[status]}
                     />
-                    <ComparisonBar
+                    <LabeledProgressBar
                         label="Time left"
                         value={result ? `${secondsLeft}s` : '—'}
                         percent={timePercent}

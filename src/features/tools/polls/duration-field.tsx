@@ -2,40 +2,18 @@ import { useState } from 'react'
 import { cn } from 'cn'
 import { numberInputClass } from '@/components/field-styles'
 import { Input } from '@/components/ui/input'
-import { useNumberField, type NumberField } from '@/hooks/use-number-field'
+import type { NumberField } from '@/hooks/use-number-field'
 import { formatCloseTime } from './format-time'
 import { DURATION_RANGE_TEXT, POLL_LIMITS } from './poll-rules'
+import {
+    MAX_DAYS,
+    MAX_HOURS,
+    MAX_MINUTES,
+    MINUTES_PER_DAY,
+    MINUTES_PER_HOUR,
+    type Duration,
+} from './use-duration'
 import { Stepper } from '@/components/stepper'
-
-const MINUTES_PER_HOUR = 60
-const MINUTES_PER_DAY = 24 * 60
-const MAX_MINUTES = 55
-const MAX_HOURS = 23
-const MAX_DAYS = POLL_LIMITS.maxDurationMinutes / MINUTES_PER_DAY
-
-/** Three number fields that add up to one poll length, in minutes */
-export function useDuration(initialMinutes: number) {
-    const minutes = useNumberField({
-        max: MAX_MINUTES,
-        initial: initialMinutes % MINUTES_PER_HOUR,
-    })
-    const hours = useNumberField({
-        max: MAX_HOURS,
-        initial: Math.floor(initialMinutes / MINUTES_PER_HOUR) % 24,
-    })
-    const days = useNumberField({
-        max: MAX_DAYS,
-        initial: Math.floor(initialMinutes / MINUTES_PER_DAY),
-    })
-
-    const total =
-        minutes.number +
-        hours.number * MINUTES_PER_HOUR +
-        days.number * MINUTES_PER_DAY
-    return { minutes, hours, days, total }
-}
-
-type Duration = ReturnType<typeof useDuration>
 
 // The next value up or down. Snaps to the step first, so a typed 7 goes to 10 or 5, not 12 or 2
 function stepFrom(value: number, step: number, direction: 1 | -1) {

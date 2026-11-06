@@ -49,7 +49,7 @@
     --hex-3: #8fb2e2;
     --hex-4: #6f97d6;
 
-    /* Shared lightness and saturation for colors picked by hue (portfolio cards) */
+    /* Shared lightness and saturation for colors picked by hue (hueColor in src/lib) */
     --hue-lightness: 0.55;
     --hue-chroma: 0.13;
 }

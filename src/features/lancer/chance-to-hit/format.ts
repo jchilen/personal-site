@@ -1,3 +1,5 @@
+import { hueColor } from '@/lib/hue-color'
+
 export function percent(chance: number): string {
     return `${(chance * 100).toFixed(1)}%`
 }
@@ -15,12 +17,13 @@ const GREEN = 145
 
 /**
  * A color for a chance to hit: red at 0%, yellow at 50%, green at 100%, blending in between.
- * Built from the same lightness and chroma tokens as the portfolio cards, so it adjusts for dark mode
+ * Uses hueColor, like the portfolio cards, so it adjusts for dark mode
  */
 export function chanceColor(chance: number): string {
     const hue =
         chance < 0.5
             ? RED + (YELLOW - RED) * (chance / 0.5)
             : YELLOW + (GREEN - YELLOW) * ((chance - 0.5) / 0.5)
-    return `oklch(var(--hue-lightness) var(--hue-chroma) ${hue.toFixed(1)})`
+    // One decimal place is finer than anyone can see, and keeps the style value short
+    return hueColor(Math.round(hue * 10) / 10)
 }

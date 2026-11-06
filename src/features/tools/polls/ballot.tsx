@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { errorMessage, postJson } from '@/lib/api'
 import { shuffle } from '@/lib/random'
 import type { PollInfo } from './api-types'
+import { FormError } from './form-error'
 
 type BallotProps = {
     poll: PollInfo
@@ -144,11 +145,7 @@ export function Ballot({ poll, onVoted }: BallotProps) {
                     Your favorite goes first. Select an already ranked option to
                     put it back.
                 </p>
-                {error && (
-                    <p role="alert" className="text-sm text-destructive">
-                        {error}
-                    </p>
-                )}
+                <FormError message={error} />
                 <Button
                     type="button"
                     disabled={submitting}

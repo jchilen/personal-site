@@ -1,6 +1,7 @@
 import { ToolLayout } from '@/components/tool-layout'
 import { ProjectCard } from '@/components/project-card'
 import { portfolio } from '@/data/portfolio'
+import { hueColor } from '@/lib/hue-color'
 import { HexMosaic } from './hex-mosaic'
 
 export function PortfolioPage() {
@@ -15,7 +16,7 @@ export function PortfolioPage() {
                     <ProjectCard
                         key={item.href}
                         item={item}
-                        color={`oklch(var(--hue-lightness) var(--hue-chroma) ${item.hue})`}
+                        color={hueColor(item.hue)}
                         label={item.source}
                         actionLabel="Read article"
                         index={index}

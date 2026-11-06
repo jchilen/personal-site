@@ -11,7 +11,9 @@ import { Input } from '@/components/ui/input'
 import { useNumberField } from '@/hooks/use-number-field'
 import { errorMessage, postJson } from '@/lib/api'
 import type { CreatedPoll } from './api-types'
-import { DurationField, useDuration } from './duration-field'
+import { DurationField } from './duration-field'
+import { FormError } from './form-error'
+import { useDuration } from './use-duration'
 import {
     DEFAULT_DURATION_MINUTES,
     POLL_LIMITS,
@@ -172,11 +174,7 @@ export function CreatePollForm({
                 <p className="text-sm text-muted-foreground">
                     Used to show progress, like “3 of 5 voted.”
                 </p>
-                {error && (
-                    <p role="alert" className="text-sm text-destructive">
-                        {error}
-                    </p>
-                )}
+                <FormError message={error} />
                 <Button type="submit" disabled={submitting}>
                     {submitting ? 'Creating…' : 'Create poll'}
                 </Button>

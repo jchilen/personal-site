@@ -3,7 +3,7 @@ import { fieldLabelClass } from '@/components/field-styles'
 import { SectionTitle } from '@/components/section-title'
 import { Button } from '@/components/ui/button'
 import { Choice } from './choice'
-import { EffectToggle } from './effects-cards'
+import { EffectToggle } from './effect-toggle'
 import { chanceColor, percent } from './format'
 import type { LancerNpc } from './npc-types'
 import {

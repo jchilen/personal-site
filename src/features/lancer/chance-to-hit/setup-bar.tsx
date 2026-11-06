@@ -1,7 +1,7 @@
 import { SectionTitle } from '@/components/section-title'
 import { Choice } from './choice'
 import { IconInfoCircle } from '@tabler/icons-react'
-import { Note } from './effects-cards'
+import { Note } from './note'
 import { oneOf } from '@/lib/one-of'
 import { TIERS } from './odds'
 import type { SettingsProps } from './settings'

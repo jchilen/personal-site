@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router'
 import { IconRefresh } from '@tabler/icons-react'
+import { ProgressBar } from '@/components/progress-bar'
 import { SectionTitle } from '@/components/section-title'
 import { PollPageLayout } from './poll-page-layout'
 import { Button } from '@/components/ui/button'
@@ -9,6 +10,7 @@ import { errorMessage, postJson, requestJson } from '@/lib/api'
 import type { PollStatus } from './api-types'
 import { CopyField } from './copy-field'
 import { formatCloseTime } from './format-time'
+import { FormError } from './form-error'
 import { PollClosedMessage, PollMessage } from './poll-message'
 import { pollTitle } from './poll-title'
 
@@ -64,12 +66,7 @@ function PollManager({ id, status, onRefresh }: PollManagerProps) {
                         of {status.expectedVoters} voted
                     </span>
                 </p>
-                <div aria-hidden="true" className="h-2 bg-muted">
-                    <div
-                        className="h-full bg-cat-tools transition-[width] duration-500 ease-out motion-reduce:transition-none"
-                        style={{ width: `${percent}%` }}
-                    />
-                </div>
+                <ProgressBar percent={percent} fillClass="bg-cat-tools" />
                 {status.ballotCount > status.expectedVoters && (
                     <p className="text-sm text-muted-foreground">
                         More votes than expected. Every one still counts.
@@ -93,11 +90,7 @@ function PollManager({ id, status, onRefresh }: PollManagerProps) {
                         {formatCloseTime(status.expiresAt)}
                     </span>
                 </p>
-                {error && (
-                    <p role="alert" className="text-sm text-destructive">
-                        {error}
-                    </p>
-                )}
+                <FormError message={error} />
                 {confirming ? (
                     <div className="flex flex-wrap gap-2">
                         <Button
