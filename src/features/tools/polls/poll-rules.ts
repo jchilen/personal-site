@@ -13,6 +13,20 @@ export const POLL_LIMITS = {
 
 export const DEFAULT_DURATION_MINUTES = 24 * 60
 
+// "5 minutes", "1 hour", or "7 days": the largest unit that divides the length evenly
+function durationText(minutes: number): string {
+    const [count, unit] =
+        minutes % (24 * 60) === 0
+            ? [minutes / (24 * 60), 'day']
+            : minutes % 60 === 0
+              ? [minutes / 60, 'hour']
+              : [minutes, 'minute']
+    return `${count} ${unit}${count === 1 ? '' : 's'}`
+}
+
+// The allowed poll lengths in words, built from POLL_LIMITS so the messages can't go stale
+export const DURATION_RANGE_TEXT = `from ${durationText(POLL_LIMITS.minDurationMinutes)} to ${durationText(POLL_LIMITS.maxDurationMinutes)}`
+
 export interface NewPoll {
     title: string
     options: string[]
@@ -94,7 +108,7 @@ export function validateNewPoll(input: unknown): Validation<NewPoll> {
         durationMinutes > POLL_LIMITS.maxDurationMinutes
     ) {
         return fail(
-            'Polls can stay open from 5 minutes to 7 days, in steps of 5 minutes',
+            `Polls can stay open ${DURATION_RANGE_TEXT}, in steps of ${durationText(POLL_LIMITS.durationStepMinutes)}`,
         )
     }
 

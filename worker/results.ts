@@ -6,7 +6,7 @@ import {
     computeResults,
     type PollResults,
 } from '../src/features/tools/polls/results'
-import { findAdminToken, isAdmin } from './admin'
+import { isAdmin, verifiedAdminToken } from './admin'
 import type { Env } from './env'
 import { errorResponse, type Params } from './http'
 import { isClosed, pollCookie, type PollRow } from './polls'
@@ -136,8 +136,8 @@ export async function claimAdmin(
     const poll = id ? await loadPoll(env, id) : null
     if (!id || !poll) return errorResponse(404, 'Poll not found')
 
-    const token = findAdminToken(request)
-    if (!token || !(await isAdmin(request, poll.admin_token_hash))) {
+    const token = await verifiedAdminToken(request, poll.admin_token_hash)
+    if (!token) {
         return errorResponse(403, "This admin link isn't valid")
     }
 

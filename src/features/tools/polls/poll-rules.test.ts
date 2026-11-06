@@ -73,6 +73,13 @@ describe('validateNewPoll', () => {
     ])('rejects %s', (_name, changes) => {
         expect(validateNewPoll(withChanges(changes)).ok).toBe(false)
     })
+
+    test('the poll length message is written out from POLL_LIMITS', () => {
+        expect(validateNewPoll(withChanges({ durationMinutes: 62 }))).toEqual({
+            ok: false,
+            error: 'Polls can stay open from 5 minutes to 7 days, in steps of 5 minutes',
+        })
+    })
 })
 
 describe('validateBallot', () => {

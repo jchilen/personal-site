@@ -4,7 +4,7 @@ import { numberInputClass } from '@/components/field-styles'
 import { Input } from '@/components/ui/input'
 import { useNumberField, type NumberField } from '@/hooks/use-number-field'
 import { formatCloseTime } from './format-time'
-import { POLL_LIMITS } from './poll-rules'
+import { DURATION_RANGE_TEXT, POLL_LIMITS } from './poll-rules'
 import { Stepper } from '@/components/stepper'
 
 const MINUTES_PER_HOUR = 60
@@ -150,7 +150,7 @@ export function DurationField({
                         if you create it now.
                     </>
                 ) : (
-                    'Choose a length from 5 minutes to 7 days.'
+                    `Choose a length ${DURATION_RANGE_TEXT}.`
                 )}
             </p>
         </div>
