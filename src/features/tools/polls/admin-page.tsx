@@ -152,12 +152,25 @@ export function AdminPage() {
     // then take it out of the address bar, so it can't be copied or shared by accident
     useEffect(() => {
         if (!token) return
+        const controller = new AbortController()
+
         requestJson(`/api/polls/${id}/claim`, {
             method: 'POST',
             headers: { Authorization: `Bearer ${token}` },
+            signal: controller.signal,
         })
-            .catch((error: unknown) => setClaimError(errorMessage(error)))
-            .finally(() => navigate(pathname, { replace: true }))
+            .catch((error: unknown) => {
+                if (!controller.signal.aborted)
+                    setClaimError(errorMessage(error))
+            })
+            .finally(() => {
+                if (!controller.signal.aborted)
+                    navigate(pathname, { replace: true })
+            })
+
+        // Leaving the page before the claim finishes cancels it, so it can't pull you back here
+        // afterward. (In development, StrictMode runs effects twice; this also drops the first run)
+        return () => controller.abort()
     }, [id, token, pathname, navigate])
 
     // While a token is waiting to be traded in, hold off, so the status request carries the new cookie

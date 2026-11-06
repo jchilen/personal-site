@@ -1,4 +1,4 @@
-import { useId, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { IconCheck, IconCopy } from '@tabler/icons-react'
 import { fieldLabelClass, underlineInputClass } from '@/components/field-styles'
 import { Button } from '@/components/ui/button'
@@ -7,13 +7,19 @@ import { Input } from '@/components/ui/input'
 export function CopyField({ label, value }: { label: string; value: string }) {
     const id = useId()
     const [copied, setCopied] = useState(false)
+    // The pending "back to Copy" timer, so a second click restarts it instead of being cut short
+    const resetTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
+
+    // Stop the timer if the field goes away first
+    useEffect(() => () => clearTimeout(resetTimer.current), [])
 
     function copy() {
         navigator.clipboard
             .writeText(value)
             .then(() => {
                 setCopied(true)
-                setTimeout(() => setCopied(false), 2000)
+                clearTimeout(resetTimer.current)
+                resetTimer.current = setTimeout(() => setCopied(false), 2000)
             })
             // If the browser blocks clipboard access, the link can still be selected and copied by hand
             .catch(() => {})

@@ -59,7 +59,7 @@ export function ExperienceSection() {
                     <ExperienceCard
                         key={entry.title}
                         entry={entry}
-                        number={String(index + 1).padStart(2, '0')}
+                        number={index + 1}
                         isHighlighted={entry.stage === selectedStage}
                         isDimmed={
                             selectedStage !== null &&
@@ -74,7 +74,7 @@ export function ExperienceSection() {
 
 type ExperienceCardProps = {
     entry: ExperienceEntry
-    number: string
+    number: number
     isHighlighted: boolean
     isDimmed: boolean
 }
@@ -97,7 +97,7 @@ function ExperienceCard({
                 isDimmed && 'opacity-50',
             )}
         >
-            <PanelHeader label={entry.org} number={Number(number)} />
+            <PanelHeader label={entry.org} number={number} />
             <CardContent>
                 <CardTitle className="text-base">{entry.title}</CardTitle>
                 <p className="mt-3">{entry.summary}</p>

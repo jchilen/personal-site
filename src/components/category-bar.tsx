@@ -1,6 +1,7 @@
 import {
     Fragment,
     useEffect,
+    useEffectEvent,
     useRef,
     useState,
     type CSSProperties,
@@ -154,18 +155,22 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
         }
     }
 
+    // An Effect Event always sees this render's state, so the listener below never acts on an
+    // older render's selectCategory, even though the effect doesn't re-run for every change
+    const onDocumentClick = useEffectEvent((event: MouseEvent) => {
+        if (!dockRef.current?.contains(event.target as Node)) {
+            selectCategory(null)
+        }
+    })
+
+    // While the floating panel is open, a click anywhere outside the dock closes it
     useEffect(() => {
         if (!floating || selectedId === null) return
 
-        function handleClickOutside(event: Event) {
-            if (!dockRef.current?.contains(event.target as Node)) {
-                selectCategory(null)
-            }
-        }
-
-        document.addEventListener('click', handleClickOutside)
-        return () => document.removeEventListener('click', handleClickOutside)
-    })
+        const handleClick = (event: MouseEvent) => onDocumentClick(event)
+        document.addEventListener('click', handleClick)
+        return () => document.removeEventListener('click', handleClick)
+    }, [floating, selectedId])
 
     return (
         <div

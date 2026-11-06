@@ -7,6 +7,7 @@ import { percent } from './format'
 import type { LancerNpc } from './npc-types'
 import type { AttackOdds } from './odds'
 import { MAX_TARGETS } from './settings'
+import { useLimitFlash } from './use-limit-flash'
 
 // Where each role sits: three columns, with the bigger roles across the top
 const ROLE_COLUMNS = [
@@ -77,10 +78,8 @@ export function NpcPicker({
     aside,
 }: NpcPickerProps) {
     const [query, setQuery] = useState('')
-    // How many times an unavailable name was picked. Each new number remounts the warning, replaying its flash
-    const [flashes, setFlashes] = useState(0)
-    // Once there's room again, forget earlier flashes, so filling up later doesn't show a stale warning
-    if (!full && flashes !== 0) setFlashes(0)
+    // Flashes when an unavailable name is picked
+    const warning = useLimitFlash(full)
     const search = query.trim().toLowerCase()
     const searching = search !== ''
 
@@ -94,19 +93,19 @@ export function NpcPicker({
     // Adds or removes an enemy, and says whether it did. At the limit, a new name flashes the warning instead
     function pick(npc: LancerNpc): boolean {
         if (unavailable(npc)) {
-            setFlashes((count) => count + 1)
+            warning.flash()
             return false
         }
-        setFlashes(0)
+        warning.clear()
         onToggle(npc.name)
         return true
     }
 
     let status: ReactNode = null
-    if (full && flashes > 0) {
+    if (warning.visible) {
         status = (
             <span
-                key={flashes}
+                key={warning.count}
                 className="animate-flash motion-reduce:animate-none"
             >
                 {MAX_TARGETS} chosen: unselect one to choose another.

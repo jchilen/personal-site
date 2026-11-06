@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { IconCopy, IconX } from '@tabler/icons-react'
 import { fieldLabelClass } from '@/components/field-styles'
 import { SectionTitle } from '@/components/section-title'
@@ -15,6 +14,7 @@ import {
     type Tier,
 } from './odds'
 import { MAX_TARGETS, type Target } from './settings'
+import { useLimitFlash } from './use-limit-flash'
 
 /** Everything one enemy card shows */
 export type EnemyCardData = {
@@ -201,16 +201,13 @@ export function EnemyCards({
     onDuplicate,
     onRemove,
 }: EnemyCardsProps) {
-    const [flashes, setFlashes] = useState(0)
     const full = cards.length >= MAX_TARGETS
-
-    // Once there's room again, forget earlier flashes, so filling up later doesn't show a stale warning
-    if (!full && flashes !== 0) setFlashes(0)
+    const warning = useLimitFlash(full)
 
     // At the limit, a copy has nowhere to go, so the warning flashes instead
     function duplicate(id: string) {
         if (full) {
-            setFlashes((count) => count + 1)
+            warning.flash()
             return
         }
         onDuplicate(id)
@@ -222,9 +219,9 @@ export function EnemyCards({
             <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                 <SectionTitle number={4}>Results</SectionTitle>
                 <p aria-live="polite" className="text-xs text-muted-foreground">
-                    {full && flashes > 0 && (
+                    {warning.visible && (
                         <span
-                            key={flashes}
+                            key={warning.count}
                             className="animate-flash motion-reduce:animate-none"
                         >
                             {MAX_TARGETS} chosen: remove one to add a copy.
