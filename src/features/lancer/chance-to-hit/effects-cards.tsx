@@ -11,12 +11,7 @@ import { Stepper } from '@/components/stepper'
 import { Toggle } from '@/components/ui/toggle'
 import { signed } from './format'
 import { grit } from './odds'
-import { LIMITS, type PageState } from './settings'
-
-type CardProps = {
-    settings: PageState
-    update: (changes: Partial<PageState>) => void
-}
+import { LIMITS, type SettingsProps } from './settings'
 
 type NumberStepperProps = {
     label: ReactNode
@@ -122,7 +117,7 @@ export function Note({ icon: NoteIcon = IconLock, children }: NoteProps) {
     )
 }
 
-export function YourEffects({ settings, update }: CardProps) {
+export function YourEffects({ settings, update }: SettingsProps) {
     const tech = settings.attackType === 'tech'
 
     return (

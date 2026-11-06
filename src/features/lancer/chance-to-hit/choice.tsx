@@ -32,9 +32,11 @@ export function Choice<T extends string>({
                 aria-label={label}
                 value={value}
                 onValueChange={(next) => {
-                    // Clicking the selected button again sends '', which would leave nothing selected,
-                    // and a locked choice can't change at all
-                    if (next && !locked) onChange(next as T)
+                    // Radix sends a plain string, so find the option it belongs to. Clicking the
+                    // selected button again sends '', which matches none and leaves the choice as
+                    // it was, and a locked choice can't change at all
+                    const match = options.find(([option]) => option === next)
+                    if (match && !locked) onChange(match[0])
                 }}
                 className="flex flex-wrap gap-2"
             >

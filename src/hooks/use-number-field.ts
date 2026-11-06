@@ -6,12 +6,24 @@ type NumberFieldOptions = {
     decimal?: boolean // allow one decimal point, like 6.5
 }
 
+export type NumberField = {
+    number: number
+    setNumber: (next: number) => void
+    // Spread onto the <input>
+    inputProps: {
+        value: string
+        onFocus: () => void
+        onChange: (event: ChangeEvent<HTMLInputElement>) => void
+        onBlur: () => void
+    }
+}
+
 // A number input that can be emptied while editing and restores its previous value if left empty
 export function useNumberField({
     max,
     initial = 0,
     decimal = false,
-}: NumberFieldOptions) {
+}: NumberFieldOptions): NumberField {
     const [text, setText] = useState(String(initial))
     const [previous, setPrevious] = useState(String(initial)) // the value when editing started
 

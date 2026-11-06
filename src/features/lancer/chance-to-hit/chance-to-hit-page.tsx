@@ -5,14 +5,12 @@ import { YourEffects } from './effects-cards'
 import { ChanceToHitMethodology } from './chance-to-hit-methodology'
 import { EnemySection } from './enemy-section'
 import type { LancerNpcSets } from './npc-types'
-import type { PageState } from './settings'
+import type { SettingsProps } from './settings'
 import { SetupBar } from './setup-bar'
 import { usePageState } from './use-page-state'
 
-type EnemiesProps = {
+type EnemiesProps = SettingsProps & {
     npcs: ApiState<LancerNpcSets>
-    settings: PageState
-    update: (changes: Partial<PageState>) => void
 }
 
 // The enemy sections once the NPC list arrives, or why it couldn't load

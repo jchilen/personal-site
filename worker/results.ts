@@ -1,3 +1,7 @@
+import type {
+    PollResultsResponse,
+    PollStatus,
+} from '../src/features/tools/polls/api-types'
 import {
     computeResults,
     type PollResults,
@@ -82,7 +86,7 @@ export async function getStatus(
         ballotCount: row?.count ?? 0,
         expectedVoters: poll.expected_voters,
         closed: isClosed(poll, Date.now()),
-    })
+    } satisfies PollStatus)
 }
 
 export async function closePoll(
@@ -118,7 +122,7 @@ export async function getResults(
         options: JSON.parse(poll.options) as string[],
         expectedVoters: poll.expected_voters,
         results: await ensureResults(env, id, poll),
-    })
+    } satisfies PollResultsResponse)
 }
 
 // Trades the admin link's token for this browser's admin cookie, so the page can take the token

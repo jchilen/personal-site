@@ -1,4 +1,5 @@
-export type Possession = 'leading' | 'trailing'
+export const POSSESSIONS = ['leading', 'trailing'] as const
+export type Possession = (typeof POSSESSIONS)[number]
 
 export type SafeLeadResult = {
     rawValue: number

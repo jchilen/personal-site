@@ -4,15 +4,13 @@ import { percent } from './format'
 import { NpcPicker } from './npc-picker'
 import type { LancerNpc } from './npc-types'
 import { attackTotals, averageOdds, type TargetEffects } from './odds'
-import { MAX_TARGETS, newTarget, type PageState } from './settings'
+import { MAX_TARGETS, newTarget, type SettingsProps } from './settings'
 
 const RULESET_NAMES = { original: 'Original', rebake: 'Rebake' } as const
 
-type EnemySectionProps = {
+type EnemySectionProps = SettingsProps & {
     // Every NPC in the chosen ruleset
     npcs: LancerNpc[]
-    settings: PageState
-    update: (changes: Partial<PageState>) => void
 }
 
 /** Sections 03 and 04: the enemy picker, and a card for each chosen enemy */

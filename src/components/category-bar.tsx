@@ -107,7 +107,7 @@ function Connector() {
 
 // Sets the color a hex, its label, and its cards use
 function categoryColorStyle(color: string): CSSProperties {
-    return { '--category-color': color } as CSSProperties
+    return { '--category-color': color }
 }
 
 type HomeHexProps = {

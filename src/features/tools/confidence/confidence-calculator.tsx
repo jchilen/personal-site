@@ -3,7 +3,8 @@ import { IconX } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { useNumberField } from '@/hooks/use-number-field'
+import { useNumberField, type NumberField } from '@/hooks/use-number-field'
+import { isOneOf } from '@/lib/one-of'
 import { SectionTitle } from '@/components/section-title'
 import {
     choiceItemClass,
@@ -18,7 +19,8 @@ import {
 } from './calculator-summary'
 import { chanceAfter, formatPercent, percentToFraction } from './confidence'
 
-type Mode = 'kills' | 'chance'
+const MODES = ['kills', 'chance'] as const
+type Mode = (typeof MODES)[number]
 
 export type CalculatorStart = {
     dropChance: number
@@ -37,7 +39,7 @@ type FieldRowProps = {
     label: string
     suffix?: string
     inputMode: 'decimal' | 'numeric'
-    field: ReturnType<typeof useNumberField>
+    field: NumberField
 }
 
 function FieldRow({ id, label, suffix, inputMode, field }: FieldRowProps) {
@@ -164,7 +166,7 @@ export function ConfidenceCalculator({
                     aria-label="Calculator mode"
                     value={mode}
                     onValueChange={(value) => {
-                        if (value) setMode(value as Mode)
+                        if (isOneOf(value, MODES)) setMode(value)
                     }}
                     className="grid w-full grid-cols-2 gap-2"
                 >

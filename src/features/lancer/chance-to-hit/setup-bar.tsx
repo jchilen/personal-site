@@ -2,15 +2,11 @@ import { SectionTitle } from '@/components/section-title'
 import { Choice } from './choice'
 import { IconInfoCircle } from '@tabler/icons-react'
 import { Note } from './effects-cards'
-import type { Tier } from './odds'
-import type { PageState } from './settings'
+import { oneOf } from '@/lib/one-of'
+import { TIERS } from './odds'
+import type { SettingsProps } from './settings'
 
-type SetupBarProps = {
-    settings: PageState
-    update: (changes: Partial<PageState>) => void
-}
-
-export function SetupBar({ settings, update }: SetupBarProps) {
+export function SetupBar({ settings, update }: SettingsProps) {
     return (
         <section className="flex flex-col gap-4 border bg-card p-4">
             <SectionTitle number={1}>Setup</SectionTitle>
@@ -42,7 +38,11 @@ export function SetupBar({ settings, update }: SetupBarProps) {
                         ['2', 'T2'],
                         ['3', 'T3'],
                     ]}
-                    onChange={(tier) => update({ tier: Number(tier) as Tier })}
+                    onChange={(tier) =>
+                        update({
+                            tier: oneOf(Number(tier), TIERS, settings.tier),
+                        })
+                    }
                 />
             </div>
             {settings.attackType === 'tech' && (

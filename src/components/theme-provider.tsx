@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { ThemeProviderContext, type Theme } from '@/hooks/use-theme'
+import { THEMES, ThemeProviderContext, type Theme } from '@/hooks/use-theme'
+import { oneOf } from '@/lib/one-of'
 
 type ThemeProviderProps = {
     children: React.ReactNode
@@ -14,7 +15,8 @@ export function ThemeProvider({
     ...props
 }: ThemeProviderProps) {
     const [theme, setTheme] = useState<Theme>(
-        () => (localStorage.getItem(storageKey) as Theme) || defaultTheme,
+        // Anything else in storage (missing, edited by hand, or from an old version) means the default
+        () => oneOf(localStorage.getItem(storageKey), THEMES, defaultTheme),
     )
 
     useEffect(() => {

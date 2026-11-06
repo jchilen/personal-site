@@ -7,12 +7,15 @@ import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card'
 import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { cn } from '@/lib/utils'
+import { isOneOf } from '@/lib/one-of'
 import {
     CAREER_STAGES,
     EXPERIENCE,
     type ExperienceEntry,
     type StageId,
 } from './experience'
+
+const STAGE_IDS = CAREER_STAGES.map((stage) => stage.id)
 
 const stageItemClass =
     'corner-brackets h-auto gap-2 px-3 py-2 font-heading text-xs tracking-eyebrow text-muted-foreground uppercase hover:bg-transparent hover:text-foreground data-[state=on]:bg-transparent data-[state=on]:text-foreground dark:data-[state=on]:text-primary'
@@ -28,7 +31,8 @@ export function ExperienceSection() {
                 aria-label="Highlight experience by career stage"
                 value={selectedStage ?? ''}
                 onValueChange={(value) =>
-                    setSelectedStage(value ? (value as StageId) : null)
+                    // '' means the selected stage was clicked again, to turn the highlight off
+                    setSelectedStage(isOneOf(value, STAGE_IDS) ? value : null)
                 }
                 className="mb-10 grid w-full grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3"
             >

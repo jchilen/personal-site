@@ -41,7 +41,7 @@ export function ProjectCard({
         'group/link corner-brackets block w-60 text-left text-(--category-color) [--brackets-hover-opacity:1]',
         className,
     )
-    const linkStyle = { '--category-color': color } as CSSProperties
+    const linkStyle: CSSProperties = { '--category-color': color }
 
     // Everything inside the link, shared by both kinds of link below
     const content = (

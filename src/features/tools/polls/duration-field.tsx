@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { cn } from 'cn'
 import { numberInputClass } from '@/components/field-styles'
 import { Input } from '@/components/ui/input'
-import { useNumberField } from '@/hooks/use-number-field'
+import { useNumberField, type NumberField } from '@/hooks/use-number-field'
 import { formatCloseTime } from './format-time'
 import { POLL_LIMITS } from './poll-rules'
 import { Stepper } from '@/components/stepper'
@@ -47,7 +47,7 @@ function stepFrom(value: number, step: number, direction: 1 | -1) {
 type StepperRowProps = {
     id: string
     label: string
-    field: ReturnType<typeof useNumberField>
+    field: NumberField
     step: number
     max: number
     minutesEach: number

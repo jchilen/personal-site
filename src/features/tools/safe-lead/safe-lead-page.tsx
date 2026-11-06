@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input'
 import { fieldLabelClass, underlineInputClass } from '@/components/field-styles'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { PanelHeader } from '@/components/panel-header'
-import { calculateSafeLead, type Possession } from './safe-lead'
+import { calculateSafeLead, POSSESSIONS, type Possession } from './safe-lead'
+import { isOneOf } from '@/lib/one-of'
 import { SafeLeadOutput } from './safe-lead-output'
 import { useNumberField } from '@/hooks/use-number-field'
 import { MethodologyLayout } from '@/components/methodology-layout'
@@ -99,8 +100,8 @@ export function SafeLeadPage() {
                                     aria-labelledby="possession-label"
                                     value={possession}
                                     onValueChange={(value) => {
-                                        if (value)
-                                            setPossession(value as Possession)
+                                        if (isOneOf(value, POSSESSIONS))
+                                            setPossession(value)
                                     }}
                                     className="grid w-full grid-cols-2 gap-2"
                                 >

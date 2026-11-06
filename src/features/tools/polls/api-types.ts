@@ -1,4 +1,5 @@
-// The shapes our API returns, so pages can type what useApi gives them
+// The shapes our API returns. The Worker checks each response against these with `satisfies`,
+// so the pages' `useApi<T>` types can't drift from what the server sends
 import type { PollResults } from './results'
 
 export type MyPoll = {

@@ -1,5 +1,6 @@
 import type { Ruleset } from './npc-types'
-import type { TargetEffects, Tier, YourSettings } from './odds'
+import { oneOf } from '@/lib/one-of'
+import { TIERS, type TargetEffects, type Tier, type YourSettings } from './odds'
 
 export const MAX_TARGETS = 3
 
@@ -14,6 +15,12 @@ export type PageState = YourSettings & {
     ruleset: Ruleset
     tier: Tier
     targets: Target[]
+}
+
+/** Props for any part of the page that shows the settings and can change them */
+export type SettingsProps = {
+    settings: PageState
+    update: (changes: Partial<PageState>) => void
 }
 
 /** The range of each stepper, shared by the page's controls and by restoreState */
@@ -53,15 +60,6 @@ export function newTarget(name: string, effects?: TargetEffects): Target {
         prone: effects?.prone ?? false,
         invisible: effects?.invisible ?? false,
     }
-}
-
-// The value if it's one of the allowed options, otherwise the fallback
-function oneOf<T extends string | number>(
-    value: unknown,
-    options: readonly T[],
-    fallback: T,
-): T {
-    return options.includes(value as T) ? (value as T) : fallback
 }
 
 // One saved enemy card, or null if it has no usable name. Missing or broken effects fall back to
@@ -141,7 +139,7 @@ export function restoreState(saved: unknown): PageState {
             ['original', 'rebake'] as const,
             DEFAULT_STATE.ruleset,
         ),
-        tier: oneOf(s.tier, [1, 2, 3] as const, DEFAULT_STATE.tier),
+        tier: oneOf(s.tier, TIERS, DEFAULT_STATE.tier),
         licenseLevel: whole('licenseLevel'),
         frameTechAttack: whole('frameTechAttack'),
         systems: whole('systems'),

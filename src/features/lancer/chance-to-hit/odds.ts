@@ -2,7 +2,8 @@ import type { LancerNpc } from './npc-types'
 
 export type AttackType = 'weapon' | 'smart' | 'tech'
 export type Cover = 'none' | 'soft' | 'hard'
-export type Tier = 1 | 2 | 3
+export const TIERS = [1, 2, 3] as const
+export type Tier = (typeof TIERS)[number]
 
 /** Your side of the roll: the same against every enemy */
 export type YourSettings = {

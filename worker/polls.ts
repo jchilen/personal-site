@@ -1,3 +1,9 @@
+import type {
+    CreatedPoll,
+    MyPollsResponse,
+    PollInfo,
+    VotedPollsResponse,
+} from '../src/features/tools/polls/api-types'
 import {
     POLL_LIMITS,
     validateBallot,
@@ -75,7 +81,10 @@ export async function createPoll(
         cookie('poll_creator', creatorId, '/api/polls', LIST_COOKIE_DAYS),
     )
 
-    return Response.json({ id, adminToken }, { status: 201, headers })
+    return Response.json({ id, adminToken } satisfies CreatedPoll, {
+        status: 201,
+        headers,
+    })
 }
 
 // Cookies only this poll's API receives, lasting as long as the poll can be open
@@ -154,7 +163,7 @@ export async function getPoll(
         // A poll past its 7 days counts as closed even before anything has marked it closed
         closed: isClosed(row, Date.now()),
         hasVoted: ballot !== null,
-    })
+    } satisfies PollInfo)
 }
 
 export async function castBallot(
@@ -245,7 +254,8 @@ export async function listMyPolls(
 ): Promise<Response> {
     // No cookie means this browser hasn't created any polls: an empty list, not an error
     const creatorId = getCookie(request, 'poll_creator')
-    if (!creatorId) return Response.json({ polls: [] })
+    if (!creatorId)
+        return Response.json({ polls: [] } satisfies MyPollsResponse)
 
     const { results: rows } = await env.DB.prepare(
         `SELECT id, title, expected_voters, created_at, expires_at, closed_at,
@@ -267,7 +277,7 @@ export async function listMyPolls(
             createdAt: row.created_at,
             closed: isClosed(row, now),
         })),
-    })
+    } satisfies MyPollsResponse)
 }
 
 type VotedPollRow = Pick<PollRow, 'id' | 'title' | 'expires_at' | 'closed_at'>
@@ -277,7 +287,8 @@ export async function listVotedPolls(
     env: Env,
 ): Promise<Response> {
     const voterId = getCookie(request, 'poll_voter_id')
-    if (!voterId) return Response.json({ polls: [] })
+    if (!voterId)
+        return Response.json({ polls: [] } satisfies VotedPollsResponse)
 
     // Polls this browser created are already in Your polls, so they're left out here
     const creatorId = getCookie(request, 'poll_creator')
@@ -301,5 +312,5 @@ export async function listVotedPolls(
             title: row.title,
             closed: isClosed(row, now),
         })),
-    })
+    } satisfies VotedPollsResponse)
 }
