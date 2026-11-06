@@ -4,6 +4,7 @@ import {
     killsNeededSummary,
     type Summary,
 } from './calculator-summary'
+import { percentToFraction } from './confidence'
 
 // The milestones as they read on screen: [label, value]
 function shownMilestones(summary: Summary) {
@@ -43,19 +44,32 @@ describe('chanceSummary', () => {
             ['84 kills', '98.7%'],
         ])
     })
+
+    test('chances too close to 0% or 100% to show honestly at one decimal are capped', () => {
+        expect(chanceSummary(0.5, 20).readout?.value).toBe('>99.9%')
+        expect(chanceSummary(0.0001, 1).readout?.value).toBe('<0.1%')
+    })
 })
 
-test('unusable inputs give a hint instead of an answer, but kills-needed milestones only need a drop chance', () => {
-    const noConfidence = killsNeededSummary(0.05, null, 0)
-    expect(noConfidence.readout).toBeNull()
-    expect(noConfidence.milestones).toHaveLength(4)
+test('typed percents of 0 or 100 give a hint instead of an answer, but kills-needed milestones only need a drop chance', () => {
+    // 100% sure would take endless kills, so the calculator asks for something below it
+    const certain = killsNeededSummary(
+        percentToFraction(5),
+        percentToFraction(100),
+        100,
+    )
+    expect(certain.readout).toBeNull()
+    expect(certain.milestones).toHaveLength(4)
 
-    expect(killsNeededSummary(null, 0.9, 90).milestones).toEqual([])
-    expect(chanceSummary(0.05, 0)).toMatchObject({
+    expect(
+        killsNeededSummary(percentToFraction(0), percentToFraction(90), 90)
+            .milestones,
+    ).toEqual([])
+    expect(chanceSummary(percentToFraction(5), 0)).toMatchObject({
         readout: null,
         milestones: [],
     })
-    expect(chanceSummary(null, 28)).toMatchObject({
+    expect(chanceSummary(percentToFraction(100), 28)).toMatchObject({
         readout: null,
         milestones: [],
     })

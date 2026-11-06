@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import type { Ballot } from './ranked-pairs'
 import { computeResults, rankByPlace, type Place } from './results'
+import { describeTiebreak, winnerSummary } from './results-text'
 
 const OPTIONS = ['A', 'B', 'C']
 
@@ -99,5 +100,39 @@ describe('computeResults', () => {
             ballotCount: 0,
             places: [],
         })
+    })
+})
+
+// What the results page says, from the ballots all the way to its sentences
+describe('results text', () => {
+    // The winner's line, then one sentence per place a tiebreak decided
+    function shownText(places: Place[]) {
+        return [
+            winnerSummary(places[0]),
+            ...places
+                .map((place, index) => describeTiebreak(place, index + 1))
+                .filter((text) => text !== null),
+        ]
+    }
+
+    test('a clear winner: no tiebreak to explain', () => {
+        expect(
+            shownText(rankByPlace(OPTIONS, CLEAR_WINNER, FIRST_BALLOT)),
+        ).toEqual(['A clear winner, with no tiebreak needed.'])
+    })
+
+    test('the cycle goes to Borda, and the 5–5–5 cycle to a drawn ballot', () => {
+        expect(shownText(rankByPlace(OPTIONS, CYCLE, FIRST_BALLOT))).toEqual([
+            'A and B could each have won, so a tiebreaker decided it.',
+            '1st place: A and B could each have taken it, so Borda scores decided (A 8 and B 9).',
+        ])
+
+        // Every option scores 8, so Borda can't split them either
+        expect(
+            shownText(rankByPlace(OPTIONS, EVEN_CYCLE, FIRST_BALLOT)),
+        ).toEqual([
+            'A, B, and C were tied all the way, so a drawn ballot decided it.',
+            '1st place: A, B, and C could each have taken it, and the top Borda scores tied (A 8, B 8, and C 8), so ballot 1 was drawn using the seed. It ranked A highest of A, B, and C.',
+        ])
     })
 })
