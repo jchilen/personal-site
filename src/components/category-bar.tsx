@@ -10,7 +10,7 @@ import {
 } from 'react'
 import { useNavigate } from 'react-router'
 import { cn } from 'cn'
-import { categories } from '@/data/categories'
+import { categories, type Category } from '@/data/categories'
 import { toggleVariants } from '@/components/ui/toggle'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { ProjectCard } from '@/components/project-card'
@@ -105,27 +105,145 @@ function Connector() {
     )
 }
 
-export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
+// Sets the color a hex, its label, and its cards use
+function categoryColorStyle(color: string): CSSProperties {
+    return { '--category-color': color } as CSSProperties
+}
+
+type HomeHexProps = {
+    mini: boolean
+    onClick: () => void
+}
+
+// The Home hex looks like the category toggles, but it's a plain button: an action, not a choice
+function HomeHex({ mini, onClick }: HomeHexProps) {
+    if (!homeCategory) return null
+    return (
+        <button
+            type="button"
+            className={cn(
+                toggleVariants(),
+                itemClass,
+                hexItemClass,
+                mini ? miniHexClass : fullHexClass,
+            )}
+            style={categoryColorStyle(homeCategory.color)}
+            onClick={onClick}
+        >
+            <HexContent
+                icon={homeCategory.icon}
+                label={homeCategory.label}
+                mini={mini}
+            />
+        </button>
+    )
+}
+
+type CategoryTogglesProps = {
+    mini: boolean
+    selectedId: string | null
+    onSelect: (id: string | null) => void
+}
+
+// One toggle per section. The home page's full-size hexes are joined by connectors, and shift into
+// place on phones
+function CategoryToggles({ mini, selectedId, onSelect }: CategoryTogglesProps) {
+    return (
+        <ToggleGroup
+            type="single"
+            aria-label="Project categories"
+            className="contents"
+            value={selectedId ?? ''}
+            // Clicking the open category again sends '', which closes it
+            onValueChange={(value) => onSelect(value || null)}
+        >
+            {sectionCategories.map((category, index) => (
+                <Fragment key={category.id}>
+                    {!mini && index > 0 && <Connector />}
+                    <ToggleGroupItem
+                        value={category.id}
+                        className={cn(
+                            itemClass,
+                            hexItemClass,
+                            mini ? miniHexClass : fullHexClass,
+                            !mini &&
+                                index > 0 &&
+                                'max-sm:-mt-6 max-sm:translate-x-[calc(50%+0.25rem)]',
+                        )}
+                        style={categoryColorStyle(category.color)}
+                    >
+                        <HexContent
+                            icon={category.icon}
+                            label={category.label}
+                            mini={mini}
+                        />
+                    </ToggleGroupItem>
+                </Fragment>
+            ))}
+        </ToggleGroup>
+    )
+}
+
+type CategoryCardsProps = {
+    category: Category
+    isLeaving: boolean
+    onAnimationEnd: () => void
+    className: string
+    // Shown before the cards, like the floating panel's side label
+    children?: ReactNode
+}
+
+// The open category's cards, which animate in, and out again when another category is picked
+function CategoryCards({
+    category,
+    isLeaving,
+    onAnimationEnd,
+    className,
+    children,
+}: CategoryCardsProps) {
+    return (
+        <div
+            className={className}
+            style={categoryColorStyle(category.color)}
+            onAnimationEnd={onAnimationEnd}
+        >
+            {children}
+
+            {/* Up to 3 cards share one row; 4 or more go 2 per row (an odd last card centers) */}
+            <div
+                className={cn(
+                    'flex flex-wrap justify-center gap-4 *:pointer-events-auto',
+                    category.items.length >= 4 && 'max-w-124',
+                )}
+            >
+                {category.items.map((item, index) => (
+                    <ProjectCard
+                        key={item.title}
+                        item={item}
+                        color={category.color}
+                        label={category.label}
+                        actionLabel={
+                            item.actionLabel ?? category.actionLabel ?? 'Open'
+                        }
+                        index={index}
+                        isLeaving={isLeaving}
+                    />
+                ))}
+            </div>
+        </div>
+    )
+}
+
+/**
+ * Which category is picked, and which one's cards are on screen. The two differ while the old
+ * cards animate out, before the new ones take their place
+ */
+function useCategorySelection() {
     const [selectedId, setSelectedId] = useState<string | null>(null)
     const [displayedId, setDisplayedId] = useState<string | null>(null)
     const [isLeaving, setIsLeaving] = useState(false)
-
-    const cardAreaRef = useRef<HTMLDivElement>(null)
-    const navigate = useNavigate()
-    const dockRef = useRef<HTMLDivElement>(null)
     // Slides away while scrolling down, unless a category's cards are open
     const scrolledAway = useHideOnScroll()
-    const hidden = scrolledAway && selectedId === null
-
-    function scrollToCards() {
-        const cardArea = cardAreaRef.current
-        // The floating panel opens below the bar, so the page never needs to scroll for it
-        if (!cardArea || floating) return
-
-        if (cardArea.getBoundingClientRect().top < 136) {
-            cardArea.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        }
-    }
 
     const displayedCategory = categories.find(
         (category) => category.id === displayedId,
@@ -155,6 +273,113 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
         }
     }
 
+    // When the old cards finish animating out, the picked category's cards replace them
+    function finishLeaving() {
+        if (isLeaving) {
+            setDisplayedId(selectedId)
+            setIsLeaving(false)
+        }
+    }
+
+    return {
+        selectedId,
+        displayedCategory,
+        isLeaving,
+        hidden: scrolledAway && selectedId === null,
+        selectCategory,
+        finishLeaving,
+    }
+}
+
+// The home page: full-size hexes that stick to the top while scrolling, with the open category's
+// cards in the space below them, or `idle` while none is open
+function HomeCategoryBar({ idle }: { idle?: ReactNode }) {
+    const {
+        selectedId,
+        displayedCategory,
+        isLeaving,
+        hidden,
+        selectCategory,
+        finishLeaving,
+    } = useCategorySelection()
+    const cardAreaRef = useRef<HTMLDivElement>(null)
+
+    // Brings the cards back into view if their area has scrolled up under the bar
+    function scrollToCards() {
+        const cardArea = cardAreaRef.current
+        if (!cardArea) return
+
+        if (cardArea.getBoundingClientRect().top < 136) {
+            cardArea.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+    }
+
+    return (
+        <div className="pointer-events-none contents">
+            <div
+                className={cn(
+                    // On phones the home hexes don't stick, so they never slide away either
+                    'sticky top-4 z-10 mx-auto mt-10 w-fit max-sm:static max-sm:translate-y-0',
+                    headerMotionClass,
+                    hidden && hiddenHeaderClass,
+                )}
+            >
+                <nav
+                    aria-label="Site sections"
+                    className="flex items-center max-sm:grid max-sm:grid-cols-2 max-sm:gap-x-2 max-sm:pr-14"
+                >
+                    <HomeHex
+                        mini={false}
+                        onClick={() => {
+                            window.scrollTo({ top: 0, behavior: 'smooth' })
+                            selectCategory(null)
+                        }}
+                    />
+                    {homeCategory && <Connector />}
+                    <CategoryToggles
+                        mini={false}
+                        selectedId={selectedId}
+                        onSelect={(id) => {
+                            selectCategory(id)
+                            if (id) scrollToCards()
+                        }}
+                    />
+                </nav>
+            </div>
+
+            <div
+                ref={cardAreaRef}
+                className="pointer-events-none flex min-h-72 scroll-mt-36 items-start justify-center pt-8"
+            >
+                {idle}
+                {displayedCategory && (
+                    <CategoryCards
+                        key={displayedCategory.id}
+                        category={displayedCategory}
+                        isLeaving={isLeaving}
+                        onAnimationEnd={finishLeaving}
+                        className="pointer-events-none relative"
+                    />
+                )}
+            </div>
+        </div>
+    )
+}
+
+// Every other page: a dock of mini hexes that slides away while scrolling down, with the open
+// category's cards in a panel below it. It opens below the bar, so the page never needs to scroll
+function FloatingCategoryBar() {
+    const {
+        selectedId,
+        displayedCategory,
+        isLeaving,
+        hidden,
+        selectCategory,
+        finishLeaving,
+    } = useCategorySelection()
+    const navigate = useNavigate()
+    const dockRef = useRef<HTMLDivElement>(null)
+
     // An Effect Event always sees this render's state, so the listener below never acts on an
     // older render's selectCategory, even though the effect doesn't re-run for every change
     const onDocumentClick = useEffectEvent((event: MouseEvent) => {
@@ -163,194 +388,61 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
         }
     })
 
-    // While the floating panel is open, a click anywhere outside the dock closes it
+    // While the panel is open, a click anywhere outside the dock closes it
     useEffect(() => {
-        if (!floating || selectedId === null) return
+        if (selectedId === null) return
 
         const handleClick = (event: MouseEvent) => onDocumentClick(event)
         document.addEventListener('click', handleClick)
         return () => document.removeEventListener('click', handleClick)
-    }, [floating, selectedId])
+    }, [selectedId])
 
     return (
         <div
             ref={dockRef}
             className={cn(
-                'pointer-events-none',
-                floating
-                    ? cn(
-                          'sticky top-4 z-10 mx-auto mt-6 w-fit',
-                          headerMotionClass,
-                          hidden && hiddenHeaderClass,
-                      )
-                    : 'contents',
+                'pointer-events-none sticky top-4 z-10 mx-auto mt-6 w-fit',
+                headerMotionClass,
+                hidden && hiddenHeaderClass,
             )}
         >
-            <div
-                className={cn(
-                    !floating &&
-                        cn(
-                            // On phones the home hexes don't stick, so they never slide away either
-                            'sticky top-4 z-10 mx-auto mt-10 w-fit max-sm:static max-sm:translate-y-0',
-                            headerMotionClass,
-                            hidden && hiddenHeaderClass,
-                        ),
-                )}
+            <nav
+                aria-label="Site sections"
+                className="flex h-12 items-start gap-1"
             >
-                <nav
-                    aria-label="Site sections"
-                    className={cn(
-                        floating
-                            ? 'flex h-12 items-start gap-1'
-                            : 'flex items-center max-sm:grid max-sm:grid-cols-2 max-sm:gap-x-2 max-sm:pr-14',
-                    )}
-                >
-                    {homeCategory && (
-                        <button
-                            type="button"
-                            className={cn(
-                                toggleVariants(),
-                                itemClass,
-                                hexItemClass,
-                                floating ? miniHexClass : fullHexClass,
-                            )}
-                            style={
-                                {
-                                    '--category-color': homeCategory.color,
-                                } as CSSProperties
-                            }
-                            onClick={() => {
-                                if (floating) {
-                                    navigate('/')
-                                    return
-                                }
-                                window.scrollTo({ top: 0, behavior: 'smooth' })
-                                selectCategory(null)
-                            }}
-                        >
-                            <HexContent
-                                icon={homeCategory.icon}
-                                label={homeCategory.label}
-                                mini={floating}
-                            />
-                        </button>
-                    )}
+                <HomeHex mini onClick={() => navigate('/')} />
+                <CategoryToggles
+                    mini
+                    selectedId={selectedId}
+                    onSelect={selectCategory}
+                />
+            </nav>
 
-                    {homeCategory && !floating && <Connector />}
-
-                    <ToggleGroup
-                        type="single"
-                        aria-label="Project categories"
-                        className="contents"
-                        value={selectedId ?? ''}
-                        onValueChange={(value) => {
-                            if (!value) {
-                                selectCategory(null)
-                                return
-                            }
-                            selectCategory(value)
-                            scrollToCards()
-                        }}
-                    >
-                        {sectionCategories.map((category, index) => (
-                            <Fragment key={category.id}>
-                                {!floating && index > 0 && <Connector />}
-                                <ToggleGroupItem
-                                    value={category.id}
-                                    className={cn(
-                                        itemClass,
-                                        hexItemClass,
-                                        floating ? miniHexClass : fullHexClass,
-                                        !floating &&
-                                            index > 0 &&
-                                            'max-sm:-mt-6 max-sm:translate-x-[calc(50%+0.25rem)]',
-                                    )}
-                                    style={
-                                        {
-                                            '--category-color': category.color,
-                                        } as CSSProperties
-                                    }
-                                >
-                                    <HexContent
-                                        icon={category.icon}
-                                        label={category.label}
-                                        mini={floating}
-                                    />
-                                </ToggleGroupItem>
-                            </Fragment>
-                        ))}
-                    </ToggleGroup>
-                </nav>
-            </div>
-
-            <div
-                ref={cardAreaRef}
-                className={cn(
-                    'pointer-events-none flex items-start justify-center',
-                    floating
-                        ? 'absolute top-full left-1/2 mt-21 w-max max-w-[calc(100vw-2rem)] -translate-x-1/2'
-                        : 'min-h-72 scroll-mt-36 pt-8',
-                )}
-            >
-                {!floating && idle}
+            <div className="pointer-events-none absolute top-full left-1/2 mt-21 flex w-max max-w-[calc(100vw-2rem)] -translate-x-1/2 items-start justify-center">
                 {displayedCategory && (
-                    <div
+                    <CategoryCards
                         key={displayedCategory.id}
-                        className={cn(
-                            floating
-                                ? 'pointer-events-auto relative border border-l-0 bg-muted py-4 pr-4 pl-10'
-                                : 'pointer-events-none relative',
-                        )}
-                        style={
-                            {
-                                '--category-color': displayedCategory.color,
-                            } as CSSProperties
-                        }
-                        onAnimationEnd={() => {
-                            if (isLeaving) {
-                                setDisplayedId(selectedId)
-                                setIsLeaving(false)
-                            }
-                        }}
+                        category={displayedCategory}
+                        isLeaving={isLeaving}
+                        onAnimationEnd={finishLeaving}
+                        className="pointer-events-auto relative border border-l-0 bg-muted py-4 pr-4 pl-10"
                     >
-                        {floating && (
-                            <div
-                                aria-hidden="true"
-                                className="absolute -inset-y-px left-0 flex w-6 items-center justify-center bg-(--category-color)"
-                            >
-                                <span className="rotate-180 font-heading text-xs font-semibold tracking-eyebrow text-background uppercase [writing-mode:vertical-rl]">
-                                    {displayedCategory.label}
-                                </span>
-                            </div>
-                        )}
-
-                        {/* Up to 3 cards share one row; 4 or more go 2 per row (an odd last card centers) */}
                         <div
-                            className={cn(
-                                'flex flex-wrap justify-center gap-4 *:pointer-events-auto',
-                                displayedCategory.items.length >= 4 &&
-                                    'max-w-124',
-                            )}
+                            aria-hidden="true"
+                            className="absolute -inset-y-px left-0 flex w-6 items-center justify-center bg-(--category-color)"
                         >
-                            {displayedCategory.items.map((item, index) => (
-                                <ProjectCard
-                                    key={item.title}
-                                    item={item}
-                                    color={displayedCategory.color}
-                                    label={displayedCategory.label}
-                                    actionLabel={
-                                        item.actionLabel ??
-                                        displayedCategory.actionLabel ??
-                                        'Open'
-                                    }
-                                    index={index}
-                                    isLeaving={isLeaving}
-                                />
-                            ))}
+                            <span className="rotate-180 font-heading text-xs font-semibold tracking-eyebrow text-background uppercase [writing-mode:vertical-rl]">
+                                {displayedCategory.label}
+                            </span>
                         </div>
-                    </div>
+                    </CategoryCards>
                 )}
             </div>
         </div>
     )
+}
+
+/** The site's section hexes: full size on the home page, a floating mini dock everywhere else */
+export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
+    return floating ? <FloatingCategoryBar /> : <HomeCategoryBar idle={idle} />
 }

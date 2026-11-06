@@ -1,15 +1,16 @@
-import { useEffect, useState, type ReactNode } from 'react'
-import { Link, useLocation, useNavigate, useParams } from 'react-router'
+import { useEffect, useState } from 'react'
+import { useLocation, useNavigate, useParams } from 'react-router'
 import { IconRefresh } from '@tabler/icons-react'
 import { SectionTitle } from '@/components/section-title'
 import { PollPageLayout } from './poll-page-layout'
 import { Button } from '@/components/ui/button'
-import { useApi } from '@/hooks/use-api'
+import { useApi, type ApiState } from '@/hooks/use-api'
 import { errorMessage, postJson, requestJson } from '@/lib/api'
 import type { PollStatus } from './api-types'
 import { CopyField } from './copy-field'
 import { formatCloseTime } from './format-time'
-import { PollMessage } from './poll-message'
+import { PollClosedMessage, PollMessage } from './poll-message'
+import { pollTitle } from './poll-title'
 
 type PollManagerProps = {
     id: string
@@ -40,17 +41,7 @@ function PollManager({ id, status, onRefresh }: PollManagerProps) {
         }
     }
 
-    if (status.closed) {
-        return (
-            <PollMessage title="This poll has closed">
-                <Button asChild className="self-start">
-                    <Link to={`/tools/polls/${id}/results`}>
-                        See the results
-                    </Link>
-                </Button>
-            </PollMessage>
-        )
-    }
+    if (status.closed) return <PollClosedMessage id={id} />
 
     return (
         <div className="divide-y border bg-card">
@@ -141,6 +132,34 @@ function PollManager({ id, status, onRefresh }: PollManagerProps) {
     )
 }
 
+type AdminContentProps = {
+    id: string
+    claimError: string | null
+    state: ApiState<PollStatus>
+    onRefresh: () => void
+}
+
+// An error if the admin link or this browser can't manage the poll, otherwise the controls
+function AdminContent({ id, claimError, state, onRefresh }: AdminContentProps) {
+    const errorText =
+        claimError ?? (state.status === 'error' ? state.error : null)
+
+    if (errorText) {
+        return (
+            <PollMessage title="Can't manage this poll">
+                <p className="text-muted-foreground">{errorText}</p>
+                <p className="text-sm text-muted-foreground">
+                    Use the browser you created the poll in, or open the admin
+                    link you saved.
+                </p>
+            </PollMessage>
+        )
+    }
+
+    if (state.status !== 'success') return null
+    return <PollManager id={id} status={state.data} onRefresh={onRefresh} />
+}
+
 export function AdminPage() {
     const { id = '' } = useParams()
     const { pathname, hash } = useLocation()
@@ -178,35 +197,18 @@ export function AdminPage() {
         token ? null : `/api/polls/${id}/status`,
     )
 
-    const errorText =
-        claimError ?? (state.status === 'error' ? state.error : null)
-
-    let content: ReactNode = null
-    if (errorText) {
-        content = (
-            <PollMessage title="Can't manage this poll">
-                <p className="text-muted-foreground">{errorText}</p>
-                <p className="text-sm text-muted-foreground">
-                    Use the browser you created the poll in, or open the admin
-                    link you saved.
-                </p>
-            </PollMessage>
-        )
-    } else if (state.status === 'success') {
-        content = <PollManager id={id} status={state.data} onRefresh={reload} />
-    }
-
     return (
         <PollPageLayout
             eyebrow="Manage poll"
-            title={
-                state.status === 'success'
-                    ? state.data.title
-                    : 'Ranked Choice Poll'
-            }
+            title={pollTitle(state)}
             intro="Watch the votes come in, and close the poll when everyone's done."
         >
-            {content}
+            <AdminContent
+                id={id}
+                claimError={claimError}
+                state={state}
+                onRefresh={reload}
+            />
         </PollPageLayout>
     )
 }

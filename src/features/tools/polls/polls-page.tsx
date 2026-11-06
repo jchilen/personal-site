@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useLocation } from 'react-router'
 import { MethodologyLayout } from '@/components/methodology-layout'
 import { ToolLayout } from '@/components/tool-layout'
-import { useApi } from '@/hooks/use-api'
+import { useApi, type ApiState } from '@/hooks/use-api'
 import type {
     CreatedPoll,
     MyPoll,
@@ -40,17 +40,69 @@ function fromVotedPoll(poll: VotedPoll): PollListItem {
     }
 }
 
-export function PollsPage() {
-    const { state, reload } = useApi<MyPollsResponse>('/api/polls/mine')
-    const voted = useApi<VotedPollsResponse>('/api/polls/voted')
+type PollsHomeProps = {
+    mine: ApiState<MyPollsResponse>
+    voted: ApiState<VotedPollsResponse>
+    // Called after a poll is created, so Your polls can include it
+    onCreated: () => void
+}
+
+// The create form (or the new poll's links), with the two lists beside it when there are any
+function PollsHome({ mine, voted, onCreated }: PollsHomeProps) {
     const [created, setCreated] = useState<CreatedPoll | null>(null)
-    const myPolls = state.status === 'success' ? state.data.polls : []
-    const votedPolls =
-        voted.state.status === 'success' ? voted.state.data.polls : []
+
+    // Wait for both lists before laying out, so the form doesn't jump sideways when they arrive
+    if (mine.status === 'loading' || voted.status === 'loading') return null
+
+    const myPolls = mine.status === 'success' ? mine.data.polls : []
+    const votedPolls = voted.status === 'success' ? voted.data.polls : []
     const hasLists = myPolls.length > 0 || votedPolls.length > 0
-    // Wait for both lists, so the layout appears once in its final shape
-    const loading =
-        state.status === 'loading' || voted.state.status === 'loading'
+
+    return (
+        <div
+            className={cn(
+                'grid items-start gap-6',
+                hasLists
+                    ? '@2xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]'
+                    : 'mx-auto max-w-md',
+            )}
+        >
+            {created ? (
+                <PollCreated
+                    poll={created}
+                    onCreateAnother={() => setCreated(null)}
+                />
+            ) : (
+                <CreatePollForm
+                    onCreated={(poll) => {
+                        setCreated(poll)
+                        onCreated()
+                    }}
+                />
+            )}
+            {hasLists && (
+                <div className="flex flex-col gap-6">
+                    {myPolls.length > 0 && (
+                        <PollList
+                            title="Your polls"
+                            items={myPolls.map(fromMyPoll)}
+                        />
+                    )}
+                    {votedPolls.length > 0 && (
+                        <PollList
+                            title="Polls you voted in"
+                            items={votedPolls.map(fromVotedPoll)}
+                        />
+                    )}
+                </div>
+            )}
+        </div>
+    )
+}
+
+export function PollsPage() {
+    const mine = useApi<MyPollsResponse>('/api/polls/mine')
+    const voted = useApi<VotedPollsResponse>('/api/polls/voted')
     const { hash } = useLocation()
 
     return (
@@ -64,47 +116,11 @@ export function PollsPage() {
                 methodology={<PollsMethodology />}
                 defaultOpen={hash === '#methodology'}
             >
-                {/* Wait for the list before laying out, so the form doesn't jump sideways when it arrives */}
-                {!loading && (
-                    <div
-                        className={cn(
-                            'grid items-start gap-6',
-                            hasLists
-                                ? '@2xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]'
-                                : 'mx-auto max-w-md',
-                        )}
-                    >
-                        {created ? (
-                            <PollCreated
-                                poll={created}
-                                onCreateAnother={() => setCreated(null)}
-                            />
-                        ) : (
-                            <CreatePollForm
-                                onCreated={(poll) => {
-                                    setCreated(poll)
-                                    reload()
-                                }}
-                            />
-                        )}
-                        {hasLists && (
-                            <div className="flex flex-col gap-6">
-                                {myPolls.length > 0 && (
-                                    <PollList
-                                        title="Your polls"
-                                        items={myPolls.map(fromMyPoll)}
-                                    />
-                                )}
-                                {votedPolls.length > 0 && (
-                                    <PollList
-                                        title="Polls you voted in"
-                                        items={votedPolls.map(fromVotedPoll)}
-                                    />
-                                )}
-                            </div>
-                        )}
-                    </div>
-                )}
+                <PollsHome
+                    mine={mine.state}
+                    voted={voted.state}
+                    onCreated={mine.reload}
+                />
             </MethodologyLayout>
         </ToolLayout>
     )

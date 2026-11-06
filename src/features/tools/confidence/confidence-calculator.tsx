@@ -1,4 +1,4 @@
-import { useId, useState, type ReactNode } from 'react'
+import { useId, useState } from 'react'
 import { IconX } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,13 +11,12 @@ import {
     numberInputClass,
 } from '@/components/field-styles'
 import {
-    CONFIDENCE_MILESTONES,
-    chanceAfter,
-    formatPercent,
-    killMilestones,
-    killsNeeded,
-    percentToFraction,
-} from './confidence'
+    chanceSummary,
+    killsNeededSummary,
+    type Milestone,
+    type Summary,
+} from './calculator-summary'
+import { chanceAfter, formatPercent, percentToFraction } from './confidence'
 
 type Mode = 'kills' | 'chance'
 
@@ -64,13 +63,7 @@ function FieldRow({ id, label, suffix, inputMode, field }: FieldRowProps) {
     )
 }
 
-type MilestoneBarProps = {
-    label: string
-    value: string
-    percent: number
-}
-
-function MilestoneBar({ label, value, percent }: MilestoneBarProps) {
+function MilestoneBar({ label, value, percent }: Milestone) {
     return (
         <div>
             <div className="flex justify-between font-heading text-xs tracking-eyebrow text-muted-foreground uppercase">
@@ -86,6 +79,24 @@ function MilestoneBar({ label, value, percent }: MilestoneBarProps) {
                 />
             </div>
         </div>
+    )
+}
+
+// The big answer at the top, with its unit in smaller type, or a dash until there is one
+function Readout({ readout }: Pick<Summary, 'readout'>) {
+    if (!readout) return '—'
+    return (
+        <>
+            {readout.value}
+            {readout.unit && (
+                <>
+                    {' '}
+                    <span className="text-base tracking-widest text-muted-foreground uppercase">
+                        {readout.unit}
+                    </span>
+                </>
+            )}
+        </>
     )
 }
 
@@ -114,53 +125,11 @@ export function ConfidenceCalculator({
     const dropChance = percentToFraction(drop.number)
     const target = percentToFraction(confidence.number)
 
-    // The big answer at the top, in whichever mode is active
-    let title: string
-    let readout: ReactNode = '—'
-    let note: string
-
-    if (mode === 'kills') {
-        title = 'Kills needed'
-        note = 'Enter a drop chance and a confidence between 0 and 100.'
-        if (dropChance !== null && target !== null) {
-            const needed = killsNeeded(dropChance, target)
-            readout = (
-                <>
-                    {needed.toLocaleString()}{' '}
-                    <span className="text-base tracking-widest text-muted-foreground uppercase">
-                        kills
-                    </span>
-                </>
-            )
-            note = `for at least a ${confidence.number}% chance.`
-        }
-    } else {
-        title = 'Chance of a drop'
-        note = 'Enter a drop chance and a number of kills.'
-        if (dropChance !== null && kills.number >= 1) {
-            readout = formatPercent(chanceAfter(dropChance, kills.number))
-            note = `of at least one drop in ${kills.number.toLocaleString()} kills.`
-        }
-    }
-
-    // Kills at set confidence levels, or the chance at multiples of the entered kills
-    let milestones: MilestoneBarProps[] = []
-    if (dropChance !== null && mode === 'kills') {
-        milestones = CONFIDENCE_MILESTONES.map((level) => ({
-            label: `${Math.round(level * 100)}% sure`,
-            value: `${killsNeeded(dropChance, level).toLocaleString()} kills`,
-            percent: level * 100,
-        }))
-    } else if (dropChance !== null && kills.number >= 1) {
-        milestones = killMilestones(kills.number).map((count) => {
-            const odds = chanceAfter(dropChance, count)
-            return {
-                label: `${count.toLocaleString()} kills`,
-                value: formatPercent(odds),
-                percent: odds * 100,
-            }
-        })
-    }
+    // The answer, its note, and the milestones, for whichever mode is active
+    const { title, readout, note, milestones } =
+        mode === 'kills'
+            ? killsNeededSummary(dropChance, target, confidence.number)
+            : chanceSummary(dropChance, kills.number)
 
     const haveIt =
         dropChance !== null && killsSoFar.number >= 1
@@ -184,7 +153,7 @@ export function ConfidenceCalculator({
                     )}
                 </div>
                 <p className="mt-1 font-heading text-4xl font-semibold text-cat-tools">
-                    {readout}
+                    <Readout readout={readout} />
                 </p>
                 <p className="mt-1 text-sm text-muted-foreground">{note}</p>
             </section>
