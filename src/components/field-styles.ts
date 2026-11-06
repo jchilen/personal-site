@@ -11,7 +11,8 @@ export const numberInputClass = `${underlineInputClass} text-right font-heading 
 export const choiceItemClass =
     'corner-brackets h-10 border text-muted-foreground hover:bg-transparent hover:text-foreground data-[state=on]:border-primary data-[state=on]:bg-primary/10 data-[state=on]:text-primary'
 
-// Controls that don't apply right now: faded, with diagonal stripes. One that's still selected
-// (Cover's None in tech attack mode) keeps the normal gold selected look, at full strength
+// Controls that don't apply right now: faded and striped, with a "not allowed" cursor and no hover
+// effects. They use aria-disabled rather than disabled, so they still receive the mouse, for the
+// cursor (and tooltips later). One that's still selected (Cover's None in tech) keeps its gold look
 export const lockedClass =
-    'bg-[repeating-linear-gradient(135deg,var(--muted)_0_5px,transparent_5px_10px)] disabled:opacity-35 data-[state=on]:bg-none data-[state=on]:disabled:opacity-100'
+    'cursor-not-allowed bg-[repeating-linear-gradient(135deg,var(--muted)_0_5px,transparent_5px_10px)] opacity-35 [--brackets-hover-opacity:0] hover:text-muted-foreground data-[state=on]:bg-none data-[state=on]:opacity-100 data-[state=on]:hover:text-primary'

@@ -26,6 +26,22 @@ export type EnemyCardData = {
     netAccuracy: number
 }
 
+// Stand-in data for the invisible card that holds the section's height while nothing is selected
+const PLACEHOLDER: EnemyCardData = {
+    target: {
+        id: 'placeholder',
+        name: '',
+        cover: 'none',
+        lockOn: false,
+        prone: false,
+        invisible: false,
+    },
+    npc: { name: '', role: '', evasion: [0, 0, 0], eDefense: [0, 0, 0] },
+    title: '',
+    odds: { hit: 0, crit: 0 },
+    netAccuracy: 0,
+}
+
 // The dice left after Accuracy and Difficulty cancel out: green for accuracy, red for difficulty
 function NetDice({ net }: { net: number }) {
     if (net === 0) {
@@ -216,14 +232,28 @@ export function EnemyCards({
                     )}
                 </p>
             </div>
-            {cards.length === 0 ? (
-                <p className="text-muted-foreground">
-                    No enemies selected, select up to {MAX_TARGETS} enemies
-                    above to see your chance of hitting each.
-                </p>
-            ) : (
-                <div className="grid gap-4 @2xl:grid-cols-2 @4xl:grid-cols-3">
-                    {cards.map((card) => (
+            <div className="grid gap-4 @2xl:grid-cols-2 @4xl:grid-cols-3">
+                {cards.length === 0 ? (
+                    <>
+                        {/* An invisible card holds the section at a real card's height, so it doesn't shrink and move the page */}
+                        <div className="invisible col-start-1 row-start-1">
+                            <EnemyCard
+                                card={PLACEHOLDER}
+                                attackType={attackType}
+                                tier={tier}
+                                full={false}
+                                onChange={() => {}}
+                                onDuplicate={() => {}}
+                                onRemove={() => {}}
+                            />
+                        </div>
+                        <p className="col-span-full row-start-1 text-muted-foreground">
+                            No enemies selected, select up to {MAX_TARGETS}{' '}
+                            enemies above to see your chance of hitting each.
+                        </p>
+                    </>
+                ) : (
+                    cards.map((card) => (
                         <EnemyCard
                             key={card.target.id}
                             card={card}
@@ -236,9 +266,9 @@ export function EnemyCards({
                             onDuplicate={() => duplicate(card.target.id)}
                             onRemove={() => onRemove(card.target.id)}
                         />
-                    ))}
-                </div>
-            )}
+                    ))
+                )}
+            </div>
         </section>
     )
 }

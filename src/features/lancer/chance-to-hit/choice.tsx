@@ -11,7 +11,8 @@ type ChoiceProps<T extends string> = {
     value: T
     options: [T, string][]
     onChange: (value: T) => void
-    // Shown but unchangeable, faded and striped, for settings that don't apply right now
+    // Shown but unchangeable, faded and striped, for settings that don't apply right now. Marked with
+    // aria-disabled instead of disabled, so the "not allowed" cursor (and tooltips) still work
     locked?: boolean
 }
 
@@ -30,10 +31,10 @@ export function Choice<T extends string>({
                 type="single"
                 aria-label={label}
                 value={value}
-                disabled={locked}
                 onValueChange={(next) => {
-                    // Clicking the selected button again sends '', which would leave nothing selected
-                    if (next) onChange(next as T)
+                    // Clicking the selected button again sends '', which would leave nothing selected,
+                    // and a locked choice can't change at all
+                    if (next && !locked) onChange(next as T)
                 }}
                 className="flex flex-wrap gap-2"
             >
@@ -41,6 +42,7 @@ export function Choice<T extends string>({
                     <ToggleGroupItem
                         key={option}
                         value={option}
+                        aria-disabled={locked}
                         className={cn(
                             choiceItemClass,
                             'px-3',

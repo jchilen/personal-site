@@ -135,17 +135,15 @@ export function NpcPicker({
                     {status}
                 </p>
             </div>
-            <div className="grid gap-x-4 @xl:grid-cols-3">
+            <div className="grid gap-x-4 gap-y-1 @xl:grid-cols-3">
                 {roleColumns(npcs).map((column, index) => (
                     // The columns never reorder, so their position works as a key
-                    <div key={index} className="flex flex-col">
+                    <div key={index} className="flex flex-col gap-1">
                         {column.map(([role, members]) => (
-                            <section key={role} className="mb-4">
-                                <div className="mb-1.5 flex items-baseline justify-between gap-2 border-b pb-1">
+                            <section key={role}>
+                                {/* One row tall, with the title centered, so every header lines up with the names beside it */}
+                                <div className="mb-1 flex h-7.5 items-center">
                                     <SectionTitle as="h3">{role}</SectionTitle>
-                                    <span className="text-xs text-muted-foreground">
-                                        {members.length}
-                                    </span>
                                 </div>
                                 <ul className="flex flex-col gap-1">
                                     {members.map((npc) => (

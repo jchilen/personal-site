@@ -84,12 +84,18 @@ export function EffectToggle({
     return (
         <Toggle
             pressed={pressed}
-            onPressedChange={onChange}
-            disabled={locked}
+            // A locked toggle can't change, so clicks (and Space or Enter) are ignored
+            onPressedChange={(next) => {
+                if (!locked) onChange(next)
+            }}
+            aria-disabled={locked}
             className={cn(
                 choiceItemClass,
                 'px-3',
-                locked ? lockedClass : 'text-foreground/80',
+                // Hovering a selected toggle softens its gold, a hint that clicking turns it off
+                locked
+                    ? lockedClass
+                    : 'text-foreground/80 data-[state=on]:hover:border-primary/60 data-[state=on]:hover:bg-primary/5',
             )}
         >
             {label}
