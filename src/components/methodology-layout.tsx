@@ -4,7 +4,7 @@ import { IconArrowUp, IconMinus, IconPlus } from '@tabler/icons-react'
 import { Eyebrow } from '@/components/eyebrow'
 import { Button } from '@/components/ui/button'
 import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible'
-import { cn } from '@/lib/utils'
+import { cn } from 'cn'
 
 // Where and how the methodology sits beside the tool. Wide tools keep their full width, so they
 // need a bigger screen before the panel fits next to them

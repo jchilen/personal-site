@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 
 import { Eyebrow } from '@/components/eyebrow'
-import { cn } from '@/lib/utils'
+import { cn } from 'cn'
 
 type HomeSectionProps = {
     id: string
