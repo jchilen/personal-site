@@ -38,6 +38,23 @@ function roleColumns(npcs: LancerNpc[]): [string, LancerNpc[]][][] {
     )
 }
 
+// The name with the typed letters underlined, so it's clear why it matched
+function HighlightedName({ name, search }: { name: string; search: string }) {
+    const start = search === '' ? -1 : name.toLowerCase().indexOf(search)
+    if (start === -1) return name
+    const end = start + search.length
+
+    return (
+        <>
+            {name.slice(0, start)}
+            <mark className="bg-transparent font-semibold text-foreground underline underline-offset-3">
+                {name.slice(start, end)}
+            </mark>
+            {name.slice(end)}
+        </>
+    )
+}
+
 type NpcPickerProps = {
     npcs: LancerNpc[]
     // Names with at least one enemy card
@@ -157,18 +174,22 @@ export function NpcPicker({
                                                     npc.name,
                                                 )}
                                                 aria-disabled={unavailable(npc)}
-                                                onClick={() => pick(npc)}
+                                                // Like Enter, a successful pick clears the search
+                                                onClick={() => {
+                                                    if (pick(npc)) setQuery('')
+                                                }}
                                                 className={cn(
                                                     'flex w-full items-center justify-between gap-2 border bg-background px-2 py-1 text-left text-sm transition hover:border-primary aria-disabled:cursor-not-allowed aria-disabled:text-muted-foreground aria-disabled:hover:border-border aria-pressed:border-primary aria-pressed:bg-primary/10 aria-pressed:text-primary aria-pressed:shadow-[inset_3px_0_0_var(--primary)]',
                                                     searching &&
                                                         !isMatch(npc) &&
                                                         'opacity-30',
-                                                    isMatch(npc) &&
-                                                        'ring-2 ring-foreground',
                                                 )}
                                             >
                                                 <span className="truncate">
-                                                    {npc.name}
+                                                    <HighlightedName
+                                                        name={npc.name}
+                                                        search={search}
+                                                    />
                                                 </span>
                                                 <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
                                                     {percent(
