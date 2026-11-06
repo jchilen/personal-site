@@ -14,6 +14,11 @@ import { toggleVariants } from '@/components/ui/toggle'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { ProjectCard } from '@/components/project-card'
 import { floatingShadowClass } from '@/components/shadow-styles'
+import {
+    headerMotionClass,
+    hiddenHeaderClass,
+} from '@/components/header-styles'
+import { useHideOnScroll } from '@/hooks/use-hide-on-scroll'
 
 type CategoryBarProps = {
     floating?: boolean
@@ -107,6 +112,9 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
     const cardAreaRef = useRef<HTMLDivElement>(null)
     const navigate = useNavigate()
     const dockRef = useRef<HTMLDivElement>(null)
+    // Slides away while scrolling down, unless a category's cards are open
+    const scrolledAway = useHideOnScroll()
+    const hidden = scrolledAway && selectedId === null
 
     function scrollToCards() {
         const cardArea = cardAreaRef.current
@@ -164,13 +172,24 @@ export function CategoryBar({ floating = false, idle }: CategoryBarProps) {
             ref={dockRef}
             className={cn(
                 'pointer-events-none',
-                floating ? 'sticky top-4 z-10 mx-auto mt-6 w-fit' : 'contents',
+                floating
+                    ? cn(
+                          'sticky top-4 z-10 mx-auto mt-6 w-fit',
+                          headerMotionClass,
+                          hidden && hiddenHeaderClass,
+                      )
+                    : 'contents',
             )}
         >
             <div
                 className={cn(
                     !floating &&
-                        'sticky top-4 z-10 mx-auto mt-10 w-fit max-sm:static',
+                        cn(
+                            // On phones the home hexes don't stick, so they never slide away either
+                            'sticky top-4 z-10 mx-auto mt-10 w-fit max-sm:static max-sm:translate-y-0',
+                            headerMotionClass,
+                            hidden && hiddenHeaderClass,
+                        ),
                 )}
             >
                 <nav

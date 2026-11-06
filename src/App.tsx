@@ -13,6 +13,12 @@ import { ComingSoonPage } from '@/pages/coming-soon-page'
 import { AdminPage } from '@/features/tools/polls/admin-page'
 import { ResultsPage } from '@/features/tools/polls/results-page'
 import { ChanceToHitPage } from '@/features/lancer/chance-to-hit/chance-to-hit-page'
+import { cn } from 'cn'
+import {
+    headerMotionClass,
+    hiddenHeaderClass,
+} from '@/components/header-styles'
+import { useHideOnScroll } from '@/hooks/use-hide-on-scroll'
 
 function App() {
     const { pathname } = useLocation()
@@ -21,9 +27,18 @@ function App() {
         window.scrollTo(0, 0)
     }, [pathname])
 
+    // The theme toggle slides away with the hex bar
+    const headerHidden = useHideOnScroll()
+
     return (
         <div className="flex min-h-svh flex-col overflow-x-clip">
-            <ModeToggle className="fixed top-4 right-4 z-20 max-sm:hidden" />
+            <ModeToggle
+                className={cn(
+                    'fixed top-4 right-4 z-20 max-sm:hidden',
+                    headerMotionClass,
+                    headerHidden && hiddenHeaderClass,
+                )}
+            />
             <main
                 key={pathname}
                 className="mx-auto w-full max-w-280 flex-1 px-6"
