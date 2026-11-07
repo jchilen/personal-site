@@ -6,6 +6,7 @@ import {
     useState,
     type CSSProperties,
     type ComponentType,
+    type FocusEvent,
     type ReactNode,
 } from 'react'
 import { useNavigate } from 'react-router'
@@ -153,6 +154,10 @@ function CategoryToggles({ mini, selectedId, onSelect }: CategoryTogglesProps) {
             type="single"
             aria-label="Project categories"
             className="contents"
+            // Each hex gets its own Tab stop. With roving focus, the group itself takes the Tab stop
+            // while nothing is open, and a display: contents element can't be focused, so Tab
+            // would skip every hex
+            rovingFocus={false}
             value={selectedId ?? ''}
             // Clicking the open category again sends '', which closes it
             onValueChange={(value) => onSelect(value || null)}
@@ -388,18 +393,50 @@ function FloatingCategoryBar() {
         }
     })
 
-    // While the panel is open, a click anywhere outside the dock closes it
+    // Escape closes the panel and puts focus back on the hex that opened it
+    const onDocumentKeyDown = useEffectEvent((event: KeyboardEvent) => {
+        if (event.key !== 'Escape') return
+        dockRef.current
+            ?.querySelector<HTMLElement>('[data-state="on"]')
+            ?.focus()
+        selectCategory(null)
+    })
+
+    // While the panel is open, a click outside the dock or Escape anywhere on the page closes it.
+    // Escape listens on the whole document because focus isn't always in the dock: some browsers
+    // don't focus a button when it's clicked
     useEffect(() => {
         if (selectedId === null) return
 
         const handleClick = (event: MouseEvent) => onDocumentClick(event)
+        const handleKeyDown = (event: KeyboardEvent) => onDocumentKeyDown(event)
         document.addEventListener('click', handleClick)
-        return () => document.removeEventListener('click', handleClick)
+        document.addEventListener('keydown', handleKeyDown)
+        return () => {
+            document.removeEventListener('click', handleClick)
+            document.removeEventListener('keydown', handleKeyDown)
+        }
     }, [selectedId])
 
+    // Tabbing out of the dock closes the panel, so it never sits on top of whatever gets focus
+    // next. relatedTarget is where focus went. It's null when focus leaves the browser window,
+    // which shouldn't close it
+    function handleBlur(event: FocusEvent<HTMLDivElement>): void {
+        const next = event.relatedTarget
+        if (
+            selectedId !== null &&
+            next instanceof Node &&
+            !dockRef.current?.contains(next)
+        ) {
+            selectCategory(null)
+        }
+    }
+
     return (
+        // Focus events from the hexes and the cards inside bubble up to the dock
         <div
             ref={dockRef}
+            onBlur={handleBlur}
             className={cn(
                 'pointer-events-none sticky top-4 z-10 mx-auto mt-6 w-fit',
                 headerMotionClass,
