@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { IconChevronUp } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
+import { reducedMotionClass } from '@/components/motion-styles'
 import {
     Popover,
     PopoverContent,
@@ -39,7 +40,8 @@ export function CardTierPicker({ title, tier, onChange }: CardTierPickerProps) {
             <PopoverContent
                 side="top"
                 aria-label={`Tier for ${title}`}
-                className="w-auto rounded-none p-3"
+                // With reduced motion it appears in place, without the zoom and slide in
+                className={`w-auto rounded-none p-3 ${reducedMotionClass}`}
             >
                 <Choice
                     label="Tier"

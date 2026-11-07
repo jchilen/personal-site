@@ -8,6 +8,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog'
+import { reducedMotionClass } from '@/components/motion-styles'
 
 type FigureProps = {
     src: string
@@ -73,7 +74,8 @@ export function Figure({ src, alt, caption, float }: FigureProps) {
                 </DialogTrigger>
                 <DialogContent
                     aria-describedby={undefined}
-                    className="max-w-[95vw] rounded-none p-2 sm:max-w-[min(95vw,80rem)]"
+                    // With reduced motion it appears in place, without the zoom in
+                    className={`max-w-[95vw] rounded-none p-2 sm:max-w-[min(95vw,80rem)] ${reducedMotionClass}`}
                 >
                     <DialogTitle className="sr-only">{alt}</DialogTitle>
                     <div className="max-h-[85svh] overflow-auto">

@@ -1,4 +1,5 @@
 import { flushSync } from 'react-dom'
+import { prefersReducedMotion } from './motion'
 
 /**
  * Runs a state update as a view transition. The browser snapshots the page before and after the
@@ -7,10 +8,7 @@ import { flushSync } from 'react-dom'
  * and anyone who has asked their system for reduced motion, get the update instantly instead
  */
 export function animateLayout(update: () => void): void {
-    const reduceMotion = window.matchMedia(
-        '(prefers-reduced-motion: reduce)',
-    ).matches
-    if (!('startViewTransition' in document) || reduceMotion) {
+    if (!('startViewTransition' in document) || prefersReducedMotion()) {
         update()
         return
     }

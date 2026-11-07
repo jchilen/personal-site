@@ -21,6 +21,7 @@ import {
     hiddenHeaderClass,
 } from '@/components/header-styles'
 import { useHideOnScroll } from '@/hooks/use-hide-on-scroll'
+import { prefersReducedMotion, scrollBehavior } from '@/lib/motion'
 
 type CategoryBarProps = {
     floating?: boolean
@@ -45,9 +46,10 @@ const hexItemClass = 'isolate flex-none p-0'
 // Home page: full-size hexes with the label always showing
 const fullHexClass = 'h-30 w-26'
 
-// Other pages: icon-only mini hexes that grow to full size on hover, keyboard focus, or while open
+// Other pages: icon-only mini hexes that grow to full size on hover, keyboard focus, or while open.
+// With reduced motion they snap to size instead of growing
 const miniHexClass =
-    'group h-12 w-10.5 gap-0 transition-[color,width,height,margin] hex-open:mx-1.5 hex-open:h-30 hex-open:w-26'
+    'group h-12 w-10.5 gap-0 transition-[color,width,height,margin] hex-open:mx-1.5 hex-open:h-30 hex-open:w-26 motion-reduce:transition-none'
 
 type HexContentProps = {
     icon: ComponentType<{ className?: string }>
@@ -63,12 +65,12 @@ function HexContent({ icon: Icon, label, mini }: HexContentProps) {
                 className={cn(
                     'stroke-[1.25]',
                     mini
-                        ? 'size-5 transition-[width,height] group-hex-open:size-7'
+                        ? 'size-5 transition-[width,height] group-hex-open:size-7 motion-reduce:transition-none'
                         : 'size-7',
                 )}
             />
             {mini ? (
-                <span className="grid grid-rows-[0fr] opacity-0 transition-[grid-template-rows,opacity] group-hex-open:grid-rows-[1fr] group-hex-open:opacity-100">
+                <span className="grid grid-rows-[0fr] opacity-0 transition-[grid-template-rows,opacity] group-hex-open:grid-rows-[1fr] group-hex-open:opacity-100 motion-reduce:transition-none">
                     <span className="overflow-hidden">
                         <span className="block pt-1.5">{label}</span>
                     </span>
@@ -269,14 +271,10 @@ function useCategorySelection() {
     function selectCategory(nextId: string | null) {
         setSelectedId(nextId)
 
-        const prefersReducedMotion = window.matchMedia(
-            '(prefers-reduced-motion: reduce)',
-        ).matches
-
         if (
             !displayedCategory ||
             displayedCategory.items.length === 0 ||
-            prefersReducedMotion
+            prefersReducedMotion()
         ) {
             // Nothing (or no cards) on screen: show the new selection right away
             setDisplayedId(nextId)
@@ -327,7 +325,10 @@ function HomeCategoryBar({ idle }: { idle?: ReactNode }) {
         if (!cardArea) return
 
         if (cardArea.getBoundingClientRect().top < 136) {
-            cardArea.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            cardArea.scrollIntoView({
+                behavior: scrollBehavior(),
+                block: 'start',
+            })
         }
     }
 
@@ -348,7 +349,10 @@ function HomeCategoryBar({ idle }: { idle?: ReactNode }) {
                     <HomeHex
                         mini={false}
                         onClick={() => {
-                            window.scrollTo({ top: 0, behavior: 'smooth' })
+                            window.scrollTo({
+                                top: 0,
+                                behavior: scrollBehavior(),
+                            })
                             selectCategory(null)
                         }}
                     />

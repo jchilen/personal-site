@@ -11,6 +11,7 @@ import {
 import { cn } from 'cn'
 
 import { hexCorners, hexToPixel, hexWidth, rectangleGrid } from '@/lib/hex'
+import { prefersReducedMotion } from '@/lib/motion'
 
 const HEX_SIZE = 16
 const COLS = 44
@@ -179,9 +180,7 @@ export function HexField({ focusRef }: HexFieldProps) {
     }, [focusRef])
 
     useEffect(() => {
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            return
-        }
+        if (prefersReducedMotion()) return
 
         const interval = setInterval(() => {
             setSlots((previous) => {
