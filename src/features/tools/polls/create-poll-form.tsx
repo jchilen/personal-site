@@ -1,6 +1,7 @@
 import { useId, useRef, useState, type RefCallback } from 'react'
 import { IconPlus, IconX } from '@tabler/icons-react'
 import {
+    ariaDisabledClass,
     numberInputClass,
     underlineInputClass,
 } from '@/components/field-styles'
@@ -109,6 +110,9 @@ export function CreatePollForm({
     }
 
     async function submit() {
+        // The Create button stays focusable while the poll is sent (aria-disabled), and Enter in a
+        // field submits the form too, so a second try is ignored here
+        if (submitting) return
         // The same rules the Worker checks, so most mistakes show up instantly.
         // Rows left empty are skipped rather than treated as mistakes
         const check = validateNewPoll({
@@ -235,7 +239,13 @@ export function CreatePollForm({
                     Used to show progress, like “3 of 5 voted.”
                 </p>
                 <FormError message={error} />
-                <Button type="submit" disabled={submitting}>
+                {/* aria-disabled, not disabled, while the poll is sent: if it fails, focus stays here
+                    with the error just above */}
+                <Button
+                    type="submit"
+                    aria-disabled={submitting}
+                    className={ariaDisabledClass}
+                >
                     {submitting ? 'Creating…' : 'Create poll'}
                 </Button>
             </section>

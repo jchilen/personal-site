@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router'
 import { IconRefresh } from '@tabler/icons-react'
 import { ProgressBar } from '@/components/progress-bar'
+import { ariaDisabledClass } from '@/components/field-styles'
 import { SectionTitle } from '@/components/section-title'
 import { PollPageLayout } from './poll-page-layout'
 import { Button } from '@/components/ui/button'
@@ -48,6 +49,8 @@ function PollManager({ id, status, onRefresh }: PollManagerProps) {
     )
 
     async function close() {
+        // Yes stays focusable while the poll closes (aria-disabled), so a second press is ignored here
+        if (closing) return
         setClosing(true)
         try {
             await postJson(`/api/polls/${id}/close`, {})
@@ -111,21 +114,27 @@ function PollManager({ id, status, onRefresh }: PollManagerProps) {
                 </p>
                 <FormError message={error} />
                 {confirming ? (
+                    // aria-disabled, not disabled, while the poll closes: if it fails, focus stays on
+                    // Yes with the error just above
                     <div className="flex flex-wrap gap-2">
                         <Button
                             ref={confirmRef}
                             type="button"
                             variant="destructive"
-                            disabled={closing}
+                            aria-disabled={closing}
                             onClick={() => void close()}
+                            className={ariaDisabledClass}
                         >
                             {closing ? 'Closing…' : 'Yes, close it'}
                         </Button>
                         <Button
                             type="button"
                             variant="ghost"
-                            disabled={closing}
-                            onClick={stopConfirming}
+                            aria-disabled={closing}
+                            onClick={() => {
+                                if (!closing) stopConfirming()
+                            }}
+                            className={ariaDisabledClass}
                         >
                             Cancel
                         </Button>

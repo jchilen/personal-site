@@ -119,6 +119,8 @@ export function Ballot({ poll, onVoted }: BallotProps) {
     }
 
     async function submit() {
+        // Submit stays focusable while the vote is sent (aria-disabled), so a second press is ignored here
+        if (submitting) return
         if (ranked.length < poll.options.length) {
             showError(`Rank all ${poll.options.length} options to submit.`)
             return
@@ -236,11 +238,14 @@ export function Ballot({ poll, onVoted }: BallotProps) {
                     put it back.
                 </p>
                 <FormError message={error} />
+                {/* aria-disabled, not disabled, while the vote is sent: if it fails, focus stays here
+                    with the error just above */}
                 <Button
                     ref={submitRef}
                     type="button"
-                    disabled={submitting}
+                    aria-disabled={submitting}
                     onClick={() => void submit()}
+                    className={ariaDisabledClass}
                 >
                     {submitting ? 'Submitting…' : 'Submit vote'}
                 </Button>

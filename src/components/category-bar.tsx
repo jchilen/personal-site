@@ -8,6 +8,7 @@ import {
     type ComponentType,
     type FocusEvent,
     type ReactNode,
+    type RefObject,
 } from 'react'
 import { Link } from 'react-router'
 import { cn } from 'cn'
@@ -255,9 +256,10 @@ function CategoryCards({
 
 /**
  * Which category is picked, and which one's cards are on screen. The two differ while the old
- * cards animate out, before the new ones take their place
+ * cards animate out, before the new ones take their place. `barRef` is the element holding the
+ * hexes, so Escape can put focus back on the open one
  */
-function useCategorySelection() {
+function useCategorySelection(barRef: RefObject<HTMLElement | null>) {
     const [selectedId, setSelectedId] = useState<string | null>(null)
     const [displayedId, setDisplayedId] = useState<string | null>(null)
     const [isLeaving, setIsLeaving] = useState(false)
@@ -296,6 +298,25 @@ function useCategorySelection() {
         }
     }
 
+    // An Effect Event always sees this render's state, so the listener below never acts on an
+    // older render's selectCategory, even though the effect doesn't re-run for every change
+    const onDocumentKeyDown = useEffectEvent((event: KeyboardEvent) => {
+        if (event.key !== 'Escape') return
+        barRef.current?.querySelector<HTMLElement>('[data-state="on"]')?.focus()
+        selectCategory(null)
+    })
+
+    // While a category is open, Escape closes it and puts focus back on its hex. It listens on the
+    // whole document because focus isn't always in the bar: some browsers don't focus a button
+    // when it's clicked
+    useEffect(() => {
+        if (selectedId === null) return
+
+        const handleKeyDown = (event: KeyboardEvent) => onDocumentKeyDown(event)
+        document.addEventListener('keydown', handleKeyDown)
+        return () => document.removeEventListener('keydown', handleKeyDown)
+    }, [selectedId])
+
     return {
         selectedId,
         displayedCategory,
@@ -309,6 +330,7 @@ function useCategorySelection() {
 // The home page: full-size hexes that stick to the top while scrolling, with the open category's
 // cards in the space below them, or `idle` while none is open
 function HomeCategoryBar({ idle }: { idle?: ReactNode }) {
+    const barRef = useRef<HTMLDivElement>(null)
     const {
         selectedId,
         displayedCategory,
@@ -316,7 +338,7 @@ function HomeCategoryBar({ idle }: { idle?: ReactNode }) {
         hidden,
         selectCategory,
         finishLeaving,
-    } = useCategorySelection()
+    } = useCategorySelection(barRef)
     const cardAreaRef = useRef<HTMLDivElement>(null)
 
     // Brings the cards back into view if their area has scrolled up under the bar
@@ -335,6 +357,7 @@ function HomeCategoryBar({ idle }: { idle?: ReactNode }) {
     return (
         <div className="pointer-events-none contents">
             <div
+                ref={barRef}
                 className={cn(
                     // On phones the home hexes don't stick, so they never slide away either
                     'sticky top-4 z-10 mx-auto mt-10 w-fit max-sm:static max-sm:translate-y-0',
@@ -390,6 +413,7 @@ function HomeCategoryBar({ idle }: { idle?: ReactNode }) {
 // Every other page: a dock of mini hexes that slides away while scrolling down, with the open
 // category's cards in a panel below it. It opens below the bar, so the page never needs to scroll
 function FloatingCategoryBar() {
+    const dockRef = useRef<HTMLDivElement>(null)
     const {
         selectedId,
         displayedCategory,
@@ -397,8 +421,7 @@ function FloatingCategoryBar() {
         hidden,
         selectCategory,
         finishLeaving,
-    } = useCategorySelection()
-    const dockRef = useRef<HTMLDivElement>(null)
+    } = useCategorySelection(dockRef)
 
     // An Effect Event always sees this render's state, so the listener below never acts on an
     // older render's selectCategory, even though the effect doesn't re-run for every change
@@ -408,29 +431,14 @@ function FloatingCategoryBar() {
         }
     })
 
-    // Escape closes the panel and puts focus back on the hex that opened it
-    const onDocumentKeyDown = useEffectEvent((event: KeyboardEvent) => {
-        if (event.key !== 'Escape') return
-        dockRef.current
-            ?.querySelector<HTMLElement>('[data-state="on"]')
-            ?.focus()
-        selectCategory(null)
-    })
-
-    // While the panel is open, a click outside the dock or Escape anywhere on the page closes it.
-    // Escape listens on the whole document because focus isn't always in the dock: some browsers
-    // don't focus a button when it's clicked
+    // While the panel is open, a click anywhere outside the dock closes it. (Escape is handled by
+    // useCategorySelection, for both bars)
     useEffect(() => {
         if (selectedId === null) return
 
         const handleClick = (event: MouseEvent) => onDocumentClick(event)
-        const handleKeyDown = (event: KeyboardEvent) => onDocumentKeyDown(event)
         document.addEventListener('click', handleClick)
-        document.addEventListener('keydown', handleKeyDown)
-        return () => {
-            document.removeEventListener('click', handleClick)
-            document.removeEventListener('keydown', handleKeyDown)
-        }
+        return () => document.removeEventListener('click', handleClick)
     }, [selectedId])
 
     // Tabbing out of the dock closes the panel, so it never sits on top of whatever gets focus

@@ -1,7 +1,7 @@
 import { useId, useState, type ReactNode } from 'react'
 import { cn } from 'cn'
 import { IconChevronDown } from '@tabler/icons-react'
-import { underlineInputClass } from '@/components/field-styles'
+import { lockedClass, underlineInputClass } from '@/components/field-styles'
 import { SectionTitle } from '@/components/section-title'
 import { collapseClass, glideClass } from '@/components/motion-styles'
 import {
@@ -246,7 +246,12 @@ export function NpcPicker({
                                                                     setQuery('')
                                                             }}
                                                             className={cn(
-                                                                'flex w-full items-center justify-between gap-2 border bg-background px-2 py-1 text-left text-sm transition hover:border-primary aria-disabled:cursor-not-allowed aria-disabled:text-muted-foreground aria-disabled:hover:border-border aria-pressed:border-primary aria-pressed:bg-primary/10 aria-pressed:text-primary aria-pressed:shadow-[inset_3px_0_0_var(--primary)]',
+                                                                'flex w-full items-center justify-between gap-2 border px-2 py-1 text-left text-sm transition hover:border-primary aria-disabled:cursor-not-allowed aria-disabled:text-muted-foreground aria-disabled:hover:border-border aria-pressed:border-primary aria-pressed:bg-primary/10 aria-pressed:text-primary aria-pressed:shadow-[inset_3px_0_0_var(--primary)]',
+                                                                // Once the most enemies are picked, the rest get the striped, faded locked
+                                                                // look, so being unavailable isn't shown by color alone (WCAG 1.4.1)
+                                                                unavailable(npc)
+                                                                    ? lockedClass
+                                                                    : 'bg-background',
                                                                 searching &&
                                                                     !isMatch(
                                                                         npc,

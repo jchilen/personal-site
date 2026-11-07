@@ -1,5 +1,7 @@
 import { useRef, type RefCallback } from 'react'
 import { IconCopy, IconX } from '@tabler/icons-react'
+import { cn } from 'cn'
+import { lockedClass } from '@/components/field-styles'
 import { SectionTitle } from '@/components/section-title'
 import { glideClass } from '@/components/motion-styles'
 import { Button } from '@/components/ui/button'
@@ -115,7 +117,11 @@ function EnemyCard({
                         aria-label={`Duplicate ${title}`}
                         aria-disabled={full}
                         onClick={onDuplicate}
-                        className="aria-disabled:cursor-not-allowed aria-disabled:text-muted-foreground"
+                        // At the limit it gets the locked look, so it isn't shown by color alone
+                        className={cn(
+                            'aria-disabled:cursor-not-allowed aria-disabled:text-muted-foreground',
+                            full && lockedClass,
+                        )}
                     >
                         <IconCopy />
                     </Button>

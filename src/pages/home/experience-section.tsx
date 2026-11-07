@@ -131,7 +131,9 @@ function ExperienceCard({
                     </CollapsibleContent>
                 </Collapsible>
             </CardContent>
-            <CardFooter className="items-end justify-between gap-4 border-t">
+            {/* flex-wrap: on narrow screens Details drops below the stack list instead of running
+                off the card's edge */}
+            <CardFooter className="flex-wrap items-end justify-between gap-4 border-t">
                 <ul className="grid grid-cols-[auto_auto] gap-x-4 gap-y-1 font-heading text-xs tracking-widest text-muted-foreground uppercase">
                     {entry.stack.map((item) => (
                         <li key={item}>{item}</li>
