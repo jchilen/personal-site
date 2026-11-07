@@ -37,7 +37,11 @@ export function ArticleLayout({
             <header className="relative mt-12 border">
                 {art}
                 <div className="p-5 sm:absolute sm:bottom-[16%] sm:left-0 sm:max-w-[55%] sm:p-0 sm:pl-[4%]">
-                    <h1 className="font-heading text-3xl font-semibold tracking-widest uppercase sm:text-4xl sm:text-white lg:text-5xl">
+                    {/* tabIndex -1 and no outline: App focuses this heading after moving to the page */}
+                    <h1
+                        tabIndex={-1}
+                        className="font-heading text-3xl font-semibold tracking-widest uppercase outline-none sm:text-4xl sm:text-white lg:text-5xl"
+                    >
                         {title}
                     </h1>
                     <p className="mt-3 font-heading text-sm tracking-eyebrow text-muted-foreground uppercase sm:text-white/80">

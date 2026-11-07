@@ -22,7 +22,11 @@ export function ToolLayout({
             <section className="pt-12 pb-16">
                 <header className="flex flex-col items-center text-center">
                     <Eyebrow>{eyebrow}</Eyebrow>
-                    <h1 className="mt-3 font-heading text-3xl font-semibold tracking-widest uppercase sm:text-5xl">
+                    {/* tabIndex -1 and no outline: App focuses this heading after moving to the page */}
+                    <h1
+                        tabIndex={-1}
+                        className="mt-3 font-heading text-3xl font-semibold tracking-widest uppercase outline-none sm:text-5xl"
+                    >
                         {title}
                     </h1>
                     {intro && (

@@ -1,10 +1,13 @@
-import { useState } from 'react'
+import { useRef, useState, type RefCallback } from 'react'
 import { IconArrowDown, IconArrowUp } from '@tabler/icons-react'
 import { SectionTitle } from '@/components/section-title'
 import { glideClass } from '@/components/motion-styles'
+import { ariaDisabledClass } from '@/components/field-styles'
 import { Button } from '@/components/ui/button'
+import { useFocusAfterRender } from '@/hooks/use-focus-after-render'
 import { animateLayout } from '@/lib/animate-layout'
 import { errorMessage, postJson } from '@/lib/api'
+import { neighborAfterRemoval } from '@/lib/focus'
 import { shuffle } from '@/lib/random'
 import type { PollInfo } from './api-types'
 import { FormError } from './form-error'
@@ -14,14 +17,37 @@ type BallotProps = {
     onVoted: () => void
 }
 
+// The ballot's buttons, by what they do, so focus can follow an option from one list to the other
+type ButtonKind = 'pick' | 'unpick' | 'up' | 'down'
+
 export function Ballot({ poll, onVoted }: BallotProps) {
     // Shuffled once when the ballot appears, so no option gets an edge from always being listed first
     const [shuffled] = useState(() => shuffle(poll.options))
     const [ranked, setRanked] = useState<string[]>([])
     const [error, setError] = useState<string | null>(null)
     const [submitting, setSubmitting] = useState(false)
+    const focusAfterRender = useFocusAfterRender()
+    const buttons = useRef(new Map<string, HTMLButtonElement>())
+    const submitRef = useRef<HTMLButtonElement>(null)
 
     const unranked = shuffled.filter((option) => !ranked.includes(option))
+
+    // Every option's buttons move or disappear as the ranking changes, so each one is kept by kind
+    // and option, ready to take focus
+    function buttonRef(
+        kind: ButtonKind,
+        option: string,
+    ): RefCallback<HTMLButtonElement> {
+        const key = `${kind}:${option}`
+        return (node) => {
+            if (node) buttons.current.set(key, node)
+            else buttons.current.delete(key)
+        }
+    }
+
+    function focusButton(kind: ButtonKind, option: string): void {
+        focusAfterRender(() => buttons.current.get(`${kind}:${option}`))
+    }
 
     // Each option keeps one transition name in both lists, so the browser sees it as the same
     // element and glides it from one list into the other. Option text can be anything, so the
@@ -30,8 +56,17 @@ export function Ballot({ poll, onVoted }: BallotProps) {
         return `ballot-option-${shuffled.indexOf(option)}`
     }
 
-    // Every change to the ranking glides the options into their new places
+    // Every change to the ranking glides the options into their new places. Each also moves focus,
+    // since the button that was pressed leaves its list or moves with its row
+
+    // Focus goes to the next option still to pick, or to Submit once the last one is placed
     function rank(option: string) {
+        const leftAfter = unranked.length - 1
+        const next = neighborAfterRemoval(unranked, unranked.indexOf(option))
+        // With one option left, it's placed automatically, so nothing is left to pick
+        if (next && leftAfter > 1) focusButton('pick', next)
+        else focusAfterRender(() => submitRef.current)
+
         animateLayout(() => {
             setError(null)
             setRanked((current) => {
@@ -43,7 +78,12 @@ export function Ballot({ poll, onVoted }: BallotProps) {
         })
     }
 
+    // Focus goes to the next ranked option, or to the option just put back if none are left
     function unrank(index: number) {
+        const next = neighborAfterRemoval(ranked, index)
+        if (next) focusButton('unpick', next)
+        else focusButton('pick', ranked[index])
+
         animateLayout(() =>
             setRanked((current) =>
                 current.filter((_, position) => position !== index),
@@ -51,7 +91,16 @@ export function Ballot({ poll, onVoted }: BallotProps) {
         )
     }
 
+    // Focus stays on the same button as the row moves, unless the row reaches that end of the
+    // list, where the button turns unavailable and focus switches to the other direction
     function move(index: number, direction: -1 | 1) {
+        const option = ranked[index]
+        const to = index + direction
+        const atEnd = direction === -1 ? to === 0 : to === ranked.length - 1
+        const sameWay = direction === -1 ? 'up' : 'down'
+        const otherWay = direction === -1 ? 'down' : 'up'
+        focusButton(atEnd ? otherWay : sameWay, option)
+
         animateLayout(() =>
             setRanked((current) => {
                 const next = [...current]
@@ -105,6 +154,7 @@ export function Ballot({ poll, onVoted }: BallotProps) {
                                 className="flex items-center gap-1 border border-primary bg-primary/5 pr-1.5"
                             >
                                 <button
+                                    ref={buttonRef('unpick', option)}
                                     type="button"
                                     aria-label={`Remove ${option} from your ranking`}
                                     onClick={() => unrank(index)}
@@ -116,22 +166,31 @@ export function Ballot({ poll, onVoted }: BallotProps) {
                                     <span className="truncate">{option}</span>
                                 </button>
                                 <Button
+                                    ref={buttonRef('up', option)}
                                     type="button"
                                     variant="ghost"
                                     size="icon-sm"
                                     aria-label={`Move ${option} up`}
-                                    disabled={index === 0}
-                                    onClick={() => move(index, -1)}
+                                    aria-disabled={index === 0}
+                                    onClick={() => {
+                                        if (index > 0) move(index, -1)
+                                    }}
+                                    className={ariaDisabledClass}
                                 >
                                     <IconArrowUp />
                                 </Button>
                                 <Button
+                                    ref={buttonRef('down', option)}
                                     type="button"
                                     variant="ghost"
                                     size="icon-sm"
                                     aria-label={`Move ${option} down`}
-                                    disabled={index === ranked.length - 1}
-                                    onClick={() => move(index, 1)}
+                                    aria-disabled={index === ranked.length - 1}
+                                    onClick={() => {
+                                        if (index < ranked.length - 1)
+                                            move(index, 1)
+                                    }}
+                                    className={ariaDisabledClass}
                                 >
                                     <IconArrowDown />
                                 </Button>
@@ -153,6 +212,7 @@ export function Ballot({ poll, onVoted }: BallotProps) {
                                 }}
                             >
                                 <button
+                                    ref={buttonRef('pick', option)}
                                     type="button"
                                     onClick={() => rank(option)}
                                     className="flex w-full items-center gap-3 border p-2.5 text-left transition-colors hover:border-primary"
@@ -176,6 +236,7 @@ export function Ballot({ poll, onVoted }: BallotProps) {
                 </p>
                 <FormError message={error} />
                 <Button
+                    ref={submitRef}
                     type="button"
                     disabled={submitting}
                     onClick={() => void submit()}

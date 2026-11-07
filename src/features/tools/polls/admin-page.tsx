@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router'
 import { IconRefresh } from '@tabler/icons-react'
 import { ProgressBar } from '@/components/progress-bar'
@@ -6,6 +6,7 @@ import { SectionTitle } from '@/components/section-title'
 import { PollPageLayout } from './poll-page-layout'
 import { Button } from '@/components/ui/button'
 import { useApi, type ApiState } from '@/hooks/use-api'
+import { useFocusAfterRender } from '@/hooks/use-focus-after-render'
 import { errorMessage, postJson, requestJson } from '@/lib/api'
 import type { PollStatus } from './api-types'
 import { CopyField } from './copy-field'
@@ -25,6 +26,20 @@ function PollManager({ id, status, onRefresh }: PollManagerProps) {
     const [confirming, setConfirming] = useState(false)
     const [closing, setClosing] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const focusAfterRender = useFocusAfterRender()
+    const confirmRef = useRef<HTMLButtonElement>(null)
+    const closePollRef = useRef<HTMLButtonElement>(null)
+
+    // Close poll and its confirm buttons swap places, so focus goes with them each way
+    function startConfirming() {
+        focusAfterRender(() => confirmRef.current)
+        setConfirming(true)
+    }
+
+    function stopConfirming() {
+        focusAfterRender(() => closePollRef.current)
+        setConfirming(false)
+    }
 
     // More votes than expected still fill the bar only to the end
     const percent = Math.min(
@@ -94,6 +109,7 @@ function PollManager({ id, status, onRefresh }: PollManagerProps) {
                 {confirming ? (
                     <div className="flex flex-wrap gap-2">
                         <Button
+                            ref={confirmRef}
                             type="button"
                             variant="destructive"
                             disabled={closing}
@@ -105,17 +121,18 @@ function PollManager({ id, status, onRefresh }: PollManagerProps) {
                             type="button"
                             variant="ghost"
                             disabled={closing}
-                            onClick={() => setConfirming(false)}
+                            onClick={stopConfirming}
                         >
                             Cancel
                         </Button>
                     </div>
                 ) : (
                     <Button
+                        ref={closePollRef}
                         type="button"
                         variant="outline"
                         className="self-start"
-                        onClick={() => setConfirming(true)}
+                        onClick={startConfirming}
                     >
                         Close poll
                     </Button>

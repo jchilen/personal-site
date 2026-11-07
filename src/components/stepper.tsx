@@ -3,6 +3,7 @@ import { IconMinus, IconPlus } from '@tabler/icons-react'
 import { cn } from 'cn'
 import { Button } from '@/components/ui/button'
 import { eyebrowClass } from '@/components/text-styles'
+import { ariaDisabledClass } from '@/components/field-styles'
 
 type StepperProps = {
     label: ReactNode
@@ -64,8 +65,11 @@ export function Stepper({
                         variant="outline"
                         size="icon-sm"
                         aria-label={decreaseLabel}
-                        disabled={!canDecrease}
-                        onClick={onDecrease}
+                        aria-disabled={!canDecrease}
+                        onClick={() => {
+                            if (canDecrease) onDecrease()
+                        }}
+                        className={ariaDisabledClass}
                     >
                         <IconMinus />
                     </Button>
@@ -75,8 +79,11 @@ export function Stepper({
                         variant="outline"
                         size="icon-sm"
                         aria-label={increaseLabel}
-                        disabled={!canIncrease}
-                        onClick={onIncrease}
+                        aria-disabled={!canIncrease}
+                        onClick={() => {
+                            if (canIncrease) onIncrease()
+                        }}
+                        className={ariaDisabledClass}
                     >
                         <IconPlus />
                     </Button>

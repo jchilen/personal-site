@@ -1,4 +1,4 @@
-import { useId, useState } from 'react'
+import { useId, useRef, useState, type RefCallback } from 'react'
 import { IconPlus, IconX } from '@tabler/icons-react'
 import {
     numberInputClass,
@@ -8,9 +8,11 @@ import { SectionTitle } from '@/components/section-title'
 import { glideClass } from '@/components/motion-styles'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useFocusAfterRender } from '@/hooks/use-focus-after-render'
 import { useNumberField } from '@/hooks/use-number-field'
 import { animateLayout } from '@/lib/animate-layout'
 import { errorMessage, postJson } from '@/lib/api'
+import { neighborAfterRemoval } from '@/lib/focus'
 import type { CreatedPoll } from './api-types'
 import { DurationField } from './duration-field'
 import { FormError } from './form-error'
@@ -31,11 +33,19 @@ function newRow(): OptionRow {
 
 const textInputClass = `${underlineInputClass} text-base`
 
+type CreatePollFormProps = {
+    onCreated: (poll: CreatedPoll) => void
+    // Focuses the question as the form appears, for when it replaces the new poll's links
+    autoFocus?: boolean
+}
+
+// Each option row's input and Remove button, which take focus when a row is added or removed
+type RowControl = 'input' | 'remove'
+
 export function CreatePollForm({
     onCreated,
-}: {
-    onCreated: (poll: CreatedPoll) => void
-}) {
+    autoFocus = false,
+}: CreatePollFormProps) {
     const id = useId()
     const [title, setTitle] = useState('')
     const [options, setOptions] = useState(() => [newRow(), newRow()])
@@ -43,6 +53,23 @@ export function CreatePollForm({
     const duration = useDuration(DEFAULT_DURATION_MINUTES)
     const [error, setError] = useState<string | null>(null)
     const [submitting, setSubmitting] = useState(false)
+    const focusAfterRender = useFocusAfterRender()
+    const rowControls = useRef(new Map<string, HTMLElement>())
+
+    function rowControlRef(
+        control: RowControl,
+        rowId: string,
+    ): RefCallback<HTMLElement> {
+        const key = `${control}:${rowId}`
+        return (node) => {
+            if (node) rowControls.current.set(key, node)
+            else rowControls.current.delete(key)
+        }
+    }
+
+    function focusRowControl(control: RowControl, rowId: string): void {
+        focusAfterRender(() => rowControls.current.get(`${control}:${rowId}`))
+    }
 
     function updateOption(rowId: string, text: string) {
         setOptions((rows) =>
@@ -51,11 +78,26 @@ export function CreatePollForm({
     }
 
     // Rows, and everything below them, glide into place as one is added or removed
+
+    // Adding the last row allowed takes away the Add button, so focus moves into the new row
     function addOption() {
-        animateLayout(() => setOptions((rows) => [...rows, newRow()]))
+        const row = newRow()
+        if (options.length + 1 >= POLL_LIMITS.maxOptions) {
+            focusRowControl('input', row.id)
+        }
+        animateLayout(() => setOptions((rows) => [...rows, row]))
     }
 
+    // Focus moves to the next row's Remove button, or the previous row's if this was the last. Back
+    // at the fewest options allowed, the Remove buttons go away, so focus goes to that row's input
     function removeOption(rowId: string) {
+        const index = options.findIndex((row) => row.id === rowId)
+        const next = neighborAfterRemoval(options, index)
+        if (next) {
+            const removesLeft = options.length - 1 > POLL_LIMITS.minOptions
+            focusRowControl(removesLeft ? 'remove' : 'input', next.id)
+        }
+
         animateLayout(() =>
             setOptions((rows) => rows.filter((row) => row.id !== rowId)),
         )
@@ -109,6 +151,7 @@ export function CreatePollForm({
                     </label>
                     <Input
                         id={`${id}-title`}
+                        autoFocus={autoFocus}
                         value={title}
                         maxLength={POLL_LIMITS.titleLength}
                         placeholder="What should our poll be about?"
@@ -133,6 +176,7 @@ export function CreatePollForm({
                                 {index + 1}
                             </span>
                             <Input
+                                ref={rowControlRef('input', row.id)}
                                 aria-label={`Option ${index + 1}`}
                                 value={row.text}
                                 maxLength={POLL_LIMITS.optionLength}
@@ -143,6 +187,7 @@ export function CreatePollForm({
                             />
                             {options.length > POLL_LIMITS.minOptions && (
                                 <Button
+                                    ref={rowControlRef('remove', row.id)}
                                     type="button"
                                     variant="ghost"
                                     size="icon-sm"

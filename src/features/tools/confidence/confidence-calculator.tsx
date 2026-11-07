@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { useNumberField, type NumberField } from '@/hooks/use-number-field'
+import { focusOnMount } from '@/lib/focus'
 import { isOneOf } from '@/lib/one-of'
 import { LabeledProgressBar } from '@/components/progress-bar'
 import { SectionTitle } from '@/components/section-title'
@@ -29,6 +30,8 @@ export type CalculatorStart = {
 
 type ConfidenceCalculatorProps = {
     start: CalculatorStart
+    // Moves focus to the title as the calculator appears, for one added by Compare
+    autoFocus?: boolean
     onRemove?: () => void
 }
 
@@ -83,6 +86,7 @@ function Readout({ readout }: Pick<Summary, 'readout'>) {
 
 export function ConfidenceCalculator({
     start,
+    autoFocus = false,
     onRemove,
 }: ConfidenceCalculatorProps) {
     const id = useId()
@@ -121,7 +125,11 @@ export function ConfidenceCalculator({
         <div className={`divide-y border bg-card ${glideClass}`}>
             <section aria-live="polite" className="p-4">
                 <div className="flex min-h-8 items-center justify-between gap-2">
-                    <SectionTitle>{title}</SectionTitle>
+                    <SectionTitle
+                        focusRef={autoFocus ? focusOnMount : undefined}
+                    >
+                        {title}
+                    </SectionTitle>
                     {onRemove && (
                         <Button
                             variant="ghost"

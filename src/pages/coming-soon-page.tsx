@@ -10,7 +10,11 @@ export function ComingSoonPage() {
             <CategoryBar floating />
             <section className="flex flex-col items-center pt-24 pb-16 text-center">
                 <Eyebrow>Coming soon</Eyebrow>
-                <h1 className="mt-3 font-heading text-3xl font-semibold tracking-widest uppercase sm:text-5xl">
+                {/* tabIndex -1 and no outline: App focuses this heading after moving to the page */}
+                <h1
+                    tabIndex={-1}
+                    className="mt-3 font-heading text-3xl font-semibold tracking-widest uppercase outline-none sm:text-5xl"
+                >
                     This page isn't built yet
                 </h1>
                 <Button asChild variant="link" className="mt-8">

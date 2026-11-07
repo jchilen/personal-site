@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { IconPlus } from '@tabler/icons-react'
 import { cn } from 'cn'
 import { ToolLayout } from '@/components/tool-layout'
 import { MethodologyLayout } from '@/components/methodology-layout'
 import { Button } from '@/components/ui/button'
+import { useFocusAfterRender } from '@/hooks/use-focus-after-render'
 import { animateLayout } from '@/lib/animate-layout'
 import {
     ConfidenceCalculator,
@@ -20,18 +21,23 @@ const STARTING_VALUES: CalculatorStart[] = [
 export function ConfidencePage() {
     // Which starting values each calculator on screen uses; also its React key
     const [calculators, setCalculators] = useState([0])
+    // The calculator Compare added, which takes focus as it appears, since Compare goes away
+    const [addedId, setAddedId] = useState<number | null>(null)
+    const focusAfterRender = useFocusAfterRender()
+    const compareRef = useRef<HTMLButtonElement>(null)
 
     // The calculators glide to their new places as one is added or removed
     function addCalculator() {
-        animateLayout(() =>
-            setCalculators((current) => [
-                ...current,
-                current.includes(0) ? 1 : 0,
-            ]),
-        )
+        const added = calculators.includes(0) ? 1 : 0
+        animateLayout(() => {
+            setAddedId(added)
+            setCalculators((current) => [...current, added])
+        })
     }
 
+    // Removing one brings Compare back, so focus goes there
     function removeCalculator(id: number) {
+        focusAfterRender(() => compareRef.current)
         animateLayout(() =>
             setCalculators((current) =>
                 current.filter((other) => other !== id),
@@ -61,6 +67,7 @@ export function ConfidencePage() {
                         <ConfidenceCalculator
                             key={id}
                             start={STARTING_VALUES[id]}
+                            autoFocus={id === addedId}
                             onRemove={
                                 calculators.length > 1
                                     ? () => removeCalculator(id)
@@ -73,6 +80,7 @@ export function ConfidencePage() {
                 {calculators.length < 2 && (
                     <div className="mt-4 flex justify-center">
                         <Button
+                            ref={compareRef}
                             variant="framed"
                             size="sm"
                             onClick={addCalculator}

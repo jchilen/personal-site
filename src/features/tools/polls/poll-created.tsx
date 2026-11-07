@@ -2,6 +2,7 @@ import { Link } from 'react-router'
 import { SectionTitle } from '@/components/section-title'
 import { glideClass } from '@/components/motion-styles'
 import { Button } from '@/components/ui/button'
+import { focusOnMount } from '@/lib/focus'
 import type { CreatedPoll } from './api-types'
 import { CopyField } from './copy-field'
 
@@ -17,7 +18,8 @@ export function PollCreated({ poll, onCreateAnother }: PollCreatedProps) {
 
     return (
         <div className={`flex flex-col gap-4 border bg-card p-4 ${glideClass}`}>
-            <SectionTitle>Poll created</SectionTitle>
+            {/* This replaces the form, so focus moves here from its Create button */}
+            <SectionTitle focusRef={focusOnMount}>Poll created</SectionTitle>
             <CopyField
                 label="Share with voters"
                 value={window.location.origin + pollPath}

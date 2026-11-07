@@ -51,6 +51,8 @@ type PollsHomeProps = {
 // The create form (or the new poll's links), with the two lists beside it when there are any
 function PollsHome({ mine, voted, onCreated }: PollsHomeProps) {
     const [created, setCreated] = useState<CreatedPoll | null>(null)
+    // Set once "Create another" brings the form back, so its question takes focus from that button
+    const [cameBack, setCameBack] = useState(false)
 
     // Wait for both lists before laying out, so the form doesn't jump sideways when they arrive
     if (mine.status === 'loading' || voted.status === 'loading') return null
@@ -71,12 +73,14 @@ function PollsHome({ mine, voted, onCreated }: PollsHomeProps) {
             {created ? (
                 <PollCreated
                     poll={created}
-                    onCreateAnother={() =>
+                    onCreateAnother={() => {
+                        setCameBack(true)
                         animateLayout(() => setCreated(null))
-                    }
+                    }}
                 />
             ) : (
                 <CreatePollForm
+                    autoFocus={cameBack}
                     onCreated={(poll) => {
                         // The form fades out as the new poll's links fade in
                         animateLayout(() => setCreated(poll))

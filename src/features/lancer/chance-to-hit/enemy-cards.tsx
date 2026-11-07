@@ -1,7 +1,10 @@
+import { useRef, type RefCallback } from 'react'
 import { IconCopy, IconX } from '@tabler/icons-react'
 import { SectionTitle } from '@/components/section-title'
 import { glideClass } from '@/components/motion-styles'
 import { Button } from '@/components/ui/button'
+import { useFocusAfterRender } from '@/hooks/use-focus-after-render'
+import { neighborAfterRemoval } from '@/lib/focus'
 import { CardTierPicker } from './card-tier-picker'
 import { Choice } from './choice'
 import { EffectToggle } from './effect-toggle'
@@ -67,6 +70,8 @@ type EnemyCardProps = {
     onTierChange: (tier: Tier) => void
     onDuplicate: () => void
     onRemove: () => void
+    // Holds on to the Remove button, so focus can move to it when a card beside it is removed
+    removeRef?: RefCallback<HTMLButtonElement>
 }
 
 function EnemyCard({
@@ -77,6 +82,7 @@ function EnemyCard({
     onTierChange,
     onDuplicate,
     onRemove,
+    removeRef,
 }: EnemyCardProps) {
     const { target, npc, title, tier, odds, netAccuracy } = card
     const tech = attackType === 'tech'
@@ -114,6 +120,7 @@ function EnemyCard({
                         <IconCopy />
                     </Button>
                     <Button
+                        ref={removeRef}
                         type="button"
                         variant="outline"
                         size="icon-sm"
@@ -202,6 +209,20 @@ export function EnemyCards({
 }: EnemyCardsProps) {
     const full = cards.length >= MAX_TARGETS
     const warning = useLimitFlash(full)
+    const focusAfterRender = useFocusAfterRender()
+    const removeButtons = useRef(new Map<string, HTMLButtonElement>())
+    const titleRef = useRef<HTMLElement | null>(null)
+
+    // The removed card takes its Remove button with it, so focus moves to the next card's Remove
+    // button, or the previous card's if it was last. With no cards left, it goes to the title
+    function remove(id: string) {
+        const index = cards.findIndex((card) => card.target.id === id)
+        const next = neighborAfterRemoval(cards, index)
+        focusAfterRender(() =>
+            next ? removeButtons.current.get(next.target.id) : titleRef.current,
+        )
+        onRemove(id)
+    }
 
     // At the limit, a copy has nowhere to go, so the warning flashes instead
     function duplicate(id: string) {
@@ -218,7 +239,14 @@ export function EnemyCards({
             className={`@container flex flex-col gap-3 border bg-card p-4 ${glideClass}`}
         >
             <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                <SectionTitle number={4}>Results</SectionTitle>
+                <SectionTitle
+                    number={4}
+                    focusRef={(node) => {
+                        titleRef.current = node
+                    }}
+                >
+                    Results
+                </SectionTitle>
                 <p aria-live="polite" className="text-xs text-muted-foreground">
                     {warning.visible && (
                         <span
@@ -264,7 +292,17 @@ export function EnemyCards({
                                 onTierChange(card.target.id, tier)
                             }
                             onDuplicate={() => duplicate(card.target.id)}
-                            onRemove={() => onRemove(card.target.id)}
+                            onRemove={() => remove(card.target.id)}
+                            removeRef={(node) => {
+                                if (node) {
+                                    removeButtons.current.set(
+                                        card.target.id,
+                                        node,
+                                    )
+                                } else {
+                                    removeButtons.current.delete(card.target.id)
+                                }
+                            }}
                         />
                     ))
                 )}

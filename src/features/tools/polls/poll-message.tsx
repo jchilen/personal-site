@@ -2,17 +2,25 @@ import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 import { SectionTitle } from '@/components/section-title'
 import { Button } from '@/components/ui/button'
+import { focusOnMount } from '@/lib/focus'
+
+type PollMessageProps = {
+    title: string
+    // Moves focus to the title as the message appears, for when it replaces what had focus
+    autoFocus?: boolean
+    children: ReactNode
+}
 
 export function PollMessage({
     title,
+    autoFocus = false,
     children,
-}: {
-    title: string
-    children: ReactNode
-}) {
+}: PollMessageProps) {
     return (
         <div className="flex flex-col gap-3 border bg-card p-4">
-            <SectionTitle>{title}</SectionTitle>
+            <SectionTitle focusRef={autoFocus ? focusOnMount : undefined}>
+                {title}
+            </SectionTitle>
             {children}
         </div>
     )

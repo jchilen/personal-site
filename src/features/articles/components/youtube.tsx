@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { IconPlayerPlay } from '@tabler/icons-react'
+import { focusOnMount } from '@/lib/focus'
 
 type YouTubeProps = {
     id: string
@@ -12,12 +13,15 @@ export function YouTube({ id, title }: YouTubeProps) {
     return (
         <div className="not-prose my-8 aspect-video border bg-card">
             {isPlaying ? (
+                // The player replaces the Play button, so focus moves into it. No outline: the
+                // frame isn't a control, and the player's own controls show their own focus
                 <iframe
+                    ref={focusOnMount}
                     src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1`}
                     title={title}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
-                    className="size-full"
+                    className="size-full outline-none"
                 />
             ) : (
                 <button

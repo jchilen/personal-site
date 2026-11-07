@@ -1,6 +1,6 @@
 import { Footer } from '@/components/footer'
 import { ModeToggle } from '@/components/mode-toggle'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { Routes, Route, useLocation } from 'react-router'
 import { HomePage } from '@/pages/home/home-page'
 import { SafeLeadPage } from '@/features/tools/safe-lead/safe-lead-page'
@@ -22,9 +22,21 @@ import { useHideOnScroll } from '@/hooks/use-hide-on-scroll'
 
 function App() {
     const { pathname } = useLocation()
+    // The page focus was last moved for, so a real page change can be told apart from the first
+    // load, a link to a heading on the same page, or StrictMode running the effect twice
+    const focusedPathname = useRef(pathname)
 
     useEffect(() => {
         window.scrollTo(0, 0)
+
+        // After moving to another page, focus its heading. Otherwise focus drops to the top of the
+        // document and screen readers don't say a new page loaded. Each page's h1 has tabIndex -1
+        // so it can take focus
+        if (focusedPathname.current === pathname) return
+        focusedPathname.current = pathname
+        document
+            .querySelector<HTMLElement>('main h1')
+            ?.focus({ preventScroll: true })
     }, [pathname])
 
     // The theme toggle slides away with the hex bar

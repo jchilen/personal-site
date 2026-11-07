@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { PollClosedMessage, PollMessage } from './poll-message'
 import { PollPageLayout } from './poll-page-layout'
@@ -9,11 +10,13 @@ import { pollTitle } from './poll-title'
 
 type BallotContentProps = {
     state: ApiState<PollInfo>
+    // True once this visit's vote went in, so the confirmation takes focus from the ballot
+    justVoted: boolean
     onVoted: () => void
 }
 
 // Whatever fits the poll's state: an error, a closed or already-voted message, or the ballot
-function BallotContent({ state, onVoted }: BallotContentProps) {
+function BallotContent({ state, justVoted, onVoted }: BallotContentProps) {
     if (state.status === 'loading') return null
 
     if (state.status === 'error') {
@@ -32,7 +35,7 @@ function BallotContent({ state, onVoted }: BallotContentProps) {
 
     if (poll.hasVoted) {
         return (
-            <PollMessage title="Your vote is in">
+            <PollMessage title="Your vote is in" autoFocus={justVoted}>
                 <p className="text-muted-foreground">
                     Results appear here when the poll closes.
                 </p>
@@ -47,6 +50,7 @@ function BallotContent({ state, onVoted }: BallotContentProps) {
 export function BallotPage() {
     const { id = '' } = useParams()
     const { state, reload } = useApi<PollInfo>(`/api/polls/${id}`)
+    const [justVoted, setJustVoted] = useState(false)
 
     return (
         <PollPageLayout
@@ -54,7 +58,14 @@ export function BallotPage() {
             title={pollTitle(state)}
             intro="Rank every option, favorite first."
         >
-            <BallotContent state={state} onVoted={reload} />
+            <BallotContent
+                state={state}
+                justVoted={justVoted}
+                onVoted={() => {
+                    setJustVoted(true)
+                    reload()
+                }}
+            />
         </PollPageLayout>
     )
 }

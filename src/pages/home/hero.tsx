@@ -26,9 +26,11 @@ export function Hero({ nameRef }: HeroProps) {
             </Eyebrow>
             <span aria-hidden="true" className="mt-2 h-0.5 w-8 bg-primary" />
 
+            {/* tabIndex -1 and no outline: App focuses this heading after moving to the page */}
             <h1
                 ref={nameRef}
-                className="mt-4 font-heading text-4xl font-semibold tracking-widest uppercase sm:text-6xl"
+                tabIndex={-1}
+                className="mt-4 font-heading text-4xl font-semibold tracking-widest uppercase outline-none sm:text-6xl"
             >
                 Joe Chilen
             </h1>
