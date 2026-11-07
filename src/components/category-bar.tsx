@@ -301,7 +301,9 @@ function useCategorySelection(barRef: RefObject<HTMLElement | null>) {
     // An Effect Event always sees this render's state, so the listener below never acts on an
     // older render's selectCategory, even though the effect doesn't re-run for every change
     const onDocumentKeyDown = useEffectEvent((event: KeyboardEvent) => {
-        if (event.key !== 'Escape') return
+        // defaultPrevented: something on top, like a tooltip or popover, already used this Escape
+        // to close itself. The category closes on the next one
+        if (event.key !== 'Escape' || event.defaultPrevented) return
         barRef.current?.querySelector<HTMLElement>('[data-state="on"]')?.focus()
         selectCategory(null)
     })

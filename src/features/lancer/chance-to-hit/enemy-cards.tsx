@@ -5,6 +5,7 @@ import { lockedClass } from '@/components/field-styles'
 import { SectionTitle } from '@/components/section-title'
 import { glideClass } from '@/components/motion-styles'
 import { Button } from '@/components/ui/button'
+import { Hint } from '@/components/hint'
 import { useFocusAfterRender } from '@/hooks/use-focus-after-render'
 import { neighborAfterRemoval } from '@/lib/focus'
 import { CardTierPicker } from './card-tier-picker'
@@ -109,32 +110,44 @@ function EnemyCard({
                         {targetDefense(npc, attackType, tier)}
                     </p>
                 </div>
+                {/* Tooltips open below: above, they'd cover the Results row, where the limit warning flashes */}
                 <div className="flex shrink-0 gap-1">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        size="icon-sm"
-                        aria-label={`Duplicate ${title}`}
-                        aria-disabled={full}
-                        onClick={onDuplicate}
-                        // At the limit it gets the locked look, so it isn't shown by color alone
-                        className={cn(
-                            'aria-disabled:cursor-not-allowed aria-disabled:text-muted-foreground',
-                            full && lockedClass,
-                        )}
+                    <Hint
+                        label={
+                            full
+                                ? `Duplicate ${title} (${MAX_TARGETS} chosen: remove one to add a copy)`
+                                : `Duplicate ${title}`
+                        }
+                        side="bottom"
                     >
-                        <IconCopy />
-                    </Button>
-                    <Button
-                        ref={removeRef}
-                        type="button"
-                        variant="outline"
-                        size="icon-sm"
-                        aria-label={`Remove ${title}`}
-                        onClick={onRemove}
-                    >
-                        <IconX />
-                    </Button>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="icon-sm"
+                            aria-label={`Duplicate ${title}`}
+                            aria-disabled={full}
+                            onClick={onDuplicate}
+                            // At the limit it gets the locked look, so it isn't shown by color alone
+                            className={cn(
+                                'aria-disabled:cursor-not-allowed aria-disabled:text-muted-foreground',
+                                full && lockedClass,
+                            )}
+                        >
+                            <IconCopy />
+                        </Button>
+                    </Hint>
+                    <Hint label={`Remove ${title}`} side="bottom">
+                        <Button
+                            ref={removeRef}
+                            type="button"
+                            variant="outline"
+                            size="icon-sm"
+                            aria-label={`Remove ${title}`}
+                            onClick={onRemove}
+                        >
+                            <IconX />
+                        </Button>
+                    </Hint>
                 </div>
             </div>
             <Choice
