@@ -1,4 +1,6 @@
-import { useEffect, useReducer, type Dispatch } from 'react'
+import { useCallback, useEffect, useReducer, type Dispatch } from 'react'
+import { animateLayout } from '@/lib/animate-layout'
+import { changesLayout } from './layout-actions'
 import { pageReducer, type PageAction } from './page-reducer'
 import { restoreState, toSaved } from './saved-settings'
 import { DEFAULT_STATE, type PageState } from './settings'
@@ -24,7 +26,7 @@ export function usePageState(): {
     dispatch: Dispatch<PageAction>
 } {
     // The third argument loads the saved state once, on the first render only
-    const [state, dispatch] = useReducer(pageReducer, null, loadState)
+    const [state, applyNow] = useReducer(pageReducer, null, loadState)
 
     // Save after every change
     useEffect(() => {
@@ -34,6 +36,16 @@ export function usePageState(): {
             // Storage is unavailable or full; the page still works, it just won't remember
         }
     }, [state])
+
+    // Actions that move things around glide into place, and the rest apply instantly. useCallback
+    // keeps this the same function between renders, like the dispatch it wraps
+    const dispatch = useCallback((action: PageAction) => {
+        if (changesLayout(action)) {
+            animateLayout(() => applyNow(action))
+        } else {
+            applyNow(action)
+        }
+    }, [])
 
     return { state, dispatch }
 }

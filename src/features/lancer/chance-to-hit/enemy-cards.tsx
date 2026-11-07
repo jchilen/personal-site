@@ -83,7 +83,9 @@ function EnemyCard({
     const defenseName = attackType === 'weapon' ? 'Evasion' : 'E-Defense'
 
     return (
-        <article className="flex flex-col gap-3 border bg-background p-4">
+        <article
+            className={`flex flex-col gap-3 border bg-background p-4 ${glideClass}`}
+        >
             <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                     <div className="flex items-center gap-2">

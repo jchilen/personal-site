@@ -294,11 +294,11 @@
     * contents crossfade inside that box at their real size, rather than stretching to fit it
     */
     ::view-transition-group(*) {
-        animation-duration: 300ms;
-        animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+        animation-duration: 450ms;
+        animation-timing-function: var(--ease-in-out);
     }
     ::view-transition-old(*),
     ::view-transition-new(*) {
-        @apply h-full object-none object-left-top;
+        @apply h-full object-none object-top-left;
     }
 }
