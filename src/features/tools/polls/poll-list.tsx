@@ -1,6 +1,7 @@
 import { cn } from 'cn'
 import { Link } from 'react-router'
 import { SectionTitle } from '@/components/section-title'
+import { glideClass } from '@/components/motion-styles'
 
 export type PollListItem = {
     id: string
@@ -18,7 +19,7 @@ export function PollList({
     items: PollListItem[]
 }) {
     return (
-        <section className="border bg-card p-4">
+        <section className={`border bg-card p-4 ${glideClass}`}>
             <SectionTitle>{title}</SectionTitle>
             <ul className="mt-3 divide-y">
                 {items.map((item) => (

@@ -1,5 +1,6 @@
 import { IconCopy, IconX } from '@tabler/icons-react'
 import { SectionTitle } from '@/components/section-title'
+import { glideClass } from '@/components/motion-styles'
 import { Button } from '@/components/ui/button'
 import { CardTierPicker } from './card-tier-picker'
 import { Choice } from './choice'
@@ -211,7 +212,9 @@ export function EnemyCards({
 
     return (
         // Its own container, so the number of card columns follows this section's width
-        <section className="@container flex flex-col gap-3 border bg-card p-4">
+        <section
+            className={`@container flex flex-col gap-3 border bg-card p-4 ${glideClass}`}
+        >
             <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                 <SectionTitle number={4}>Results</SectionTitle>
                 <p aria-live="polite" className="text-xs text-muted-foreground">

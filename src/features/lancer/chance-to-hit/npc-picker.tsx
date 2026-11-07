@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react'
 import { cn } from 'cn'
 import { underlineInputClass } from '@/components/field-styles'
 import { SectionTitle } from '@/components/section-title'
+import { glideClass } from '@/components/motion-styles'
 import { Input } from '@/components/ui/input'
 import { percent } from './format'
 import type { LancerNpc } from './npc-types'
@@ -119,7 +120,9 @@ export function NpcPicker({
 
     return (
         // Its own container, so the columns follow this card's width
-        <section className="@container flex flex-col gap-3 border bg-card p-4">
+        <section
+            className={`@container flex flex-col gap-3 border bg-card p-4 ${glideClass}`}
+        >
             <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
                 <div>
                     <SectionTitle number={3}>

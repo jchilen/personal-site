@@ -1,4 +1,5 @@
 import { SectionTitle } from '@/components/section-title'
+import { glideClass } from '@/components/motion-styles'
 import { Choice } from './choice'
 import { IconInfoCircle } from '@tabler/icons-react'
 import { Note } from './note'
@@ -9,7 +10,9 @@ export function SetupBar({ settings, dispatch }: SettingsProps) {
     // Each ruleset remembers its own tier, so this shows and changes only the showing one's
     const { tier } = currentRuleset(settings)
     return (
-        <section className="flex flex-col gap-4 border bg-card p-4">
+        <section
+            className={`flex flex-col gap-4 border bg-card p-4 ${glideClass}`}
+        >
             <SectionTitle number={1}>Setup</SectionTitle>
             <Choice
                 label="Attack"

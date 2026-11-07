@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { cn } from 'cn'
 import { IconMinus, IconPlus } from '@tabler/icons-react'
 import { ToolLayout } from '@/components/tool-layout'
 import { Button } from '@/components/ui/button'
@@ -8,6 +9,7 @@ import { underlineInputClass } from '@/components/field-styles'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { PanelHeader } from '@/components/panel-header'
 import { flatCardClass } from '@/components/card-styles'
+import { glideClass } from '@/components/motion-styles'
 import { calculateSafeLead, POSSESSIONS, type Possession } from './safe-lead'
 import { isOneOf } from '@/lib/one-of'
 import { SafeLeadOutput } from './safe-lead-output'
@@ -52,7 +54,7 @@ export function SafeLeadPage() {
                 methodology={<SafeLeadMethodology />}
             >
                 <div className="grid gap-4 @xl:grid-cols-2">
-                    <Card size="sm" className={flatCardClass}>
+                    <Card size="sm" className={cn(flatCardClass, glideClass)}>
                         <PanelHeader label="Input" number={1} />
                         <CardContent className="flex flex-col gap-5">
                             <div className={rowClass}>
@@ -161,7 +163,12 @@ export function SafeLeadPage() {
                     />
                 </div>
 
-                <p className="mt-6 text-center text-xs text-muted-foreground">
+                <p
+                    className={cn(
+                        'mt-6 text-center text-xs text-muted-foreground',
+                        glideClass,
+                    )}
+                >
                     Uses the{' '}
                     <InlineLink href="https://www.slate.com/articles/sports/sports_nut/2008/03/the_lead_is_safe.single.html">
                         Safe Lead Formula

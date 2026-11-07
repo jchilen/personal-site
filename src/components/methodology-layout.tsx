@@ -1,9 +1,10 @@
 import { useRef, useState, type ReactNode } from 'react'
 import { IconArrowUp, IconMinus, IconPlus } from '@tabler/icons-react'
-
 import { Eyebrow } from '@/components/eyebrow'
 import { Button } from '@/components/ui/button'
 import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible'
+import { glideClass } from '@/components/motion-styles'
+import { animateLayout } from '@/lib/animate-layout'
 import { cn } from 'cn'
 
 // Where and how the methodology sits beside the tool. Wide tools keep their full width, so they
@@ -56,7 +57,8 @@ export function MethodologyLayout({
             variant="framed"
             size="sm"
             aria-expanded={isOpen}
-            onClick={() => setIsOpen(!isOpen)}
+            // The tool's cards glide to their new places as the panel opens or closes
+            onClick={() => animateLayout(() => setIsOpen(!isOpen))}
         >
             Methodology
             {isOpen ? (
@@ -68,12 +70,7 @@ export function MethodologyLayout({
     )
 
     return (
-        <div
-            className={cn(
-                'grid transition-[grid-template-columns,margin] duration-300 ease-out motion-reduce:transition-none',
-                isOpen ? layout.open : layout.closed,
-            )}
-        >
+        <div className={cn('grid', isOpen ? layout.open : layout.closed)}>
             <div
                 ref={toolRef}
                 className={cn(
@@ -81,7 +78,13 @@ export function MethodologyLayout({
                     layout.tool,
                 )}
             >
-                <div className={cn('mb-4 flex justify-end', layout.topOnly)}>
+                <div
+                    className={cn(
+                        'mb-4 flex justify-end',
+                        glideClass,
+                        layout.topOnly,
+                    )}
+                >
                     {toggle}
                 </div>
                 {children}
@@ -96,7 +99,8 @@ export function MethodologyLayout({
                 <CollapsibleContent asChild>
                     <article
                         className={cn(
-                            'mt-8 border-t-2 border-primary pt-6 duration-300 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=open]:animate-in data-[state=open]:fade-in motion-reduce:animate-none',
+                            'mt-8 border-t-2 border-primary pt-6',
+                            glideClass,
                             layout.article,
                         )}
                     >

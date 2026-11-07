@@ -7,6 +7,7 @@ import { useNumberField, type NumberField } from '@/hooks/use-number-field'
 import { isOneOf } from '@/lib/one-of'
 import { LabeledProgressBar } from '@/components/progress-bar'
 import { SectionTitle } from '@/components/section-title'
+import { glideClass } from '@/components/motion-styles'
 import { choiceItemClass, numberInputClass } from '@/components/field-styles'
 import {
     chanceSummary,
@@ -117,7 +118,7 @@ export function ConfidenceCalculator({
             : null
 
     return (
-        <div className="divide-y border bg-card">
+        <div className={`divide-y border bg-card ${glideClass}`}>
             <section aria-live="polite" className="p-4">
                 <div className="flex min-h-8 items-center justify-between gap-2">
                     <SectionTitle>{title}</SectionTitle>

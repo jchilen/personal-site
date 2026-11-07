@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { cn } from 'cn'
 import { SectionTitle } from '@/components/section-title'
+import { glideClass } from '@/components/motion-styles'
 import { Stepper } from '@/components/stepper'
 import { EffectToggle } from './effect-toggle'
 import { signed } from './format'
@@ -64,7 +65,9 @@ export function YourEffects({ settings, dispatch }: SettingsProps) {
 
     return (
         // Its own container, so its two columns split based on this card's width, not the page's
-        <section className="@container flex flex-col gap-3 border bg-card p-4">
+        <section
+            className={`@container flex flex-col gap-3 border bg-card p-4 ${glideClass}`}
+        >
             <div className="grid gap-y-3 @lg:grid-cols-2">
                 <div className="flex flex-col gap-4 @lg:pr-5">
                     <SectionTitle number={2}>Your primary effects</SectionTitle>

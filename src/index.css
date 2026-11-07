@@ -287,4 +287,18 @@
     html {
         @apply scroll-smooth font-sans motion-reduce:scroll-auto;
     }
+
+    /*
+    * View transitions, run by animateLayout (src/lib/animate-layout.ts). Each element marked with
+    * glideClass gets its own box, which glides to the element's new spot and size. Its old and new
+    * contents crossfade inside that box at their real size, rather than stretching to fit it
+    */
+    ::view-transition-group(*) {
+        animation-duration: 300ms;
+        animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+        @apply h-full object-none object-left-top;
+    }
 }

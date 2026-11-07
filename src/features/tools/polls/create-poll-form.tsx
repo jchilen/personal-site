@@ -5,6 +5,7 @@ import {
     underlineInputClass,
 } from '@/components/field-styles'
 import { SectionTitle } from '@/components/section-title'
+import { glideClass } from '@/components/motion-styles'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useNumberField } from '@/hooks/use-number-field'
@@ -85,7 +86,7 @@ export function CreatePollForm({
                 event.preventDefault()
                 void submit()
             }}
-            className="divide-y border bg-card"
+            className={`divide-y border bg-card ${glideClass}`}
         >
             <section className="flex flex-col gap-3 p-4">
                 <SectionTitle>New poll</SectionTitle>
