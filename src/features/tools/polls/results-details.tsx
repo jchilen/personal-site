@@ -11,6 +11,7 @@ import { findWins, groupByStrength, sortWins } from './ranked-pairs'
 import type { PollResults } from './results'
 import { describeTiebreak } from './results-text'
 import { Eyebrow } from '@/components/eyebrow'
+import { collapseClass } from '@/components/motion-styles'
 
 type ResultsDetailsProps = {
     options: string[]
@@ -31,7 +32,9 @@ export function ResultsDetails({ options, results }: ResultsDetailsProps) {
                 <IconChevronDown className="size-4 transition-transform group-data-[state=open]:rotate-180 motion-reduce:transition-none" />
             </CollapsibleTrigger>
 
-            <CollapsibleContent className="divide-y border-t">
+            <CollapsibleContent
+                className={cn(collapseClass, 'divide-y border-t')}
+            >
                 <section className="flex flex-col gap-3 p-4">
                     <SectionTitle>Head-to-head</SectionTitle>
                     <p className="text-sm text-muted-foreground">

@@ -16,6 +16,7 @@ import {
 } from './experience'
 import { flatCardClass } from '@/components/card-styles'
 import { eyebrowClass } from '@/components/text-styles'
+import { collapseClass } from '@/components/motion-styles'
 
 const STAGE_IDS = CAREER_STAGES.map((stage) => stage.id)
 
@@ -111,7 +112,7 @@ function ExperienceCard({
                 <CardTitle className="text-base">{entry.title}</CardTitle>
                 <p className="mt-3">{entry.summary}</p>
                 <Collapsible open={isOpen}>
-                    <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down motion-reduce:animate-none">
+                    <CollapsibleContent className={collapseClass}>
                         <ul className="list-disc space-y-1.5 pt-3 pl-5 text-sm text-muted-foreground marker:text-foreground dark:marker:text-primary">
                             {entry.highlights.map((highlight) => (
                                 <li key={highlight}>{highlight}</li>

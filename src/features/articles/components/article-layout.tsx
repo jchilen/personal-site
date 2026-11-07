@@ -4,6 +4,7 @@ import { IconMinus, IconPlus } from '@tabler/icons-react'
 
 import { CategoryBar } from '@/components/category-bar'
 import { Eyebrow } from '@/components/eyebrow'
+import { collapseClass } from '@/components/motion-styles'
 import {
     Collapsible,
     CollapsibleContent,
@@ -62,8 +63,10 @@ export function ArticleLayout({
                         <IconPlus className="size-4 group-data-[state=open]/toc:hidden" />
                         <IconMinus className="size-4 group-data-[state=closed]/toc:hidden" />
                     </CollapsibleTrigger>
-                    <CollapsibleContent className="border-t px-2 py-3">
-                        <TableOfContents toc={toc} />
+                    <CollapsibleContent className={collapseClass}>
+                        <div className="border-t px-2 py-3">
+                            <TableOfContents toc={toc} />
+                        </div>
                     </CollapsibleContent>
                 </Collapsible>
 

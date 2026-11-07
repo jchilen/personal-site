@@ -425,7 +425,13 @@ function FloatingCategoryBar() {
                         category={displayedCategory}
                         isLeaving={isLeaving}
                         onAnimationEnd={finishLeaving}
-                        className="pointer-events-auto relative border border-l-0 bg-muted py-4 pr-4 pl-10"
+                        // The panel scans in and out with its cards, rather than appearing first
+                        className={cn(
+                            'pointer-events-auto relative border border-l-0 bg-muted py-4 pr-4 pl-10 motion-reduce:animate-none',
+                            isLeaving
+                                ? 'animate-scan-conceal'
+                                : 'animate-scan-reveal',
+                        )}
                     >
                         <div
                             aria-hidden="true"
