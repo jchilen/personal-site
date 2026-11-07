@@ -6,6 +6,8 @@ import { ToolLayout } from '@/components/tool-layout'
 type PollPageLayoutProps = {
     eyebrow: string
     title: string
+    // The browser tab's title, so a poll's ballot, admin and results tabs can be told apart
+    tabTitle?: string
     intro: string
     children: ReactNode
 }
@@ -15,11 +17,17 @@ type PollPageLayoutProps = {
 export function PollPageLayout({
     eyebrow,
     title,
+    tabTitle,
     intro,
     children,
 }: PollPageLayoutProps) {
     return (
-        <ToolLayout eyebrow={eyebrow} title={title} intro={intro}>
+        <ToolLayout
+            eyebrow={eyebrow}
+            title={title}
+            tabTitle={tabTitle}
+            intro={intro}
+        >
             <meta name="robots" content="noindex" />
             <div className="mx-auto max-w-md">
                 <Link

@@ -8,6 +8,7 @@ function FooterLink({ label, href }: { label: string; href: string }) {
         <Button asChild variant="link" size="sm">
             <a href={href} target="_blank" rel="noopener noreferrer">
                 {label}
+                <span className="sr-only">(opens in a new tab)</span>
                 <IconArrowUpRight data-icon="inline-end" />
             </a>
         </Button>

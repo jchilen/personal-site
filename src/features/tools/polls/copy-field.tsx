@@ -48,6 +48,11 @@ export function CopyField({ label, value }: { label: string; value: string }) {
                     {copied ? <IconCheck /> : <IconCopy />}
                     {copied ? 'Copied' : 'Copy'}
                 </Button>
+                {/* Screen readers don't reliably announce a focused button's text changing, so
+                    this says it out loud instead */}
+                <span role="status" className="sr-only">
+                    {copied ? 'Link copied' : ''}
+                </span>
             </div>
         </div>
     )

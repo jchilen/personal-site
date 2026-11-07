@@ -95,6 +95,7 @@ export function ResultsPage() {
         <PollPageLayout
             eyebrow="Poll results"
             title={pollTitle(state)}
+            tabTitle={`Poll results: ${pollTitle(state)}`}
             intro="Every ballot counted, using Ranked Pairs."
         >
             <ResultsContent id={id} state={state} />

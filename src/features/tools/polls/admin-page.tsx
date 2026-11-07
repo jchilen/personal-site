@@ -75,7 +75,11 @@ function PollManager({ id, status, onRefresh }: PollManagerProps) {
                         Refresh
                     </Button>
                 </div>
-                <p className="font-heading text-4xl font-semibold text-cat-tools">
+                {/* Announced when Refresh brings in new votes */}
+                <p
+                    aria-live="polite"
+                    className="font-heading text-4xl font-semibold text-cat-tools"
+                >
                     {status.ballotCount}{' '}
                     <span className="text-base tracking-widest text-muted-foreground uppercase">
                         of {status.expectedVoters} voted
@@ -211,6 +215,7 @@ export function AdminPage() {
         <PollPageLayout
             eyebrow="Manage poll"
             title={pollTitle(state)}
+            tabTitle={`Manage poll: ${pollTitle(state)}`}
             intro="Watch the votes come in, and close the poll when everyone's done."
         >
             <AdminContent

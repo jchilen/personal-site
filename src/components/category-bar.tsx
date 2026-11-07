@@ -9,7 +9,7 @@ import {
     type FocusEvent,
     type ReactNode,
 } from 'react'
-import { useNavigate } from 'react-router'
+import { Link } from 'react-router'
 import { cn } from 'cn'
 import { categories, type Category } from '@/data/categories'
 import { toggleVariants } from '@/components/ui/toggle'
@@ -111,31 +111,43 @@ function categoryColorStyle(color: string): CSSProperties {
     return { '--category-color': color }
 }
 
-type HomeHexProps = {
-    mini: boolean
-    onClick: () => void
-}
+type HomeHexProps = { mini: boolean } & (
+    { to: string; onClick?: never } | { onClick: () => void; to?: never }
+)
 
-// The Home hex looks like the category toggles, but it's a plain button: an action, not a choice
-function HomeHex({ mini, onClick }: HomeHexProps) {
+// The Home hex looks like the category toggles, but it isn't a choice. On another page it's a
+// link to the home page; on the home page, where there's nowhere to go, it's a button that
+// scrolls back to the top
+function HomeHex({ mini, to, onClick }: HomeHexProps) {
     if (!homeCategory) return null
-    return (
+
+    const className = cn(
+        toggleVariants(),
+        itemClass,
+        hexItemClass,
+        mini ? miniHexClass : fullHexClass,
+    )
+    const style = categoryColorStyle(homeCategory.color)
+    const content = (
+        <HexContent
+            icon={homeCategory.icon}
+            label={homeCategory.label}
+            mini={mini}
+        />
+    )
+
+    return to ? (
+        <Link to={to} className={className} style={style}>
+            {content}
+        </Link>
+    ) : (
         <button
             type="button"
-            className={cn(
-                toggleVariants(),
-                itemClass,
-                hexItemClass,
-                mini ? miniHexClass : fullHexClass,
-            )}
-            style={categoryColorStyle(homeCategory.color)}
+            className={className}
+            style={style}
             onClick={onClick}
         >
-            <HexContent
-                icon={homeCategory.icon}
-                label={homeCategory.label}
-                mini={mini}
-            />
+            {content}
         </button>
     )
 }
@@ -382,7 +394,6 @@ function FloatingCategoryBar() {
         selectCategory,
         finishLeaving,
     } = useCategorySelection()
-    const navigate = useNavigate()
     const dockRef = useRef<HTMLDivElement>(null)
 
     // An Effect Event always sees this render's state, so the listener below never acts on an
@@ -447,7 +458,7 @@ function FloatingCategoryBar() {
                 aria-label="Site sections"
                 className="flex h-12 items-start gap-1"
             >
-                <HomeHex mini onClick={() => navigate('/')} />
+                <HomeHex mini to="/" />
                 <CategoryToggles
                     mini
                     selectedId={selectedId}

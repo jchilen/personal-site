@@ -9,6 +9,8 @@ type SectionTitleProps = {
     // Lets code move focus to the title, for when the content around it is swapped in. Pass
     // focusOnMount to focus it as it appears, or a ref callback to hold on to it
     focusRef?: RefCallback<HTMLElement>
+    // For a control named by this title, through aria-labelledby
+    id?: string
 }
 
 export function SectionTitle({
@@ -16,11 +18,13 @@ export function SectionTitle({
     as: Heading = 'h2',
     number,
     focusRef,
+    id,
 }: SectionTitleProps) {
     return (
         // A focused title gets no outline: it isn't a control, it only marks where you are.
         // tabIndex -1 lets code focus it without adding it to the Tab order
         <Heading
+            id={id}
             ref={focusRef}
             tabIndex={focusRef ? -1 : undefined}
             className="flex items-center gap-2 font-heading text-sm font-semibold tracking-eyebrow text-foreground uppercase outline-none"

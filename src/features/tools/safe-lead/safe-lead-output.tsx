@@ -54,14 +54,11 @@ export function SafeLeadOutput({
           : `${result.safePercent}%`
 
     return (
-        <Card
-            size="sm"
-            className={cn(flatCardClass, glideClass)}
-            aria-live="polite"
-        >
+        <Card size="sm" className={cn(flatCardClass, glideClass)}>
             <PanelHeader label="Result" number={2} />
             <CardContent className="flex flex-1 flex-col justify-center gap-5">
-                <div>
+                {/* Only the answer is announced as it changes, not the bars and working below */}
+                <div aria-live="polite">
                     <p
                         className={cn(
                             'font-heading text-xs font-semibold tracking-eyebrow uppercase',

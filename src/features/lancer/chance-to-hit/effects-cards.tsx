@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useId, type ReactNode } from 'react'
 import { cn } from 'cn'
 import { SectionTitle } from '@/components/section-title'
 import { glideClass } from '@/components/motion-styles'
@@ -60,6 +60,7 @@ function NumberStepper({
 
 export function YourEffects({ settings, dispatch }: SettingsProps) {
     const tech = settings.attackType === 'tech'
+    const statusesId = useId()
     const change = (changes: Partial<YourSettings>) =>
         dispatch({ type: 'changeYourSettings', changes })
 
@@ -116,10 +117,15 @@ export function YourEffects({ settings, dispatch }: SettingsProps) {
                         </>
                     )}
                     <div className="flex flex-col gap-1.5">
-                        <span className={eyebrowClass}>
+                        <span id={statusesId} className={eyebrowClass}>
                             Statuses and conditions
                         </span>
-                        <div className="flex flex-wrap gap-2">
+                        {/* Grouped under its label, so screen readers say what the toggles are for */}
+                        <div
+                            role="group"
+                            aria-labelledby={statusesId}
+                            className="flex flex-wrap gap-2"
+                        >
                             <EffectToggle
                                 label="Impaired"
                                 pressed={settings.impaired}

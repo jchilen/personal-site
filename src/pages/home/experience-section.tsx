@@ -107,9 +107,19 @@ function ExperienceCard({
                 isDimmed && 'opacity-50',
             )}
         >
-            <PanelHeader label={entry.org} number={number} />
+            {/* h3: each card sits inside the Experience section's h2 */}
+            <PanelHeader label={entry.org} number={number} as="h3" />
             <CardContent>
-                <CardTitle className="text-base">{entry.title}</CardTitle>
+                <CardTitle className="text-base">
+                    {entry.title}
+                    {/* The highlight is a gold border, so screen readers get it in words */}
+                    {isHighlighted && (
+                        <span className="sr-only">
+                            {' '}
+                            (matches the selected stage)
+                        </span>
+                    )}
+                </CardTitle>
                 <p className="mt-3">{entry.summary}</p>
                 <Collapsible open={isOpen}>
                     <CollapsibleContent className={collapseClass}>

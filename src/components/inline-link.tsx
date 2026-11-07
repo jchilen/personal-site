@@ -2,7 +2,11 @@ import type { ComponentProps } from 'react'
 
 import { cn } from 'cn'
 
-export function InlineLink({ className, ...props }: ComponentProps<'a'>) {
+export function InlineLink({
+    className,
+    children,
+    ...props
+}: ComponentProps<'a'>) {
     return (
         <a
             target="_blank"
@@ -12,6 +16,10 @@ export function InlineLink({ className, ...props }: ComponentProps<'a'>) {
                 className,
             )}
             {...props}
-        />
+        >
+            {children}
+            {/* The space sits inside the hidden text, so no underlined space shows after the link */}
+            <span className="sr-only"> (opens in a new tab)</span>
+        </a>
     )
 }

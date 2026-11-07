@@ -129,8 +129,15 @@ export function SafeLeadPage() {
                             </div>
 
                             <div className={rowClass}>
-                                <span className={eyebrowClass}>Clock</span>
-                                <div className="flex items-center gap-2">
+                                <span id="clock-label" className={eyebrowClass}>
+                                    Clock
+                                </span>
+                                {/* Grouped under Clock, so the inputs read as "Clock, Minutes" */}
+                                <div
+                                    role="group"
+                                    aria-labelledby="clock-label"
+                                    className="flex items-center gap-2"
+                                >
                                     <Input
                                         aria-label="Minutes"
                                         inputMode="numeric"

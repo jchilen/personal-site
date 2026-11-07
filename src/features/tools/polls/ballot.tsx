@@ -156,7 +156,8 @@ export function Ballot({ poll, onVoted }: BallotProps) {
                                 <button
                                     ref={buttonRef('unpick', option)}
                                     type="button"
-                                    aria-label={`Remove ${option} from your ranking`}
+                                    // Starts with the number and name it shows, for voice control (WCAG 2.5.3)
+                                    aria-label={`${index + 1} ${option}, remove from your ranking`}
                                     onClick={() => unrank(index)}
                                     className="flex min-w-0 flex-1 items-center gap-3 p-2.5 text-left"
                                 >

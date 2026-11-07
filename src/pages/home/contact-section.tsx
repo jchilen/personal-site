@@ -22,6 +22,9 @@ export function ContactSection() {
                             {channel.label}
                             <span className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors group-hover/channel:text-foreground dark:group-hover/channel:text-primary">
                                 {channel.action}
+                                <span className="sr-only">
+                                    (opens in a new tab)
+                                </span>
                                 <IconArrowUpRight className="size-4" />
                             </span>
                         </a>

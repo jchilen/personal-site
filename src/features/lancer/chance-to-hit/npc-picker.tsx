@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useId, useState, type ReactNode } from 'react'
 import { cn } from 'cn'
 import { IconChevronDown } from '@tabler/icons-react'
 import { underlineInputClass } from '@/components/field-styles'
@@ -84,6 +84,7 @@ export function NpcPicker({
     onToggle,
     aside,
 }: NpcPickerProps) {
+    const titleId = useId()
     const [query, setQuery] = useState('')
     // Open on every visit, since the list is where you start
     const [isOpen, setIsOpen] = useState(true)
@@ -135,14 +136,15 @@ export function NpcPicker({
                 {/* relative: the toggle's click area stretches over this whole row */}
                 <div className="relative flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
                     <div>
-                        <SectionTitle number={3}>
+                        <SectionTitle number={3} id={titleId}>
                             Enemies - Pick up to {MAX_TARGETS}
                         </SectionTitle>
                     </div>
                     <div className="flex items-center gap-2">
                         {aside}
                         <CollapsibleTrigger
-                            aria-label="Enemy list"
+                            // Named by the title, since clicking the title row is how most people use it
+                            aria-labelledby={titleId}
                             // after: lays an empty box over the whole title row, so clicking anywhere on it
                             // toggles. A plain button, since the shared Button nudges itself down when
                             // pressed, which would shrink that box back to the button mid-click
@@ -268,6 +270,11 @@ export function NpcPicker({
                                                                         npc,
                                                                     ).hit,
                                                                 )}
+                                                                {/* Sighted users read this from the page; screen readers get it here */}
+                                                                <span className="sr-only">
+                                                                    {' '}
+                                                                    to hit
+                                                                </span>
                                                             </span>
                                                         </button>
                                                     </li>

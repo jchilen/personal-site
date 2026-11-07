@@ -5,6 +5,8 @@ import { Eyebrow } from '@/components/eyebrow'
 type ToolLayoutProps = {
     eyebrow: string
     title: string
+    // The browser tab's title, when it should say more than the heading; defaults to the heading
+    tabTitle?: string
     intro?: string
     children: ReactNode
 }
@@ -12,12 +14,13 @@ type ToolLayoutProps = {
 export function ToolLayout({
     eyebrow,
     title,
+    tabTitle = title,
     intro,
     children,
 }: ToolLayoutProps) {
     return (
         <>
-            <title>{`${title} // IceNine`}</title>
+            <title>{`${tabTitle} // IceNine`}</title>
             <CategoryBar floating />
             <section className="pt-12 pb-16">
                 <header className="flex flex-col items-center text-center">
