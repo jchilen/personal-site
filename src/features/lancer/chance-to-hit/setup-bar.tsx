@@ -2,9 +2,8 @@ import { SectionTitle } from '@/components/section-title'
 import { Choice } from './choice'
 import { IconInfoCircle } from '@tabler/icons-react'
 import { Note } from './note'
-import { oneOf } from '@/lib/one-of'
-import { TIERS } from './odds'
 import { currentRuleset, type SettingsProps } from './settings'
+import { TIER_OPTIONS, tierFromOption } from './tier-options'
 
 export function SetupBar({ settings, dispatch }: SettingsProps) {
     // Each ruleset remembers its own tier, so this shows and changes only the showing one's
@@ -42,15 +41,11 @@ export function SetupBar({ settings, dispatch }: SettingsProps) {
                 <Choice
                     label="Tier"
                     value={String(tier)}
-                    options={[
-                        ['1', 'T1'],
-                        ['2', 'T2'],
-                        ['3', 'T3'],
-                    ]}
-                    onChange={(next) =>
+                    options={TIER_OPTIONS}
+                    onChange={(option) =>
                         dispatch({
                             type: 'setSetupTier',
-                            tier: oneOf(Number(next), TIERS, tier),
+                            tier: tierFromOption(option, tier),
                         })
                     }
                 />

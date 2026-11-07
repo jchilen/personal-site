@@ -1,11 +1,17 @@
 import { IconCopy, IconX } from '@tabler/icons-react'
 import { SectionTitle } from '@/components/section-title'
 import { Button } from '@/components/ui/button'
+import { CardTierPicker } from './card-tier-picker'
 import { Choice } from './choice'
 import { EffectToggle } from './effect-toggle'
 import type { EnemyCardData } from './enemy-card-data'
 import { chanceColor, percent } from './format'
-import { targetDefense, type AttackType, type TargetEffects } from './odds'
+import {
+    targetDefense,
+    type AttackType,
+    type TargetEffects,
+    type Tier,
+} from './odds'
 import { MAX_TARGETS } from './settings'
 import { useLimitFlash } from './use-limit-flash'
 import { eyebrowClass } from '@/components/text-styles'
@@ -57,6 +63,7 @@ type EnemyCardProps = {
     attackType: AttackType
     full: boolean
     onChange: (changes: Partial<TargetEffects>) => void
+    onTierChange: (tier: Tier) => void
     onDuplicate: () => void
     onRemove: () => void
 }
@@ -66,6 +73,7 @@ function EnemyCard({
     attackType,
     full,
     onChange,
+    onTierChange,
     onDuplicate,
     onRemove,
 }: EnemyCardProps) {
@@ -77,9 +85,14 @@ function EnemyCard({
         <article className="flex flex-col gap-3 border bg-background p-4">
             <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                    <SectionTitle as="h3">
-                        {title} · T{tier}
-                    </SectionTitle>
+                    <div className="flex items-center gap-2">
+                        <SectionTitle as="h3">{title}</SectionTitle>
+                        <CardTierPicker
+                            title={title}
+                            tier={tier}
+                            onChange={onTierChange}
+                        />
+                    </div>
                     <p className="mt-1 text-sm text-muted-foreground">
                         {npc.role} · {defenseName}{' '}
                         {targetDefense(npc, attackType, tier)}
@@ -170,6 +183,7 @@ type EnemyCardsProps = {
     cards: EnemyCardData[]
     attackType: AttackType
     onChange: (id: string, changes: Partial<TargetEffects>) => void
+    onTierChange: (id: string, tier: Tier) => void
     onDuplicate: (id: string) => void
     onRemove: (id: string) => void
 }
@@ -179,6 +193,7 @@ export function EnemyCards({
     cards,
     attackType,
     onChange,
+    onTierChange,
     onDuplicate,
     onRemove,
 }: EnemyCardsProps) {
@@ -220,6 +235,7 @@ export function EnemyCards({
                                 attackType={attackType}
                                 full={false}
                                 onChange={() => {}}
+                                onTierChange={() => {}}
                                 onDuplicate={() => {}}
                                 onRemove={() => {}}
                             />
@@ -238,6 +254,9 @@ export function EnemyCards({
                             full={full}
                             onChange={(changes) =>
                                 onChange(card.target.id, changes)
+                            }
+                            onTierChange={(tier) =>
+                                onTierChange(card.target.id, tier)
                             }
                             onDuplicate={() => duplicate(card.target.id)}
                             onRemove={() => onRemove(card.target.id)}

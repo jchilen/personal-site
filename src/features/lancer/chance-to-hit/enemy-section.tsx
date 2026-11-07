@@ -47,6 +47,9 @@ export function EnemySection({ npcs, settings, dispatch }: EnemySectionProps) {
                 onChange={(id, changes) =>
                     dispatch({ type: 'changeCardEffects', id, changes })
                 }
+                onTierChange={(id, tier) =>
+                    dispatch({ type: 'setCardTier', id, tier })
+                }
                 onDuplicate={(id) => dispatch({ type: 'duplicateCard', id })}
                 onRemove={(id) => dispatch({ type: 'removeCard', id })}
             />
