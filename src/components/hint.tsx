@@ -1,4 +1,9 @@
-import { useState, type ComponentProps, type ReactElement } from 'react'
+import {
+    useState,
+    type ComponentProps,
+    type FocusEvent,
+    type ReactElement,
+} from 'react'
 import { Slot } from 'radix-ui'
 import { cn } from 'cn'
 import {
@@ -34,6 +39,16 @@ function WithoutTooltipState(props: PassThroughProps) {
     return <Slot.Root {...rest} />
 }
 
+// Radix opens a tooltip whenever its control gets focus, unless a press on that same control caused
+// it. But focus also arrives from code: a popover handing it back after a mouse click inside, or
+// focus moving to the next card after one is removed. A tooltip popping up then, with the mouse
+// somewhere else, looks like a glitch. :focus-visible is the browser's own call on whether focus came
+// from the keyboard, so only then does focus open the tooltip. Radix runs this before its own focus
+// handler and skips that one when preventDefault is called. It doesn't affect focus itself
+function openOnlyForKeyboardFocus(event: FocusEvent<HTMLElement>): void {
+    if (!event.currentTarget.matches(':focus-visible')) event.preventDefault()
+}
+
 type HintProps = {
     // The tooltip's text. For an icon-only button, use the same words as its aria-label. null means
     // no tooltip for now, like a reason that only applies while a control is locked
@@ -54,7 +69,7 @@ export function Hint({ label, side = 'top', children }: HintProps) {
 
     return (
         <Tooltip open={open && label !== null} onOpenChange={setOpen}>
-            <TooltipTrigger asChild>
+            <TooltipTrigger asChild onFocus={openOnlyForKeyboardFocus}>
                 <WithoutTooltipState>{children}</WithoutTooltipState>
             </TooltipTrigger>
             {label !== null && (

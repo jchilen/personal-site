@@ -4,6 +4,7 @@ import { SectionTitle } from '@/components/section-title'
 import { glideClass } from '@/components/motion-styles'
 import { ariaDisabledClass } from '@/components/field-styles'
 import { Button } from '@/components/ui/button'
+import { Hint } from '@/components/hint'
 import { useFocusAfterRender } from '@/hooks/use-focus-after-render'
 import { animateLayout } from '@/lib/animate-layout'
 import { errorMessage, postJson } from '@/lib/api'
@@ -168,35 +169,46 @@ export function Ballot({ poll, onVoted }: BallotProps) {
                                     </span>
                                     <span className="truncate">{option}</span>
                                 </button>
-                                <Button
-                                    ref={buttonRef('up', option)}
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon-sm"
-                                    aria-label={`Move ${option} up`}
-                                    aria-disabled={index === 0}
-                                    onClick={() => {
-                                        if (index > 0) move(index, -1)
-                                    }}
-                                    className={ariaDisabledClass}
+                                {/* Tooltips open to the right, into the margin, instead of over the rows
+                                    above and below */}
+                                <Hint label={`Move ${option} up`} side="right">
+                                    <Button
+                                        ref={buttonRef('up', option)}
+                                        type="button"
+                                        variant="ghost"
+                                        size="icon-sm"
+                                        aria-label={`Move ${option} up`}
+                                        aria-disabled={index === 0}
+                                        onClick={() => {
+                                            if (index > 0) move(index, -1)
+                                        }}
+                                        className={ariaDisabledClass}
+                                    >
+                                        <IconArrowUp />
+                                    </Button>
+                                </Hint>
+                                <Hint
+                                    label={`Move ${option} down`}
+                                    side="right"
                                 >
-                                    <IconArrowUp />
-                                </Button>
-                                <Button
-                                    ref={buttonRef('down', option)}
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon-sm"
-                                    aria-label={`Move ${option} down`}
-                                    aria-disabled={index === ranked.length - 1}
-                                    onClick={() => {
-                                        if (index < ranked.length - 1)
-                                            move(index, 1)
-                                    }}
-                                    className={ariaDisabledClass}
-                                >
-                                    <IconArrowDown />
-                                </Button>
+                                    <Button
+                                        ref={buttonRef('down', option)}
+                                        type="button"
+                                        variant="ghost"
+                                        size="icon-sm"
+                                        aria-label={`Move ${option} down`}
+                                        aria-disabled={
+                                            index === ranked.length - 1
+                                        }
+                                        onClick={() => {
+                                            if (index < ranked.length - 1)
+                                                move(index, 1)
+                                        }}
+                                        className={ariaDisabledClass}
+                                    >
+                                        <IconArrowDown />
+                                    </Button>
+                                </Hint>
                             </li>
                         ))}
                     </ol>

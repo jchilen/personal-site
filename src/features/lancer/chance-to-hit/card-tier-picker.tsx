@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { IconChevronUp } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
+import { Hint } from '@/components/hint'
 import { reducedMotionClass } from '@/components/motion-styles'
 import {
     Popover,
@@ -25,18 +26,24 @@ export function CardTierPicker({ title, tier, onChange }: CardTierPickerProps) {
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-                <Button
-                    type="button"
-                    variant="outline"
-                    size="xs"
-                    // Starts with the text people see, so voice control users can say it (WCAG 2.5.3)
-                    aria-label={`T${tier}, change the tier for ${title}`}
-                >
-                    T{tier}
-                    <IconChevronUp data-icon="inline-end" />
-                </Button>
-            </PopoverTrigger>
+            {/* "T1" alone doesn't say it's a control, so the tooltip says what it does. It opens
+                above, clear of the role and defense line you read when picking a tier, and the
+                popover takes its place when clicked */}
+            <Hint label={`Change the tier for this ${title}`}>
+                <PopoverTrigger asChild>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="xs"
+                        // Starts with the text people see, so voice control users can say it (WCAG
+                        // 2.5.3), then the tooltip's words
+                        aria-label={`T${tier}, change the tier for this ${title}`}
+                    >
+                        T{tier}
+                        <IconChevronUp data-icon="inline-end" />
+                    </Button>
+                </PopoverTrigger>
+            </Hint>
             <PopoverContent
                 side="top"
                 aria-label={`Tier for ${title}`}

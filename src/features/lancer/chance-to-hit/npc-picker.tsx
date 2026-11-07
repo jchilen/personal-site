@@ -3,6 +3,7 @@ import { cn } from 'cn'
 import { IconChevronDown } from '@tabler/icons-react'
 import { lockedClass, underlineInputClass } from '@/components/field-styles'
 import { SectionTitle } from '@/components/section-title'
+import { Hint } from '@/components/hint'
 import { collapseClass, glideClass } from '@/components/motion-styles'
 import {
     Collapsible,
@@ -142,16 +143,26 @@ export function NpcPicker({
                     </div>
                     <div className="flex items-center gap-2">
                         {aside}
-                        <CollapsibleTrigger
-                            // Named by the title, since clicking the title row is how most people use it
-                            aria-labelledby={titleId}
-                            // after: lays an empty box over the whole title row, so clicking anywhere on it
-                            // toggles. A plain button, since the shared Button nudges itself down when
-                            // pressed, which would shrink that box back to the button mid-click
-                            className="group flex size-8 shrink-0 items-center justify-center text-muted-foreground transition-colors after:absolute after:inset-0 hover:text-foreground"
+                        {/* Its name is the title, so the tooltip adds what it does. Above, it only
+                            covers the gap over the section */}
+                        <Hint
+                            label={
+                                isOpen
+                                    ? 'Hide the enemy list'
+                                    : 'Show the enemy list'
+                            }
                         >
-                            <IconChevronDown className="size-4 transition-transform group-data-[state=open]:rotate-180 motion-reduce:transition-none" />
-                        </CollapsibleTrigger>
+                            <CollapsibleTrigger
+                                // Named by the title, since clicking the title row is how most people use it
+                                aria-labelledby={titleId}
+                                // after: lays an empty box over the whole title row, so clicking anywhere on it
+                                // toggles. A plain button, since the shared Button nudges itself down when
+                                // pressed, which would shrink that box back to the button mid-click
+                                className="group flex size-8 shrink-0 items-center justify-center text-muted-foreground transition-colors after:absolute after:inset-0 hover:text-foreground"
+                            >
+                                <IconChevronDown className="size-4 transition-transform group-data-[state=open]:rotate-180 motion-reduce:transition-none" />
+                            </CollapsibleTrigger>
+                        </Hint>
                     </div>
                 </div>
                 {/* While the list is closed, the enemies you've picked show in its place */}

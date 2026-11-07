@@ -8,6 +8,7 @@ import {
 import { SectionTitle } from '@/components/section-title'
 import { glideClass } from '@/components/motion-styles'
 import { Button } from '@/components/ui/button'
+import { Hint } from '@/components/hint'
 import { Input } from '@/components/ui/input'
 import { useFocusAfterRender } from '@/hooks/use-focus-after-render'
 import { useNumberField } from '@/hooks/use-number-field'
@@ -190,16 +191,22 @@ export function CreatePollForm({
                                 className={textInputClass}
                             />
                             {options.length > POLL_LIMITS.minOptions && (
-                                <Button
-                                    ref={rowControlRef('remove', row.id)}
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon-sm"
-                                    aria-label={`Remove option ${index + 1}`}
-                                    onClick={() => removeOption(row.id)}
+                                // To the right, into the margin, instead of over the other rows
+                                <Hint
+                                    label={`Remove option ${index + 1}`}
+                                    side="right"
                                 >
-                                    <IconX />
-                                </Button>
+                                    <Button
+                                        ref={rowControlRef('remove', row.id)}
+                                        type="button"
+                                        variant="ghost"
+                                        size="icon-sm"
+                                        aria-label={`Remove option ${index + 1}`}
+                                        onClick={() => removeOption(row.id)}
+                                    >
+                                        <IconX />
+                                    </Button>
+                                </Hint>
                             )}
                         </li>
                     ))}

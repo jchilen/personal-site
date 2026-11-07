@@ -1,6 +1,7 @@
 import { useId, useState } from 'react'
 import { IconX } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
+import { Hint } from '@/components/hint'
 import { Input } from '@/components/ui/input'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { useNumberField, type NumberField } from '@/hooks/use-number-field'
@@ -130,15 +131,18 @@ export function ConfidenceCalculator({
                     >
                         {title}
                     </SectionTitle>
+                    {/* Above: beside or below, it would cover the other calculator or the answer */}
                     {onRemove && (
-                        <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            aria-label="Remove this calculator"
-                            onClick={onRemove}
-                        >
-                            <IconX />
-                        </Button>
+                        <Hint label="Remove this calculator">
+                            <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                aria-label="Remove this calculator"
+                                onClick={onRemove}
+                            >
+                                <IconX />
+                            </Button>
+                        </Hint>
                     )}
                 </div>
                 <p className="mt-1 font-heading text-4xl font-semibold text-cat-tools">
