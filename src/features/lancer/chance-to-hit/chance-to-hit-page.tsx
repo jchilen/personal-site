@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { ToolLayout } from '@/components/tool-layout'
 import { MethodologyLayout } from '@/components/methodology-layout'
 import { useApi, type ApiState } from '@/hooks/use-api'
@@ -14,7 +15,14 @@ type EnemiesProps = SettingsProps & {
 }
 
 // The enemy sections once the NPC list arrives, or why it couldn't load
-function Enemies({ npcs, settings, update }: EnemiesProps) {
+function Enemies({ npcs, settings, dispatch }: EnemiesProps) {
+    // A saved card for an enemy the list no longer has (renamed or removed from the table) would
+    // take up a slot without ever showing, so those cards are cleared once the list arrives
+    useEffect(() => {
+        if (npcs.status === 'success') {
+            dispatch({ type: 'removeMissingEnemies', npcs: npcs.data })
+        }
+    }, [npcs, dispatch])
     if (npcs.status === 'loading') return null
 
     if (npcs.status === 'error') {
@@ -32,14 +40,14 @@ function Enemies({ npcs, settings, update }: EnemiesProps) {
         <EnemySection
             npcs={npcs.data[settings.ruleset]}
             settings={settings}
-            update={update}
+            dispatch={dispatch}
         />
     )
 }
 
 export function ChanceToHitPage() {
     const npcs = useApi<LancerNpcSets>('/api/lancer/npcs')
-    const { state: settings, update } = usePageState()
+    const { state: settings, dispatch } = usePageState()
 
     return (
         <ToolLayout eyebrow="Lancer" title="Chance-to-Hit Calculator">
@@ -51,13 +59,13 @@ export function ChanceToHitPage() {
                 <div className="flex flex-col gap-4">
                     {/* No items-start here, so both cards stretch to the taller one's height */}
                     <div className="grid gap-4 @2xl:grid-cols-[auto_minmax(0,1fr)]">
-                        <SetupBar settings={settings} update={update} />
-                        <YourEffects settings={settings} update={update} />
+                        <SetupBar settings={settings} dispatch={dispatch} />
+                        <YourEffects settings={settings} dispatch={dispatch} />
                     </div>
                     <Enemies
                         npcs={npcs.state}
                         settings={settings}
-                        update={update}
+                        dispatch={dispatch}
                     />
                 </div>
             </MethodologyLayout>

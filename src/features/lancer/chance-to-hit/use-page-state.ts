@@ -1,5 +1,7 @@
-import { useCallback, useEffect, useState } from 'react'
-import { DEFAULT_STATE, restoreState, type PageState } from './settings'
+import { useEffect, useReducer, type Dispatch } from 'react'
+import { pageReducer, type PageAction } from './page-reducer'
+import { restoreState, toSaved } from './saved-settings'
+import { DEFAULT_STATE, type PageState } from './settings'
 
 const STORAGE_KEY = 'chance-to-hit-settings'
 
@@ -13,25 +15,25 @@ function loadState(): PageState {
     }
 }
 
-/** The page's settings, remembered in this browser between visits */
-export function usePageState() {
-    const [state, setState] = useState(loadState)
+/**
+ * The page's settings, remembered in this browser between visits. Every change goes through
+ * pageReducer, as an action passed to `dispatch`
+ */
+export function usePageState(): {
+    state: PageState
+    dispatch: Dispatch<PageAction>
+} {
+    // The third argument loads the saved state once, on the first render only
+    const [state, dispatch] = useReducer(pageReducer, null, loadState)
 
     // Save after every change
     useEffect(() => {
         try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(toSaved(state)))
         } catch {
             // Storage is unavailable or full; the page still works, it just won't remember
         }
     }, [state])
 
-    // Change only the given settings, keeping the rest
-    const update = useCallback(
-        (changes: Partial<PageState>) =>
-            setState((current) => ({ ...current, ...changes })),
-        [],
-    )
-
-    return { state, update }
+    return { state, dispatch }
 }

@@ -1,26 +1,33 @@
+import type { Dispatch } from 'react'
 import type { Ruleset } from './npc-types'
-import { oneOf } from '@/lib/one-of'
-import { TIERS, type TargetEffects, type Tier, type YourSettings } from './odds'
+import type { TargetEffects, Tier, YourSettings } from './odds'
+import type { PageAction } from './page-reducer'
 
 export const MAX_TARGETS = 3
 
 /**
- * One enemy card and its own effects. The same enemy can appear more than once, so each card has
- * its own id, to tell copies apart
+ * One enemy card: which enemy, and its own effects. The same enemy can appear more than once, so
+ * each card has its own id, to tell copies apart. A card with no tier of its own follows Setup's
  */
-export type Target = TargetEffects & { id: string; name: string }
+export type Target = TargetEffects & { id: string; name: string; tier?: Tier }
+
+/** What each ruleset remembers on its own, so changing one never touches the other */
+export type RulesetState = {
+    // Setup's tier while this ruleset is showing
+    tier: Tier
+    targets: Target[]
+}
 
 /** Everything the page remembers between visits */
 export type PageState = YourSettings & {
     ruleset: Ruleset
-    tier: Tier
-    targets: Target[]
+    rulesets: Record<Ruleset, RulesetState>
 }
 
 /** Props for any part of the page that shows the settings and can change them */
 export type SettingsProps = {
     settings: PageState
-    update: (changes: Partial<PageState>) => void
+    dispatch: Dispatch<PageAction>
 }
 
 /** The range of each stepper, shared by the page's controls and by restoreState */
@@ -33,10 +40,11 @@ export const LIMITS = {
     otherDifficulty: { min: 0, max: 5 },
 } as const
 
+export const DEFAULT_RULESET: RulesetState = { tier: 1, targets: [] }
+
 export const DEFAULT_STATE: PageState = {
     attackType: 'weapon',
     ruleset: 'original',
-    tier: 1,
     licenseLevel: 0,
     frameTechAttack: 0,
     systems: 0,
@@ -45,109 +53,41 @@ export const DEFAULT_STATE: PageState = {
     otherDifficulty: 0,
     impaired: false,
     engaged: false,
-    targets: [],
+    rulesets: { original: DEFAULT_RULESET, rebake: DEFAULT_RULESET },
 }
 
-const COVERS = ['none', 'soft', 'hard'] as const
+/** The showing ruleset's own settings: its Setup tier and its cards */
+export function currentRuleset(settings: PageState): RulesetState {
+    return settings.rulesets[settings.ruleset]
+}
 
-/** A new enemy card with none of its own effects, or a copy of an existing card's effects */
-export function newTarget(name: string, effects?: TargetEffects): Target {
+/** A card with the given tier of its own, or with none (`undefined`), so it follows Setup's */
+export function withTier(target: Target, tier: Tier | undefined): Target {
+    const { id, name, cover, lockOn, prone, invisible } = target
     return {
+        id,
+        name,
+        cover,
+        lockOn,
+        prone,
+        invisible,
+        // Left out entirely, rather than saved as undefined, when the card follows Setup
+        ...(tier === undefined ? {} : { tier }),
+    }
+}
+
+/** A new card with none of its own effects, or a copy of another card's effects and tier */
+export function newTarget(
+    name: string,
+    from?: Omit<Target, 'id' | 'name'>,
+): Target {
+    const card: Target = {
         id: crypto.randomUUID(),
         name,
-        cover: effects?.cover ?? 'none',
-        lockOn: effects?.lockOn ?? false,
-        prone: effects?.prone ?? false,
-        invisible: effects?.invisible ?? false,
+        cover: from?.cover ?? 'none',
+        lockOn: from?.lockOn ?? false,
+        prone: from?.prone ?? false,
+        invisible: from?.invisible ?? false,
     }
-}
-
-// One saved enemy card, or null if it has no usable name. Missing or broken effects fall back to
-// none/off, and a missing id gets a new one
-function restoreTarget(value: unknown): Target | null {
-    if (typeof value !== 'object' || value === null) return null
-    const t = value as Record<string, unknown>
-    if (typeof t.name !== 'string' || t.name === '') return null
-
-    return {
-        id:
-            typeof t.id === 'string' && t.id !== ''
-                ? t.id
-                : crypto.randomUUID(),
-        name: t.name,
-        cover: oneOf(t.cover, COVERS, 'none'),
-        lockOn: t.lockOn === true,
-        prone: t.prone === true,
-        invisible: t.invisible === true,
-    }
-}
-
-// The saved enemy cards: valid entries only, no two sharing an id, and at most MAX_TARGETS
-function restoreTargets(s: Record<string, unknown>): Target[] {
-    // Saves from before multiple enemies had one featured NPC, with the target effects stored
-    // beside it, so that NPC becomes the first card and keeps those effects
-    const saved: unknown[] = Array.isArray(s.targets)
-        ? s.targets
-        : typeof s.featured === 'string'
-          ? [{ ...s, name: s.featured }]
-          : []
-
-    const targets: Target[] = []
-    for (const item of saved) {
-        const target = restoreTarget(item)
-        if (!target) continue
-        // Two cards sharing an id would confuse the page about which one you clicked; give the
-        // later one a fresh id. Copies of the same enemy are fine: they just need different ids
-        if (targets.some((existing) => existing.id === target.id))
-            target.id = crypto.randomUUID()
-        targets.push(target)
-    }
-    return targets.slice(0, MAX_TARGETS)
-}
-
-/**
- * Rebuilds the page's state from whatever was saved, checking each setting on its own.
- * A missing or broken setting falls back to its default, without throwing away the others
- */
-export function restoreState(saved: unknown): PageState {
-    if (typeof saved !== 'object' || saved === null) return DEFAULT_STATE
-    const s = saved as Record<string, unknown>
-
-    const whole = (key: keyof typeof LIMITS): number => {
-        const value = s[key]
-        const { min, max } = LIMITS[key]
-        return typeof value === 'number' &&
-            Number.isInteger(value) &&
-            value >= min &&
-            value <= max
-            ? value
-            : DEFAULT_STATE[key]
-    }
-    const flag = (key: 'impaired' | 'engaged'): boolean => {
-        const value = s[key]
-        return typeof value === 'boolean' ? value : DEFAULT_STATE[key]
-    }
-
-    return {
-        attackType: oneOf(
-            s.attackType,
-            ['weapon', 'smart', 'tech'] as const,
-            DEFAULT_STATE.attackType,
-        ),
-        ruleset: oneOf(
-            s.ruleset,
-            ['original', 'rebake'] as const,
-            DEFAULT_STATE.ruleset,
-        ),
-        tier: oneOf(s.tier, TIERS, DEFAULT_STATE.tier),
-        licenseLevel: whole('licenseLevel'),
-        frameTechAttack: whole('frameTechAttack'),
-        systems: whole('systems'),
-        flatBonus: whole('flatBonus'),
-        otherAccuracy: whole('otherAccuracy'),
-        otherDifficulty: whole('otherDifficulty'),
-        impaired: flag('impaired'),
-        engaged: flag('engaged'),
-        targets: restoreTargets(s),
-    }
+    return withTier(card, from?.tier)
 }

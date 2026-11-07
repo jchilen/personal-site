@@ -4,9 +4,11 @@ import { IconInfoCircle } from '@tabler/icons-react'
 import { Note } from './note'
 import { oneOf } from '@/lib/one-of'
 import { TIERS } from './odds'
-import type { SettingsProps } from './settings'
+import { currentRuleset, type SettingsProps } from './settings'
 
-export function SetupBar({ settings, update }: SettingsProps) {
+export function SetupBar({ settings, dispatch }: SettingsProps) {
+    // Each ruleset remembers its own tier, so this shows and changes only the showing one's
+    const { tier } = currentRuleset(settings)
     return (
         <section className="flex flex-col gap-4 border bg-card p-4">
             <SectionTitle number={1}>Setup</SectionTitle>
@@ -18,7 +20,12 @@ export function SetupBar({ settings, update }: SettingsProps) {
                     ['smart', 'Smart weapon'],
                     ['tech', 'Tech attack'],
                 ]}
-                onChange={(attackType) => update({ attackType })}
+                onChange={(attackType) =>
+                    dispatch({
+                        type: 'changeYourSettings',
+                        changes: { attackType },
+                    })
+                }
             />
             <div className="flex flex-wrap gap-x-6 gap-y-4">
                 <Choice
@@ -28,19 +35,22 @@ export function SetupBar({ settings, update }: SettingsProps) {
                         ['original', 'Original'],
                         ['rebake', 'Rebake'],
                     ]}
-                    onChange={(ruleset) => update({ ruleset })}
+                    onChange={(ruleset) =>
+                        dispatch({ type: 'switchRuleset', ruleset })
+                    }
                 />
                 <Choice
                     label="Tier"
-                    value={String(settings.tier)}
+                    value={String(tier)}
                     options={[
                         ['1', 'T1'],
                         ['2', 'T2'],
                         ['3', 'T3'],
                     ]}
-                    onChange={(tier) =>
-                        update({
-                            tier: oneOf(Number(tier), TIERS, settings.tier),
+                    onChange={(next) =>
+                        dispatch({
+                            type: 'setSetupTier',
+                            tier: oneOf(Number(next), TIERS, tier),
                         })
                     }
                 />

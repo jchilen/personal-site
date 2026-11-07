@@ -3,28 +3,12 @@ import { SectionTitle } from '@/components/section-title'
 import { Button } from '@/components/ui/button'
 import { Choice } from './choice'
 import { EffectToggle } from './effect-toggle'
+import type { EnemyCardData } from './enemy-card-data'
 import { chanceColor, percent } from './format'
-import type { LancerNpc } from './npc-types'
-import {
-    targetDefense,
-    type AttackOdds,
-    type AttackType,
-    type TargetEffects,
-    type Tier,
-} from './odds'
-import { MAX_TARGETS, type Target } from './settings'
+import { targetDefense, type AttackType, type TargetEffects } from './odds'
+import { MAX_TARGETS } from './settings'
 import { useLimitFlash } from './use-limit-flash'
 import { eyebrowClass } from '@/components/text-styles'
-
-/** Everything one enemy card shows */
-export type EnemyCardData = {
-    target: Target
-    npc: LancerNpc
-    // "Sniper", or "Sniper (2)" for the second card of the same enemy
-    title: string
-    odds: AttackOdds
-    netAccuracy: number
-}
 
 // Stand-in data for the invisible card that holds the section's height while nothing is selected
 const PLACEHOLDER: EnemyCardData = {
@@ -38,6 +22,7 @@ const PLACEHOLDER: EnemyCardData = {
     },
     npc: { name: '', role: '', evasion: [0, 0, 0], eDefense: [0, 0, 0] },
     title: '',
+    tier: 1,
     odds: { hit: 0, crit: 0 },
     netAccuracy: 0,
 }
@@ -70,7 +55,6 @@ function NetDice({ net }: { net: number }) {
 type EnemyCardProps = {
     card: EnemyCardData
     attackType: AttackType
-    tier: Tier
     full: boolean
     onChange: (changes: Partial<TargetEffects>) => void
     onDuplicate: () => void
@@ -80,13 +64,12 @@ type EnemyCardProps = {
 function EnemyCard({
     card,
     attackType,
-    tier,
     full,
     onChange,
     onDuplicate,
     onRemove,
 }: EnemyCardProps) {
-    const { target, npc, title, odds, netAccuracy } = card
+    const { target, npc, title, tier, odds, netAccuracy } = card
     const tech = attackType === 'tech'
     const defenseName = attackType === 'weapon' ? 'Evasion' : 'E-Defense'
 
@@ -186,7 +169,6 @@ function EnemyCard({
 type EnemyCardsProps = {
     cards: EnemyCardData[]
     attackType: AttackType
-    tier: Tier
     onChange: (id: string, changes: Partial<TargetEffects>) => void
     onDuplicate: (id: string) => void
     onRemove: (id: string) => void
@@ -196,7 +178,6 @@ type EnemyCardsProps = {
 export function EnemyCards({
     cards,
     attackType,
-    tier,
     onChange,
     onDuplicate,
     onRemove,
@@ -237,7 +218,6 @@ export function EnemyCards({
                             <EnemyCard
                                 card={PLACEHOLDER}
                                 attackType={attackType}
-                                tier={tier}
                                 full={false}
                                 onChange={() => {}}
                                 onDuplicate={() => {}}
@@ -255,7 +235,6 @@ export function EnemyCards({
                             key={card.target.id}
                             card={card}
                             attackType={attackType}
-                            tier={tier}
                             full={full}
                             onChange={(changes) =>
                                 onChange(card.target.id, changes)

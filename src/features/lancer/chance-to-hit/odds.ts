@@ -1,7 +1,9 @@
 import type { LancerNpc } from './npc-types'
 
-export type AttackType = 'weapon' | 'smart' | 'tech'
-export type Cover = 'none' | 'soft' | 'hard'
+export const ATTACK_TYPES = ['weapon', 'smart', 'tech'] as const
+export type AttackType = (typeof ATTACK_TYPES)[number]
+export const COVERS = ['none', 'soft', 'hard'] as const
+export type Cover = (typeof COVERS)[number]
 export const TIERS = [1, 2, 3] as const
 export type Tier = (typeof TIERS)[number]
 
@@ -114,7 +116,7 @@ function total(entries: [string, number][]): Total {
     }
 }
 
-/**
+/*
  * The totals for an attack against one enemy: your effects, which apply to every enemy, plus that
  * enemy's own. Each total lists the sources that add up to it
  */

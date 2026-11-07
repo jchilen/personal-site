@@ -4,7 +4,7 @@ import { SectionTitle } from '@/components/section-title'
 import { Stepper } from '@/components/stepper'
 import { EffectToggle } from './effect-toggle'
 import { signed } from './format'
-import { grit } from './odds'
+import { grit, type YourSettings } from './odds'
 import { LIMITS, type SettingsProps } from './settings'
 import { eyebrowClass } from '@/components/text-styles'
 
@@ -57,8 +57,10 @@ function NumberStepper({
     )
 }
 
-export function YourEffects({ settings, update }: SettingsProps) {
+export function YourEffects({ settings, dispatch }: SettingsProps) {
     const tech = settings.attackType === 'tech'
+    const change = (changes: Partial<YourSettings>) =>
+        dispatch({ type: 'changeYourSettings', changes })
 
     return (
         // Its own container, so its two columns split based on this card's width, not the page's
@@ -85,7 +87,7 @@ export function YourEffects({ settings, update }: SettingsProps) {
                         name="License Level"
                         value={settings.licenseLevel}
                         limits={LIMITS.licenseLevel}
-                        onChange={(licenseLevel) => update({ licenseLevel })}
+                        onChange={(licenseLevel) => change({ licenseLevel })}
                     />
                     {tech && (
                         <>
@@ -95,7 +97,7 @@ export function YourEffects({ settings, update }: SettingsProps) {
                                 value={settings.frameTechAttack}
                                 limits={LIMITS.frameTechAttack}
                                 onChange={(frameTechAttack) =>
-                                    update({ frameTechAttack })
+                                    change({ frameTechAttack })
                                 }
                                 showSign
                                 stacked
@@ -105,7 +107,7 @@ export function YourEffects({ settings, update }: SettingsProps) {
                                 name="Systems"
                                 value={settings.systems}
                                 limits={LIMITS.systems}
-                                onChange={(systems) => update({ systems })}
+                                onChange={(systems) => change({ systems })}
                                 stacked
                             />
                         </>
@@ -118,12 +120,12 @@ export function YourEffects({ settings, update }: SettingsProps) {
                             <EffectToggle
                                 label="Impaired"
                                 pressed={settings.impaired}
-                                onChange={(impaired) => update({ impaired })}
+                                onChange={(impaired) => change({ impaired })}
                             />
                             <EffectToggle
                                 label="Engaged"
                                 pressed={!tech && settings.engaged}
-                                onChange={(engaged) => update({ engaged })}
+                                onChange={(engaged) => change({ engaged })}
                                 locked={tech}
                             />
                         </div>
@@ -144,7 +146,7 @@ export function YourEffects({ settings, update }: SettingsProps) {
                         name="accuracy"
                         value={settings.otherAccuracy}
                         limits={LIMITS.otherAccuracy}
-                        onChange={(otherAccuracy) => update({ otherAccuracy })}
+                        onChange={(otherAccuracy) => change({ otherAccuracy })}
                         compact
                     />
                     <NumberStepper
@@ -153,7 +155,7 @@ export function YourEffects({ settings, update }: SettingsProps) {
                         value={settings.otherDifficulty}
                         limits={LIMITS.otherDifficulty}
                         onChange={(otherDifficulty) =>
-                            update({ otherDifficulty })
+                            change({ otherDifficulty })
                         }
                         compact
                     />
@@ -162,7 +164,7 @@ export function YourEffects({ settings, update }: SettingsProps) {
                         name="flat bonus"
                         value={settings.flatBonus}
                         limits={LIMITS.flatBonus}
-                        onChange={(flatBonus) => update({ flatBonus })}
+                        onChange={(flatBonus) => change({ flatBonus })}
                         showSign
                         compact
                     />
