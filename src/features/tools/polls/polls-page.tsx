@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useLocation } from 'react-router'
 import { MethodologyLayout } from '@/components/methodology-layout'
 import { ToolLayout } from '@/components/tool-layout'
+import { animateLayout } from '@/lib/animate-layout'
 import { useApi, type ApiState } from '@/hooks/use-api'
 import type {
     CreatedPoll,
@@ -70,12 +71,15 @@ function PollsHome({ mine, voted, onCreated }: PollsHomeProps) {
             {created ? (
                 <PollCreated
                     poll={created}
-                    onCreateAnother={() => setCreated(null)}
+                    onCreateAnother={() =>
+                        animateLayout(() => setCreated(null))
+                    }
                 />
             ) : (
                 <CreatePollForm
                     onCreated={(poll) => {
-                        setCreated(poll)
+                        // The form fades out as the new poll's links fade in
+                        animateLayout(() => setCreated(poll))
                         onCreated()
                     }}
                 />

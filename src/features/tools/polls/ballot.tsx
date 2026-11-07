@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { IconArrowDown, IconArrowUp } from '@tabler/icons-react'
 import { SectionTitle } from '@/components/section-title'
+import { glideClass } from '@/components/motion-styles'
 import { Button } from '@/components/ui/button'
+import { animateLayout } from '@/lib/animate-layout'
 import { errorMessage, postJson } from '@/lib/api'
 import { shuffle } from '@/lib/random'
 import type { PollInfo } from './api-types'
@@ -21,53 +23,72 @@ export function Ballot({ poll, onVoted }: BallotProps) {
 
     const unranked = shuffled.filter((option) => !ranked.includes(option))
 
+    // Each option keeps one transition name in both lists, so the browser sees it as the same
+    // element and glides it from one list into the other. Option text can be anything, so the
+    // name uses the option's place in the shuffled list instead
+    function glideName(option: string): string {
+        return `ballot-option-${shuffled.indexOf(option)}`
+    }
+
+    // Every change to the ranking glides the options into their new places
     function rank(option: string) {
-        setError(null)
-        setRanked((current) => {
-            const next = [...current, option]
-            // When one option is left, it can only go last, so place it automatically
-            const left = shuffled.filter((other) => !next.includes(other))
-            return left.length === 1 ? [...next, left[0]] : next
+        animateLayout(() => {
+            setError(null)
+            setRanked((current) => {
+                const next = [...current, option]
+                // When one option is left, it can only go last, so place it automatically
+                const left = shuffled.filter((other) => !next.includes(other))
+                return left.length === 1 ? [...next, left[0]] : next
+            })
         })
     }
 
     function unrank(index: number) {
-        setRanked((current) =>
-            current.filter((_, position) => position !== index),
+        animateLayout(() =>
+            setRanked((current) =>
+                current.filter((_, position) => position !== index),
+            ),
         )
     }
 
     function move(index: number, direction: -1 | 1) {
-        setRanked((current) => {
-            const next = [...current]
-            ;[next[index], next[index + direction]] = [
-                next[index + direction],
-                next[index],
-            ]
-            return next
-        })
+        animateLayout(() =>
+            setRanked((current) => {
+                const next = [...current]
+                ;[next[index], next[index + direction]] = [
+                    next[index + direction],
+                    next[index],
+                ]
+                return next
+            }),
+        )
+    }
+
+    // The message slides open or closed, rather than pushing the button down in one jump
+    function showError(message: string | null) {
+        animateLayout(() => setError(message))
     }
 
     async function submit() {
         if (ranked.length < poll.options.length) {
-            setError(`Rank all ${poll.options.length} options to submit.`)
+            showError(`Rank all ${poll.options.length} options to submit.`)
             return
         }
 
-        setError(null)
+        showError(null)
         setSubmitting(true)
         try {
             await postJson(`/api/polls/${poll.id}/ballots`, { ranking: ranked })
             onVoted()
         } catch (caught) {
-            setError(errorMessage(caught))
+            showError(errorMessage(caught))
             setSubmitting(false)
         }
     }
 
     return (
-        <div className="divide-y border bg-card">
-            <section className="flex flex-col gap-2 p-4">
+        <div className={`divide-y border bg-card ${glideClass}`}>
+            <section className={`flex flex-col gap-2 p-4 ${glideClass}`}>
                 <SectionTitle>Your ranking</SectionTitle>
                 {ranked.length === 0 ? (
                     <p className="border border-dashed p-2.5 text-sm text-muted-foreground">
@@ -78,6 +99,9 @@ export function Ballot({ poll, onVoted }: BallotProps) {
                         {ranked.map((option, index) => (
                             <li
                                 key={option}
+                                style={{
+                                    viewTransitionName: glideName(option),
+                                }}
                                 className="flex items-center gap-1 border border-primary bg-primary/5 pr-1.5"
                             >
                                 <button
@@ -118,11 +142,16 @@ export function Ballot({ poll, onVoted }: BallotProps) {
             </section>
 
             {unranked.length > 0 && (
-                <section className="flex flex-col gap-2 p-4">
+                <section className={`flex flex-col gap-2 p-4 ${glideClass}`}>
                     <SectionTitle>Pick in order of preference</SectionTitle>
                     <ul className="flex flex-col gap-2">
                         {unranked.map((option) => (
-                            <li key={option}>
+                            <li
+                                key={option}
+                                style={{
+                                    viewTransitionName: glideName(option),
+                                }}
+                            >
                                 <button
                                     type="button"
                                     onClick={() => rank(option)}
@@ -140,7 +169,7 @@ export function Ballot({ poll, onVoted }: BallotProps) {
                 </section>
             )}
 
-            <section className="flex flex-col gap-3 p-4">
+            <section className={`flex flex-col gap-3 p-4 ${glideClass}`}>
                 <p className="text-sm text-muted-foreground">
                     Your favorite goes first. Select an already ranked option to
                     put it back.

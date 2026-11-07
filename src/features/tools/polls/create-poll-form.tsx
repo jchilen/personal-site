@@ -9,6 +9,7 @@ import { glideClass } from '@/components/motion-styles'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useNumberField } from '@/hooks/use-number-field'
+import { animateLayout } from '@/lib/animate-layout'
 import { errorMessage, postJson } from '@/lib/api'
 import type { CreatedPoll } from './api-types'
 import { DurationField } from './duration-field'
@@ -49,8 +50,20 @@ export function CreatePollForm({
         )
     }
 
+    // Rows, and everything below them, glide into place as one is added or removed
+    function addOption() {
+        animateLayout(() => setOptions((rows) => [...rows, newRow()]))
+    }
+
     function removeOption(rowId: string) {
-        setOptions((rows) => rows.filter((row) => row.id !== rowId))
+        animateLayout(() =>
+            setOptions((rows) => rows.filter((row) => row.id !== rowId)),
+        )
+    }
+
+    // The message slides open or closed, rather than pushing the button down in one jump
+    function showError(message: string | null) {
+        animateLayout(() => setError(message))
     }
 
     async function submit() {
@@ -65,16 +78,16 @@ export function CreatePollForm({
             durationMinutes: duration.total,
         })
         if (!check.ok) {
-            setError(check.error)
+            showError(check.error)
             return
         }
 
-        setError(null)
+        showError(null)
         setSubmitting(true)
         try {
             onCreated(await postJson<CreatedPoll>('/api/polls', check.value))
         } catch (caught) {
-            setError(errorMessage(caught))
+            showError(errorMessage(caught))
             setSubmitting(false)
         }
     }
@@ -105,11 +118,14 @@ export function CreatePollForm({
                 </div>
             </section>
 
-            <section className="flex flex-col gap-3 p-4">
+            <section className={`flex flex-col gap-3 p-4 ${glideClass}`}>
                 <SectionTitle>Options</SectionTitle>
                 <ol className="flex flex-col gap-2">
                     {options.map((row, index) => (
-                        <li key={row.id} className="flex items-center gap-3">
+                        <li
+                            key={row.id}
+                            className={`flex items-center gap-3 ${glideClass}`}
+                        >
                             <span
                                 aria-hidden="true"
                                 className="w-4 shrink-0 text-right font-heading text-sm text-muted-foreground"
@@ -144,10 +160,8 @@ export function CreatePollForm({
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() =>
-                            setOptions((rows) => [...rows, newRow()])
-                        }
-                        className="self-start"
+                        onClick={addOption}
+                        className={`self-start ${glideClass}`}
                     >
                         <IconPlus />
                         Add option
@@ -155,12 +169,12 @@ export function CreatePollForm({
                 )}
             </section>
 
-            <section className="flex flex-col gap-3 p-4">
+            <section className={`flex flex-col gap-3 p-4 ${glideClass}`}>
                 <SectionTitle>Poll length</SectionTitle>
                 <DurationField id={`${id}-length`} duration={duration} />
             </section>
 
-            <section className="flex flex-col gap-4 p-4">
+            <section className={`flex flex-col gap-4 p-4 ${glideClass}`}>
                 <div className="grid grid-cols-[minmax(0,1fr)_5rem] items-center gap-3">
                     <label htmlFor={`${id}-voters`} className={eyebrowClass}>
                         Expected voters

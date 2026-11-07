@@ -4,6 +4,7 @@ import { cn } from 'cn'
 import { ToolLayout } from '@/components/tool-layout'
 import { MethodologyLayout } from '@/components/methodology-layout'
 import { Button } from '@/components/ui/button'
+import { animateLayout } from '@/lib/animate-layout'
 import {
     ConfidenceCalculator,
     type CalculatorStart,
@@ -20,12 +21,22 @@ export function ConfidencePage() {
     // Which starting values each calculator on screen uses; also its React key
     const [calculators, setCalculators] = useState([0])
 
+    // The calculators glide to their new places as one is added or removed
     function addCalculator() {
-        setCalculators((current) => [...current, current.includes(0) ? 1 : 0])
+        animateLayout(() =>
+            setCalculators((current) => [
+                ...current,
+                current.includes(0) ? 1 : 0,
+            ]),
+        )
     }
 
     function removeCalculator(id: number) {
-        setCalculators((current) => current.filter((other) => other !== id))
+        animateLayout(() =>
+            setCalculators((current) =>
+                current.filter((other) => other !== id),
+            ),
+        )
     }
 
     return (
