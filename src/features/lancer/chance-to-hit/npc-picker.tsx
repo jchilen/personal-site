@@ -4,7 +4,12 @@ import { IconChevronDown } from '@tabler/icons-react'
 import { lockedClass, underlineInputClass } from '@/components/field-styles'
 import { SectionTitle } from '@/components/section-title'
 import { Hint } from '@/components/hint'
-import { collapseClass, glideClass } from '@/components/motion-styles'
+import { LOCK_REASONS } from './lock-reasons'
+import {
+    collapseClass,
+    glideClass,
+    reducedMotionClass,
+} from '@/components/motion-styles'
 import {
     Collapsible,
     CollapsibleContent,
@@ -112,6 +117,10 @@ export function NpcPicker({
         return true
     }
 
+    // The note under the search box. Picking an unavailable name flashes the limit message; while
+    // searching, it counts the matches; and once the last enemy is picked, the limit message fades in
+    // and stays, so it's clear before anyone tries for one more. It's a live region, so screen
+    // readers announce each change
     let status: ReactNode = null
     if (warning.visible) {
         status = (
@@ -119,13 +128,22 @@ export function NpcPicker({
                 key={warning.count}
                 className="animate-flash motion-reduce:animate-none"
             >
-                {MAX_TARGETS} chosen: unselect one to choose another.
+                {LOCK_REASONS.pickerFull}.
             </span>
         )
     } else if (searching) {
         status = first
             ? `${matches.length} ${matches.length === 1 ? 'match' : 'matches'}. Press Enter to ${selected.has(first.name) ? 'remove' : 'select'} ${first.name}.`
             : 'No enemy matches that name.'
+    } else if (full) {
+        status = (
+            <span
+                key="full"
+                className={`animate-in duration-500 fade-in-0 ${reducedMotionClass}`}
+            >
+                {LOCK_REASONS.pickerFull}.
+            </span>
+        )
     }
 
     return (
@@ -239,60 +257,78 @@ export function NpcPicker({
                                             <ul className="flex flex-col gap-1">
                                                 {members.map((npc) => (
                                                     <li key={npc.name}>
-                                                        <button
-                                                            type="button"
-                                                            aria-pressed={selected.has(
-                                                                npc.name,
-                                                            )}
-                                                            aria-disabled={unavailable(
-                                                                npc,
-                                                            )}
-                                                            // Picking one of the search's matches clears the search, like Enter.
-                                                            // Picking a faded name keeps it, so you can carry on with the same search
-                                                            onClick={() => {
-                                                                if (
-                                                                    pick(npc) &&
-                                                                    isMatch(npc)
-                                                                )
-                                                                    setQuery('')
-                                                            }}
-                                                            className={cn(
-                                                                'flex w-full items-center justify-between gap-2 border px-2 py-1 text-left text-sm transition hover:border-primary aria-disabled:cursor-not-allowed aria-disabled:text-muted-foreground aria-disabled:hover:border-border aria-pressed:border-primary aria-pressed:bg-primary/10 aria-pressed:text-primary aria-pressed:shadow-[inset_3px_0_0_var(--primary)]',
-                                                                // Once the most enemies are picked, the rest get the striped, faded locked
-                                                                // look, so being unavailable isn't shown by color alone (WCAG 1.4.1)
+                                                        {/* Once the most are picked, the rest explain why they're striped. Clicking one still
+                                                            flashes the same words above, for touch screens, which never show tooltips */}
+                                                        <Hint
+                                                            label={
                                                                 unavailable(npc)
-                                                                    ? lockedClass
-                                                                    : 'bg-background',
-                                                                searching &&
-                                                                    !isMatch(
-                                                                        npc,
-                                                                    ) &&
-                                                                    'opacity-30',
-                                                            )}
+                                                                    ? LOCK_REASONS.pickerFull
+                                                                    : null
+                                                            }
                                                         >
-                                                            <span className="truncate">
-                                                                <HighlightedName
-                                                                    name={
-                                                                        npc.name
-                                                                    }
-                                                                    search={
-                                                                        search
-                                                                    }
-                                                                />
-                                                            </span>
-                                                            <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
-                                                                {percent(
-                                                                    oddsAgainst(
-                                                                        npc,
-                                                                    ).hit,
+                                                            <button
+                                                                type="button"
+                                                                aria-pressed={selected.has(
+                                                                    npc.name,
                                                                 )}
-                                                                {/* Sighted users read this from the page; screen readers get it here */}
-                                                                <span className="sr-only">
-                                                                    {' '}
-                                                                    to hit
+                                                                aria-disabled={unavailable(
+                                                                    npc,
+                                                                )}
+                                                                // Picking one of the search's matches clears the search, like Enter.
+                                                                // Picking a faded name keeps it, so you can carry on with the same search
+                                                                onClick={() => {
+                                                                    if (
+                                                                        pick(
+                                                                            npc,
+                                                                        ) &&
+                                                                        isMatch(
+                                                                            npc,
+                                                                        )
+                                                                    )
+                                                                        setQuery(
+                                                                            '',
+                                                                        )
+                                                                }}
+                                                                className={cn(
+                                                                    'flex w-full items-center justify-between gap-2 border px-2 py-1 text-left text-sm transition hover:border-primary aria-disabled:cursor-not-allowed aria-disabled:text-muted-foreground aria-disabled:hover:border-border aria-pressed:border-primary aria-pressed:bg-primary/10 aria-pressed:text-primary aria-pressed:shadow-[inset_3px_0_0_var(--primary)]',
+                                                                    // Once the most enemies are picked, the rest get the striped, faded locked
+                                                                    // look, so being unavailable isn't shown by color alone (WCAG 1.4.1)
+                                                                    unavailable(
+                                                                        npc,
+                                                                    )
+                                                                        ? lockedClass
+                                                                        : 'bg-background',
+                                                                    searching &&
+                                                                        !isMatch(
+                                                                            npc,
+                                                                        ) &&
+                                                                        'opacity-30',
+                                                                )}
+                                                            >
+                                                                <span className="truncate">
+                                                                    <HighlightedName
+                                                                        name={
+                                                                            npc.name
+                                                                        }
+                                                                        search={
+                                                                            search
+                                                                        }
+                                                                    />
                                                                 </span>
-                                                            </span>
-                                                        </button>
+                                                                <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
+                                                                    {percent(
+                                                                        oddsAgainst(
+                                                                            npc,
+                                                                        ).hit,
+                                                                    )}
+                                                                    {/* Sighted users read this from the page; screen readers get it here */}
+                                                                    <span className="sr-only">
+                                                                        {' '}
+                                                                        to hit
+                                                                    </span>
+                                                                </span>
+                                                            </button>
+                                                        </Hint>
                                                     </li>
                                                 ))}
                                             </ul>

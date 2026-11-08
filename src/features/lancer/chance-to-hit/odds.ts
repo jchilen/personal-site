@@ -4,6 +4,13 @@ export const ATTACK_TYPES = ['weapon', 'smart', 'tech'] as const
 export type AttackType = (typeof ATTACK_TYPES)[number]
 export const COVERS = ['none', 'soft', 'hard'] as const
 export type Cover = (typeof COVERS)[number]
+
+/** The Difficulty each kind of cover adds to an attack */
+export const COVER_DIFFICULTY = {
+    none: 0,
+    soft: 1,
+    hard: 2,
+} satisfies Record<Cover, number>
 export const TIERS = [1, 2, 3] as const
 export type Tier = (typeof TIERS)[number]
 
@@ -135,8 +142,8 @@ export function attackTotals(
         ['Other', you.otherAccuracy],
     ])
     const difficulty = total([
-        ['Soft cover', cover === 'soft' ? 1 : 0],
-        ['Hard cover', cover === 'hard' ? 2 : 0],
+        ['Soft cover', cover === 'soft' ? COVER_DIFFICULTY.soft : 0],
+        ['Hard cover', cover === 'hard' ? COVER_DIFFICULTY.hard : 0],
         ['Impaired', you.impaired ? 1 : 0],
         ['Engaged', engaged ? 1 : 0],
         ['Other', you.otherDifficulty],

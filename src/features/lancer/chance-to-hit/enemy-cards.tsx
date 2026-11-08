@@ -13,7 +13,9 @@ import { Choice } from './choice'
 import { EffectToggle } from './effect-toggle'
 import type { EnemyCardData } from './enemy-card-data'
 import { chanceColor, percent } from './format'
+import { LOCK_REASONS } from './lock-reasons'
 import {
+    COVER_DIFFICULTY,
     targetDefense,
     type AttackType,
     type TargetEffects,
@@ -115,7 +117,7 @@ function EnemyCard({
                     <Hint
                         label={
                             full
-                                ? `Duplicate ${title} (${MAX_TARGETS} chosen: remove one to add a copy)`
+                                ? `Duplicate ${title} (${LOCK_REASONS.cardsFull})`
                                 : `Duplicate ${title}`
                         }
                         side="bottom"
@@ -159,7 +161,11 @@ function EnemyCard({
                     ['hard', 'Hard'],
                 ]}
                 onChange={(cover) => onChange({ cover })}
-                locked={tech}
+                lockedReason={tech ? LOCK_REASONS.techCover : undefined}
+                hints={{
+                    soft: `Adds ${COVER_DIFFICULTY.soft} difficulty`,
+                    hard: `Adds ${COVER_DIFFICULTY.hard} difficulty`,
+                }}
             />
             <div className="flex flex-wrap gap-2">
                 <EffectToggle
@@ -272,7 +278,7 @@ export function EnemyCards({
                             key={warning.count}
                             className="animate-flash motion-reduce:animate-none"
                         >
-                            {MAX_TARGETS} chosen: remove one to add a copy.
+                            {LOCK_REASONS.cardsFull}.
                         </span>
                     )}
                 </p>

@@ -2,6 +2,7 @@ import { SectionTitle } from '@/components/section-title'
 import { glideClass } from '@/components/motion-styles'
 import { Choice } from './choice'
 import { IconInfoCircle } from '@tabler/icons-react'
+import { LOCK_REASONS } from './lock-reasons'
 import { Note } from './note'
 import { currentRuleset, type SettingsProps } from './settings'
 import { TIER_OPTIONS, tierFromOption } from './tier-options'
@@ -56,8 +57,9 @@ export function SetupBar({ settings, dispatch }: SettingsProps) {
             {settings.attackType === 'tech' && (
                 // w-0 min-w-full: as wide as the card, without making the card any wider
                 <div className="flex w-0 min-w-full flex-col gap-1 border-t pt-3">
-                    <Note>Tech attacks ignore cover.</Note>
-                    <Note>Engaged doesn't affect tech attacks.</Note>
+                    {/* The same words as the tooltips on the locked Cover and Engaged controls */}
+                    <Note>{LOCK_REASONS.techCover}.</Note>
+                    <Note>{LOCK_REASONS.techEngaged}.</Note>
                     <Note icon={IconInfoCircle}>
                         Tech attacks can only crit with certain Frontier Foundry
                         abilities.

@@ -5,6 +5,7 @@ import { glideClass } from '@/components/motion-styles'
 import { Stepper } from '@/components/stepper'
 import { EffectToggle } from './effect-toggle'
 import { signed } from './format'
+import { LOCK_REASONS } from './lock-reasons'
 import { grit, type YourSettings } from './odds'
 import { LIMITS, type SettingsProps } from './settings'
 import { eyebrowClass } from '@/components/text-styles'
@@ -135,7 +136,9 @@ export function YourEffects({ settings, dispatch }: SettingsProps) {
                                 label="Engaged"
                                 pressed={!tech && settings.engaged}
                                 onChange={(engaged) => change({ engaged })}
-                                locked={tech}
+                                lockedReason={
+                                    tech ? LOCK_REASONS.techEngaged : undefined
+                                }
                             />
                         </div>
                     </div>

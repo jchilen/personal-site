@@ -1,6 +1,7 @@
 import { cn } from 'cn'
 import { choiceItemClass, lockedClass } from '@/components/field-styles'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Hint } from '@/components/hint'
 import { eyebrowClass } from '@/components/text-styles'
 
 type ChoiceProps<T extends string> = {
@@ -8,9 +9,12 @@ type ChoiceProps<T extends string> = {
     value: T
     options: [T, string][]
     onChange: (value: T) => void
-    // Shown but unchangeable, faded and striped, for settings that don't apply right now. Marked with
-    // aria-disabled instead of disabled, so the "not allowed" cursor (and tooltips) still work
-    locked?: boolean
+    // Why the choice doesn't apply right now. Setting it locks the choice: faded and striped,
+    // unchangeable, with the reason as each button's tooltip. Marked with aria-disabled instead of
+    // disabled, so the buttons can still be focused and hovered to show that tooltip
+    lockedReason?: string
+    // A tooltip for some options, by value, shown while the choice is unlocked
+    hints?: Partial<Record<T, string>>
 }
 
 /** A labeled row of buttons where exactly one is selected */
@@ -19,8 +23,11 @@ export function Choice<T extends string>({
     value,
     options,
     onChange,
-    locked = false,
+    lockedReason,
+    hints,
 }: ChoiceProps<T>) {
+    const locked = lockedReason !== undefined
+
     return (
         <div className="flex flex-col gap-1.5">
             <span className={eyebrowClass}>{label}</span>
@@ -38,19 +45,23 @@ export function Choice<T extends string>({
                 className="flex flex-wrap gap-2"
             >
                 {options.map(([option, text]) => (
-                    <ToggleGroupItem
+                    <Hint
                         key={option}
-                        value={option}
-                        aria-disabled={locked}
-                        className={cn(
-                            choiceItemClass,
-                            'px-3',
-                            // Unlocked choices are a little brighter, so the faded locked ones stand apart
-                            locked ? lockedClass : 'text-foreground/80',
-                        )}
+                        label={lockedReason ?? hints?.[option] ?? null}
                     >
-                        {text}
-                    </ToggleGroupItem>
+                        <ToggleGroupItem
+                            value={option}
+                            aria-disabled={locked}
+                            className={cn(
+                                choiceItemClass,
+                                'px-3',
+                                // Unlocked choices are a little brighter, so the faded locked ones stand apart
+                                locked ? lockedClass : 'text-foreground/80',
+                            )}
+                        >
+                            {text}
+                        </ToggleGroupItem>
+                    </Hint>
                 ))}
             </ToggleGroup>
         </div>
