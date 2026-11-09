@@ -1,6 +1,8 @@
-export const RULESETS = ['original', 'rebake'] as const
-export type Ruleset = (typeof RULESETS)[number]
+import type { Ruleset } from '../rulesets'
 
+// The rulesets now live in lancer/rulesets.ts, shared with Frame Survivability. Passing them on from
+// here keeps this tool's imports working unchanged
+export { RULESETS, type Ruleset } from '../rulesets'
 /** One value for each tier: index 0 is Tier 1, index 2 is Tier 3 */
 export type PerTier = [number, number, number]
 

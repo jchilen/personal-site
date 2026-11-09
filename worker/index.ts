@@ -10,6 +10,7 @@ import {
 import { claimAdmin, closePoll, getResults, getStatus } from './results'
 import { deleteOldPolls } from './cleanup'
 import { listLancerNpcs } from './lancer'
+import { getSurvivabilityData } from './survivability'
 
 async function health(_request: Request, env: Env): Promise<Response> {
     const row = await env.DB.prepare('SELECT 1 AS ok').first<{ ok: number }>()
@@ -72,6 +73,11 @@ const routes: { method: string; pattern: URLPattern; handler: Handler }[] = [
         method: 'GET',
         pattern: new URLPattern({ pathname: '/api/lancer/npcs' }),
         handler: listLancerNpcs,
+    },
+    {
+        method: 'GET',
+        pattern: new URLPattern({ pathname: '/api/lancer/survivability' }),
+        handler: getSurvivabilityData,
     },
 ]
 

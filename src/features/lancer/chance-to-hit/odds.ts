@@ -1,18 +1,24 @@
+import {
+    COVER_DIFFICULTY,
+    netDieOutcomes,
+    type Cover,
+    type Tier,
+} from '../rules'
 import type { LancerNpc } from './npc-types'
+
+// Tiers, cover and the dice now live in lancer/rules.ts, shared with Frame Survivability. Passing
+// them on from here keeps this tool's imports working unchanged
+export {
+    COVER_DIFFICULTY,
+    COVERS,
+    netDieOutcomes,
+    TIERS,
+    type Cover,
+    type Tier,
+} from '../rules'
 
 export const ATTACK_TYPES = ['weapon', 'smart', 'tech'] as const
 export type AttackType = (typeof ATTACK_TYPES)[number]
-export const COVERS = ['none', 'soft', 'hard'] as const
-export type Cover = (typeof COVERS)[number]
-
-/** The Difficulty each kind of cover adds to an attack */
-export const COVER_DIFFICULTY = {
-    none: 0,
-    soft: 1,
-    hard: 2,
-} satisfies Record<Cover, number>
-export const TIERS = [1, 2, 3] as const
-export type Tier = (typeof TIERS)[number]
 
 /** Your side of the roll: the same against every enemy */
 export type YourSettings = {
@@ -49,23 +55,6 @@ export type AttackOdds = { hit: number; crit: number }
 /** Grit is half the License Level, rounded up */
 export function grit(licenseLevel: number): number {
     return Math.ceil(licenseLevel / 2)
-}
-
-/**
- * Every value the Accuracy or Difficulty dice can add, with its chance. Positive `net` adds the
- * highest of that many d6; negative subtracts it; zero rolls nothing
- */
-export function netDieOutcomes(
-    net: number,
-): { value: number; chance: number }[] {
-    if (net === 0) return [{ value: 0, chance: 1 }]
-    const count = Math.abs(net)
-    const sign = Math.sign(net)
-    return [1, 2, 3, 4, 5, 6].map((highest) => ({
-        value: sign * highest,
-        // The highest die is exactly `highest` when all dice are at most it, but not all below it
-        chance: (highest ** count - (highest - 1) ** count) / 6 ** count,
-    }))
 }
 
 type AttackInput = {
