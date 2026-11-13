@@ -13,30 +13,34 @@ import { glideClass } from '@/components/motion-styles'
 import { calculateSafeLead, POSSESSIONS, type Possession } from './safe-lead'
 import { isOneOf } from '@/lib/one-of'
 import { SafeLeadOutput } from './safe-lead-output'
-import { useNumberField } from '@/hooks/use-number-field'
+import { useNumberField, type NumberField } from '@/hooks/use-number-field'
 import { MethodologyLayout } from '@/components/methodology-layout'
 import { SafeLeadMethodology } from './safe-lead-methodology'
 import { InlineLink } from '@/components/inline-link'
 import { eyebrowClass } from '@/components/text-styles'
 
-// The shared underline input, centered and larger, for the lead and clock. Named apart from the
+// The shared underline input, centered and larger, for the lead and seconds. Named apart from the
 // shared numberInputClass, which is right-aligned and smaller
 const largeNumberInputClass = `${underlineInputClass} text-center font-heading text-2xl font-semibold`
 
-// One input row with a fixed label column, so Lead, Ball, and Clock line up
-const rowClass = 'grid grid-cols-[4.5rem_minmax(0,1fr)] items-center gap-3'
+// One input row with a fixed label column, so Lead, Ball, and Seconds Remaining line up. Wide
+// enough for "Remaining", the longest word; "Seconds Remaining" wraps onto two lines
+const rowClass = 'grid grid-cols-[6.5rem_minmax(0,1fr)] items-center gap-3'
+
+// The longest game is 40 minutes; overtime isn't covered
+const MAX_SECONDS = 40 * 60
 
 const possessionItemClass =
     'corner-brackets h-10 border text-muted-foreground hover:bg-transparent hover:text-cat-tools data-[state=on]:bg-transparent data-[state=on]:text-cat-tools'
 
 export function SafeLeadPage() {
     const lead = useNumberField({ max: 99 })
-    const minutes = useNumberField({ max: 40 })
-    const seconds = useNumberField({ max: 59 })
+    // Starts at the last two minutes, when the question usually comes up
+    const seconds = useNumberField({ max: MAX_SECONDS, initial: 120 })
     const [possession, setPossession] = useState<Possession>('leading')
 
     const pointsAhead = lead.number
-    const secondsLeft = minutes.number * 60 + seconds.number
+    const secondsLeft = seconds.number
     const hasValidInput = pointsAhead > 0 && secondsLeft > 0
     const result = hasValidInput
         ? calculateSafeLead(pointsAhead, possession, secondsLeft)
@@ -57,44 +61,13 @@ export function SafeLeadPage() {
                     <Card size="sm" className={cn(flatCardClass, glideClass)}>
                         <PanelHeader label="Input" number={1} />
                         <CardContent className="flex flex-col gap-5">
-                            <div className={rowClass}>
-                                <label
-                                    htmlFor="points-ahead"
-                                    className={eyebrowClass}
-                                >
-                                    Lead
-                                </label>
-                                <div className="flex items-center gap-2">
-                                    <Button
-                                        variant="outline"
-                                        size="icon-sm"
-                                        aria-label="Decrease lead"
-                                        className="text-cat-tools"
-                                        onClick={() =>
-                                            lead.setNumber(lead.number - 1)
-                                        }
-                                    >
-                                        <IconMinus />
-                                    </Button>
-                                    <Input
-                                        id="points-ahead"
-                                        inputMode="numeric"
-                                        {...lead.inputProps}
-                                        className={largeNumberInputClass}
-                                    />
-                                    <Button
-                                        variant="outline"
-                                        size="icon-sm"
-                                        aria-label="Increase lead"
-                                        className="text-cat-tools"
-                                        onClick={() =>
-                                            lead.setNumber(lead.number + 1)
-                                        }
-                                    >
-                                        <IconPlus />
-                                    </Button>
-                                </div>
-                            </div>
+                            <LargeNumberStepper
+                                id="points-ahead"
+                                label="Lead"
+                                decreaseLabel="Decrease lead"
+                                increaseLabel="Increase lead"
+                                field={lead}
+                            />
 
                             <div className={rowClass}>
                                 <span
@@ -128,36 +101,13 @@ export function SafeLeadPage() {
                                 </ToggleGroup>
                             </div>
 
-                            <div className={rowClass}>
-                                <span id="clock-label" className={eyebrowClass}>
-                                    Clock
-                                </span>
-                                {/* Grouped under Clock, so the inputs read as "Clock, Minutes" */}
-                                <div
-                                    role="group"
-                                    aria-labelledby="clock-label"
-                                    className="flex items-center gap-2"
-                                >
-                                    <Input
-                                        aria-label="Minutes"
-                                        inputMode="numeric"
-                                        {...minutes.inputProps}
-                                        className={largeNumberInputClass}
-                                    />
-                                    <span
-                                        aria-hidden="true"
-                                        className="font-heading text-2xl font-semibold text-muted-foreground"
-                                    >
-                                        :
-                                    </span>
-                                    <Input
-                                        aria-label="Seconds"
-                                        inputMode="numeric"
-                                        {...seconds.inputProps}
-                                        className={largeNumberInputClass}
-                                    />
-                                </div>
-                            </div>
+                            <LargeNumberStepper
+                                id="seconds-remaining"
+                                label="Seconds Remaining"
+                                decreaseLabel="Decrease seconds remaining"
+                                increaseLabel="Increase seconds remaining"
+                                field={seconds}
+                            />
                         </CardContent>
                     </Card>
 
@@ -184,5 +134,57 @@ export function SafeLeadPage() {
                 </p>
             </MethodologyLayout>
         </ToolLayout>
+    )
+}
+
+type LargeNumberStepperProps = {
+    id: string
+    label: string
+    decreaseLabel: string
+    increaseLabel: string
+    field: NumberField
+}
+
+// A row of − / input / + in the page's label column. The shared Stepper isn't used because its
+// layout doesn't fit this page's fixed label column and large centered inputs
+function LargeNumberStepper({
+    id,
+    label,
+    decreaseLabel,
+    increaseLabel,
+    field,
+}: LargeNumberStepperProps) {
+    return (
+        <div className={rowClass}>
+            <label htmlFor={id} className={eyebrowClass}>
+                {label}
+            </label>
+            <div className="flex items-center gap-2">
+                <Button
+                    variant="outline"
+                    size="icon-sm"
+                    aria-label={decreaseLabel}
+                    className="text-cat-tools"
+                    onClick={() => field.setNumber(field.number - 1)}
+                >
+                    <IconMinus />
+                </Button>
+                <Input
+                    id={id}
+                    inputMode="numeric"
+                    {...field.inputProps}
+                    className={largeNumberInputClass}
+                />
+                <Button
+                    variant="outline"
+                    size="icon-sm"
+                    aria-label={increaseLabel}
+                    className="text-cat-tools"
+                    onClick={() => field.setNumber(field.number + 1)}
+                >
+                    <IconPlus />
+                </Button>
+            </div>
+        </div>
     )
 }
