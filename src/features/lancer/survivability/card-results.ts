@@ -75,3 +75,28 @@ export function cardResults(
         standard: frameResult(standard, card, blast),
     }
 }
+
+// Results already worked out, by card. The reducer replaces only the card that changed, so a card
+// that's the same object as last time, with the same data and standard frame, has the same results.
+// A WeakMap forgets a card once nothing else holds on to it, like a removed card
+const saved = new WeakMap<
+    BuildCard,
+    { data: SurvivabilityData; standard: Frame; results: CardResults | null }
+>()
+
+/**
+ * cardResults, worked out once per card and reused until that card, the data or the standard frame
+ * changes. The cards and the versus card both read from it, so nothing is worked out twice
+ */
+export function cachedCardResults(
+    card: BuildCard,
+    data: SurvivabilityData,
+    standard: Frame,
+): CardResults | null {
+    const hit = saved.get(card)
+    if (hit && hit.data === data && hit.standard === standard)
+        return hit.results
+    const results = cardResults(card, data, standard)
+    saved.set(card, { data, standard, results })
+    return results
+}

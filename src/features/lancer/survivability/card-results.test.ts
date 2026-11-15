@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { cardResults, fieldResults } from './card-results'
+import { cachedCardResults, cardResults, fieldResults } from './card-results'
 import type { PilotBuild } from './pilot-build'
 import { DEFAULT_SETTINGS, newCard, type CardSettings } from './settings'
 import { standardFrame } from './standard-frame'
@@ -102,5 +102,30 @@ describe('cardResults', () => {
         expect(
             cardResults(newCard('Missing Frame', [], settings), data, standard),
         ).toBeNull()
+    })
+})
+
+describe('cachedCardResults', () => {
+    const standard = standardFrame(data.frames)
+    const card = newCard('Arminius', [], { ...DEFAULT_SETTINGS, hull: 4 })
+
+    test('the same card gets back the very same results, without working them out again', () => {
+        const first = cachedCardResults(card, data, standard)
+        expect(cachedCardResults(card, data, standard)).toBe(first)
+        expect(first).toEqual(cardResults(card, data, standard))
+    })
+
+    test('a changed card is a new object, so its results are worked out afresh', () => {
+        const before = cachedCardResults(card, data, standard)
+        const changed = { ...card, agility: 3 }
+        const after = cachedCardResults(changed, data, standard)
+        expect(after).not.toBe(before)
+        expect(after?.stats.evasion).toBe((before?.stats.evasion ?? 0) + 3)
+    })
+
+    test('new data or a new standard frame starts afresh too', () => {
+        const before = cachedCardResults(card, data, standard)
+        expect(cachedCardResults(card, { ...data }, standard)).not.toBe(before)
+        expect(cachedCardResults(card, data, { ...standard })).not.toBe(before)
     })
 })

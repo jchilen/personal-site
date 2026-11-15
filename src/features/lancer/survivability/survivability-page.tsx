@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react'
-import { MethodologyLayout } from '@/components/methodology-layout'
+import { MethodologyDialog } from '@/components/methodology-dialog'
 import { ToolLayout } from '@/components/tool-layout'
 import { useApi, type ApiState } from '@/hooks/use-api'
 import { BuildCards } from './build-cards'
@@ -64,17 +64,17 @@ export function SurvivabilityPage() {
 
     return (
         <ToolLayout eyebrow="Lancer" title="Frame Survivability">
-            <MethodologyLayout
-                title="How survivability is worked out"
-                methodology={<SurvivabilityMethodology />}
-                wide
-            >
-                <Builds
-                    survivability={survivability.state}
-                    state={state}
-                    dispatch={dispatch}
-                />
-            </MethodologyLayout>
+            {/* In a dialog rather than a side panel, so the page's margins stay free for the versus card */}
+            <div className="mb-4 flex justify-end">
+                <MethodologyDialog title="How survivability is worked out">
+                    <SurvivabilityMethodology />
+                </MethodologyDialog>
+            </div>
+            <Builds
+                survivability={survivability.state}
+                state={state}
+                dispatch={dispatch}
+            />
         </ToolLayout>
     )
 }

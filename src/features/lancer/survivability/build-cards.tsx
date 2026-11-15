@@ -1,14 +1,16 @@
-import { useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import { cn } from 'cn'
 import { glideClass } from '@/components/motion-styles'
 import { SectionTitle } from '@/components/section-title'
 import { useFocusAfterRender } from '@/hooks/use-focus-after-render'
 import { neighborAfterRemoval } from '@/lib/focus'
 import { BuildCard } from './build-card'
+import { cachedCardResults } from './card-results'
 import { FramePicker } from './frame-picker'
 import { LOCK_REASONS } from './lock-reasons'
 import { MAX_CARDS, type StateProps } from './settings'
 import type { Frame, SurvivabilityData } from './survivability-types'
+import { VersusCard } from './versus-card'
 
 type Control = 'name' | 'up' | 'down' | 'remove'
 
@@ -29,6 +31,22 @@ export function BuildCards({
     const focusAfterRender = useFocusAfterRender()
     const titleRef = useRef<HTMLElement | null>(null)
     // Each card's controls, by card id, so focus can be put back after cards move or go
+    // Every card's numbers, by card id. Each is worked out once and reused until that card changes
+    const results = useMemo(
+        () =>
+            new Map(
+                cards.map((card) => [
+                    card.id,
+                    cachedCardResults(card, data, standard),
+                ]),
+            ),
+        [cards, data, standard],
+    )
+    const featured = cards.at(0)
+    const compared = cards.find((card) => card.id === state.comparingId)
+    const featuredResults = featured && results.get(featured.id)
+    const comparedResults = compared && results.get(compared.id)
+
     const controls = useRef(
         new Map<string, Partial<Record<Control, HTMLElement>>>(),
     )
@@ -104,38 +122,74 @@ export function BuildCards({
                 </p>
             ) : (
                 cards.map((card, index) => {
+                    const cardResults = results.get(card.id)
+                    // A card for a frame the data no longer has is cleared as the page loads
+                    if (!cardResults) return null
+                    // Every card sits in the same wrapper, so moving one never swaps what it's
+                    // wrapped in, which would rebuild it and break its glide. The featured card's
+                    // wrapper also holds the versus card
                     return (
-                        <BuildCard
-                            key={card.id}
-                            card={card}
-                            data={data}
-                            standard={standard}
-                            featured={index === 0}
-                            canMoveUp={index > 0}
-                            canMoveDown={index < cards.length - 1}
-                            full={full}
-                            onChange={(changes) =>
-                                dispatch({
-                                    type: 'changeCard',
-                                    id: card.id,
-                                    changes,
-                                })
-                            }
-                            onRename={(name) =>
-                                dispatch({
-                                    type: 'renameCard',
-                                    id: card.id,
-                                    name,
-                                })
-                            }
-                            onFeature={() => feature(card.id)}
-                            onMove={(direction) => move(card.id, direction)}
-                            onDuplicate={() =>
-                                dispatch({ type: 'duplicateCard', id: card.id })
-                            }
-                            onRemove={() => remove(card.id)}
-                            controlRef={controlRef(card.id)}
-                        />
+                        <div key={card.id} className="relative grid gap-4">
+                            <BuildCard
+                                card={card}
+                                results={cardResults}
+                                featured={index === 0}
+                                comparing={card.id === state.comparingId}
+                                canMoveUp={index > 0}
+                                canMoveDown={index < cards.length - 1}
+                                full={full}
+                                onChange={(changes) =>
+                                    dispatch({
+                                        type: 'changeCard',
+                                        id: card.id,
+                                        changes,
+                                    })
+                                }
+                                onRename={(name) =>
+                                    dispatch({
+                                        type: 'renameCard',
+                                        id: card.id,
+                                        name,
+                                    })
+                                }
+                                onFeature={() => feature(card.id)}
+                                onCompare={() =>
+                                    dispatch({
+                                        type: 'toggleCompare',
+                                        id: card.id,
+                                    })
+                                }
+                                onMove={(direction) => move(card.id, direction)}
+                                onDuplicate={() =>
+                                    dispatch({
+                                        type: 'duplicateCard',
+                                        id: card.id,
+                                    })
+                                }
+                                onRemove={() => remove(card.id)}
+                                controlRef={controlRef(card.id)}
+                            />
+                            {index === 0 &&
+                                compared &&
+                                featuredResults &&
+                                comparedResults && (
+                                    // On screens wide enough, it floats in the margin to the right of the
+                                    // featured card, tops lined up, so the card keeps the same width as the
+                                    // rest. Narrower screens have no margin to spare, so it sits just below
+                                    <div className="2xl:absolute 2xl:top-0 2xl:left-full 2xl:ml-4 2xl:w-48">
+                                        <VersusCard
+                                            featured={{
+                                                name: card.name,
+                                                results: featuredResults,
+                                            }}
+                                            compared={{
+                                                name: compared.name,
+                                                results: comparedResults,
+                                            }}
+                                        />
+                                    </div>
+                                )}
+                        </div>
                     )
                 })
             )}

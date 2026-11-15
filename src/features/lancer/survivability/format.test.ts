@@ -16,6 +16,12 @@ describe('survivesComparedTo', () => {
         )
     })
 
+    test('with a subject, the sentence names who survives', () => {
+        expect(survivesComparedTo(1.08, 0.71, 'Pegasus-1', 'Tank build')).toBe(
+            'Tank build survives 0.37 more blasts than Pegasus-1',
+        )
+    })
+
     test('numbers that look the same on screen survive as many blasts', () => {
         expect(survivesComparedTo(0.9541, 0.9549, 'the standard frame')).toBe(
             'Survives as many blasts as the standard frame',

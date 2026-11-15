@@ -1,6 +1,7 @@
-import { useMemo, useState, type RefCallback } from 'react'
+import { useState, type RefCallback } from 'react'
 import {
     IconArrowDown,
+    IconArrowsLeftRight,
     IconArrowUp,
     IconCopy,
     IconPencil,
@@ -19,7 +20,7 @@ import { Button } from '@/components/ui/button'
 import { Hint } from '@/components/hint'
 import { COVER_DIFFICULTY } from '../rules'
 import { TIER_OPTIONS, tierFromOption } from '../tier-options'
-import { cardResults } from './card-results'
+import type { CardResults } from './card-results'
 import { blasts, ordinal, rankColor, survivesComparedTo } from './format'
 import { LOCK_REASONS } from './lock-reasons'
 import {
@@ -28,7 +29,6 @@ import {
     type CardSettings,
     type PilotStat,
 } from './settings'
-import type { Frame, SurvivabilityData } from './survivability-types'
 
 // Notes for frames whose numbers need explaining, shown on their cards
 const FRAME_NOTES: Record<string, string> = {
@@ -106,15 +106,17 @@ function CardName({
 
 type BuildCardProps = {
     card: BuildCardData
-    data: SurvivabilityData
-    standard: Frame
+    results: CardResults
     featured: boolean
+    // Shown head to head with the featured card
+    comparing: boolean
     canMoveUp: boolean
     canMoveDown: boolean
     full: boolean
     onChange: (changes: Partial<CardSettings>) => void
     onRename: (name: string) => void
     onFeature: () => void
+    onCompare: () => void
     onMove: (direction: 'up' | 'down') => void
     onDuplicate: () => void
     onRemove: () => void
@@ -127,28 +129,21 @@ type BuildCardProps = {
 /** One frame with one pilot build: its controls on the left, and how long it survives on the right */
 export function BuildCard({
     card,
-    data,
-    standard,
+    results,
     featured,
+    comparing,
     canMoveUp,
     canMoveDown,
     full,
     onChange,
     onRename,
     onFeature,
+    onCompare,
     onMove,
     onDuplicate,
     onRemove,
     controlRef,
 }: BuildCardProps) {
-    // Worked out again only when this card, the data or the standard frame changes, so changing one
-    // card's build leaves the other cards' numbers alone
-    const results = useMemo(
-        () => cardResults(card, data, standard),
-        [card, data, standard],
-    )
-    // A card for a frame the data no longer has is cleared as the page loads, so this is brief
-    if (!results) return null
     const { frame, stats } = results
     const note = FRAME_NOTES[card.frame]
 
@@ -182,15 +177,28 @@ export function BuildCard({
                             Featured
                         </p>
                     ) : (
-                        <Button
-                            type="button"
-                            variant="outline"
-                            className="h-10"
-                            onClick={onFeature}
-                        >
-                            <IconStar data-icon="inline-start" />
-                            Make featured
-                        </Button>
+                        <>
+                            {/* Pressed while this card is shown head to head with the featured card */}
+                            <Button
+                                type="button"
+                                variant="outline"
+                                aria-pressed={comparing}
+                                onClick={onCompare}
+                                className="h-10 aria-pressed:border-primary aria-pressed:bg-primary/10 aria-pressed:text-primary"
+                            >
+                                <IconArrowsLeftRight data-icon="inline-start" />
+                                {comparing ? 'Comparing' : 'Compare'}
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                className="h-10"
+                                onClick={onFeature}
+                            >
+                                <IconStar data-icon="inline-start" />
+                                Make featured
+                            </Button>
+                        </>
                     )}
                     {/* Moves that can't happen are hidden, not disabled: the top card has no Move up */}
                     {canMoveUp && (

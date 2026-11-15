@@ -5,20 +5,23 @@ export function blasts(value: number): string {
 
 /**
  * How many more or fewer blasts a frame survives than another, worked out from the rounded numbers
- * on screen so the sentence never disagrees with them: "Survives 0.12 more blasts than Pegasus-1"
+ * on screen so the sentence never disagrees with them: "Survives 0.12 more blasts than Pegasus-1".
+ * With a subject it names who survives: "Tank build survives 0.12 more blasts than Pegasus-1"
  */
 export function survivesComparedTo(
     value: number,
     other: number,
     otherName: string,
+    subject?: string,
 ): string {
+    const survives = subject === undefined ? 'Survives' : `${subject} survives`
     const difference = Number(blasts(value)) - Number(blasts(other))
     if (Math.abs(difference) < 0.005) {
-        return `Survives as many blasts as ${otherName}`
+        return `${survives} as many blasts as ${otherName}`
     }
     const amount = blasts(Math.abs(difference))
     const direction = difference > 0 ? 'more' : 'fewer'
-    return `Survives ${amount} ${direction} blasts than ${otherName}`
+    return `${survives} ${amount} ${direction} blasts than ${otherName}`
 }
 
 /** 1st, 2nd, 3rd, 4th… 11th, 12th, 13th… 21st */
