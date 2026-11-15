@@ -13,6 +13,7 @@ import { ComingSoonPage } from '@/pages/coming-soon-page'
 import { AdminPage } from '@/features/tools/polls/admin-page'
 import { ResultsPage } from '@/features/tools/polls/results-page'
 import { ChanceToHitPage } from '@/features/lancer/chance-to-hit/chance-to-hit-page'
+import { SurvivabilityPage } from '@/features/lancer/survivability/survivability-page'
 import { cn } from 'cn'
 import {
     headerMotionClass,
@@ -78,6 +79,10 @@ function App() {
                     <Route
                         path="/lancer/chance-to-hit"
                         element={<ChanceToHitPage />}
+                    />
+                    <Route
+                        path="/lancer/survivability"
+                        element={<SurvivabilityPage />}
                     />
                     <Route
                         path="/articles/the-article"
