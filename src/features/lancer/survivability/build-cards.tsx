@@ -1,14 +1,11 @@
-import { useRef, useState } from 'react'
-import { IconPlus } from '@tabler/icons-react'
+import { useRef } from 'react'
 import { cn } from 'cn'
-import { lockedClass } from '@/components/field-styles'
 import { glideClass } from '@/components/motion-styles'
 import { SectionTitle } from '@/components/section-title'
-import { Button } from '@/components/ui/button'
-import { Hint } from '@/components/hint'
 import { useFocusAfterRender } from '@/hooks/use-focus-after-render'
 import { neighborAfterRemoval } from '@/lib/focus'
 import { BuildCard } from './build-card'
+import { FramePicker } from './frame-picker'
 import { LOCK_REASONS } from './lock-reasons'
 import { MAX_CARDS, type StateProps } from './settings'
 import type { Frame, SurvivabilityData } from './survivability-types'
@@ -35,8 +32,6 @@ export function BuildCards({
     const controls = useRef(
         new Map<string, Partial<Record<Control, HTMLElement>>>(),
     )
-    // Temporary: a plain list for adding a card, until the frame picker replaces it in step 4
-    const [frameToAdd, setFrameToAdd] = useState(data.frames[0]?.name ?? '')
 
     const controlRef =
         (id: string) => (control: Control) => (node: HTMLElement | null) => {
@@ -94,34 +89,11 @@ export function BuildCards({
                     >
                         {full && `${LOCK_REASONS.cardsFull}.`}
                     </p>
-                    <select
-                        aria-label="Frame for the new card"
-                        value={frameToAdd}
-                        onChange={(event) => setFrameToAdd(event.target.value)}
-                        className="h-10 border bg-background px-2"
-                    >
-                        {data.frames.map((frame) => (
-                            <option key={frame.name}>{frame.name}</option>
-                        ))}
-                    </select>
-                    <Hint label={full ? LOCK_REASONS.cardsFull : null}>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            className={cn('h-10', full && lockedClass)}
-                            aria-disabled={full}
-                            onClick={() => {
-                                if (!full)
-                                    dispatch({
-                                        type: 'addCard',
-                                        frame: frameToAdd,
-                                    })
-                            }}
-                        >
-                            <IconPlus data-icon="inline-start" />
-                            New frame card
-                        </Button>
-                    </Hint>
+                    <FramePicker
+                        frames={data.frames}
+                        full={full}
+                        onPick={(frame) => dispatch({ type: 'addCard', frame })}
+                    />
                 </div>
             </div>
 

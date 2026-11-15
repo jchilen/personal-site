@@ -4,6 +4,7 @@ import { IconChevronDown } from '@tabler/icons-react'
 import { lockedClass, underlineInputClass } from '@/components/field-styles'
 import { SectionTitle } from '@/components/section-title'
 import { Hint } from '@/components/hint'
+import { HighlightedName } from '@/components/highlighted-name'
 import { LOCK_REASONS } from './lock-reasons'
 import {
     collapseClass,
@@ -49,23 +50,6 @@ function roleColumns(npcs: LancerNpc[]): [string, LancerNpc[]][][] {
                 npcs.filter((npc) => npc.role === role),
             ])
             .filter(([, members]) => members.length > 0),
-    )
-}
-
-// The name with the typed letters underlined, so it's clear why it matched
-function HighlightedName({ name, search }: { name: string; search: string }) {
-    const start = search === '' ? -1 : name.toLowerCase().indexOf(search)
-    if (start === -1) return name
-    const end = start + search.length
-
-    return (
-        <>
-            {name.slice(0, start)}
-            <mark className="bg-transparent font-semibold text-foreground underline underline-offset-3">
-                {name.slice(start, end)}
-            </mark>
-            {name.slice(end)}
-        </>
     )
 }
 
