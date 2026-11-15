@@ -1,45 +1,66 @@
+import { useEffect, useMemo } from 'react'
 import { MethodologyLayout } from '@/components/methodology-layout'
 import { ToolLayout } from '@/components/tool-layout'
 import { useApi, type ApiState } from '@/hooks/use-api'
+import { BuildCards } from './build-cards'
+import type { StateProps } from './settings'
 import { standardFrame } from './standard-frame'
 import { SurvivabilityMethodology } from './survivability-methodology'
 import type { SurvivabilityData } from './survivability-types'
+import { usePageState } from './use-page-state'
 
-type BuildsProps = {
+type BuildsProps = StateProps & {
     survivability: ApiState<SurvivabilityData>
 }
 
 // The build cards once the data arrives, or why it couldn't load
-function Builds({ survivability }: BuildsProps) {
+function Builds({ survivability, state, dispatch }: BuildsProps) {
+    // A saved card for a frame the data no longer has (renamed or removed from the table) would
+    // take up a slot without ever showing, so those cards are cleared once the data arrives
+    useEffect(() => {
+        if (survivability.status === 'success') {
+            dispatch({
+                type: 'removeMissingFrames',
+                frames: survivability.data.frames.map((frame) => frame.name),
+            })
+        }
+    }, [survivability, dispatch])
+    const standard = useMemo(
+        () =>
+            survivability.status === 'success'
+                ? standardFrame(survivability.data.frames)
+                : null,
+        [survivability],
+    )
+
     if (survivability.status === 'loading') return null
 
-    if (survivability.status === 'error') {
+    if (survivability.status === 'error' || standard === null) {
         return (
             <p
                 role="alert"
                 className="border bg-card p-4 text-muted-foreground"
             >
-                {survivability.error}
+                {survivability.status === 'error'
+                    ? survivability.error
+                    : 'No frames were found.'}
             </p>
         )
     }
 
-    const { frames, attacks } = survivability.data
-    const standard = standardFrame(frames)
-    // Temporary: shows the data and math arrived, until the build cards take its place
     return (
-        <p className="border bg-card p-4">
-            Loaded {frames.length} frames and{' '}
-            {attacks.original[0].length + attacks.rebake[0].length} Tier 1
-            attackers. Standard frame: Armor {standard.armor}, HP {standard.hp},
-            Evasion {standard.evasion}, E-Defense {standard.eDefense}, Repair
-            Cap {standard.repairCap}.
-        </p>
+        <BuildCards
+            state={state}
+            dispatch={dispatch}
+            data={survivability.data}
+            standard={standard}
+        />
     )
 }
 
 export function SurvivabilityPage() {
     const survivability = useApi<SurvivabilityData>('/api/lancer/survivability')
+    const { state, dispatch } = usePageState()
 
     return (
         <ToolLayout eyebrow="Lancer" title="Frame Survivability">
@@ -48,7 +69,11 @@ export function SurvivabilityPage() {
                 methodology={<SurvivabilityMethodology />}
                 wide
             >
-                <Builds survivability={survivability.state} />
+                <Builds
+                    survivability={survivability.state}
+                    state={state}
+                    dispatch={dispatch}
+                />
             </MethodologyLayout>
         </ToolLayout>
     )

@@ -13,8 +13,9 @@ export function changesLayout(action: PageAction): boolean {
         case 'moveCard':
         case 'featureCard':
         case 'toggleCompare':
-        case 'removeMissingFrames':
             return true
+        // Runs as the page loads, where there's nothing on screen yet to glide from
+        case 'removeMissingFrames':
         case 'renameCard':
         case 'changeCard':
             return false

@@ -10,12 +10,12 @@ test('adding, removing, reordering and comparing cards glide into place', () => 
     )
     expect(changesLayout({ type: 'featureCard', id: 'a' })).toBe(true)
     expect(changesLayout({ type: 'toggleCompare', id: 'a' })).toBe(true)
-    expect(changesLayout({ type: 'removeMissingFrames', frames: [] })).toBe(
-        true,
-    )
 })
 
-test('renaming a card and changing its build apply instantly', () => {
+test('renaming, changing a build, and clearing missing frames on load apply instantly', () => {
+    expect(changesLayout({ type: 'removeMissingFrames', frames: [] })).toBe(
+        false,
+    )
     expect(changesLayout({ type: 'renameCard', id: 'a', name: 'New' })).toBe(
         false,
     )

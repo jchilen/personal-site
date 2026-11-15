@@ -1,5 +1,5 @@
 import { oneOf } from '@/lib/one-of'
-import { TIERS, type Tier } from './odds'
+import { TIERS, type Tier } from './rules'
 
 /**
  * The tier choices, shared by Setup and each card's tier picker. Choice works with text, so each

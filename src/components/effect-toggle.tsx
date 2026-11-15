@@ -5,6 +5,8 @@ import { Hint } from '@/components/hint'
 
 type EffectToggleProps = {
     label: string
+    // A second, smaller line under the label, such as what the effect adds: "+1 Armor"
+    detail?: string
     pressed: boolean
     onChange: (pressed: boolean) => void
     // Why the effect doesn't apply right now. Setting it locks the toggle (faded, striped,
@@ -15,6 +17,7 @@ type EffectToggleProps = {
 // An on/off effect, styled like the other choices
 export function EffectToggle({
     label,
+    detail,
     pressed,
     onChange,
     lockedReason,
@@ -33,13 +36,25 @@ export function EffectToggle({
                 className={cn(
                     choiceItemClass,
                     'px-3',
+                    // With a detail line it grows to two rows, both lined up on the left
+                    detail &&
+                        'h-auto flex-col items-start gap-0.5 py-2 text-left',
                     // Hovering a selected toggle softens its gold, a hint that clicking turns it off
                     locked
                         ? lockedClass
                         : 'text-foreground/80 data-[state=on]:hover:border-primary/60 data-[state=on]:hover:bg-primary/5',
                 )}
             >
-                {label}
+                {detail ? (
+                    <>
+                        <span>{label}</span>
+                        <span className="font-normal tracking-normal normal-case">
+                            {detail}
+                        </span>
+                    </>
+                ) : (
+                    label
+                )}
             </Toggle>
         </Hint>
     )

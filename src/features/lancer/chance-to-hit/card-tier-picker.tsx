@@ -8,9 +8,9 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover'
-import { Choice } from './choice'
+import { Choice } from '@/components/choice'
 import type { Tier } from './odds'
-import { TIER_OPTIONS, tierFromOption } from './tier-options'
+import { TIER_OPTIONS, tierFromOption } from '../tier-options'
 
 type CardTierPickerProps = {
     // The card's title, so the picker's name says which card it changes

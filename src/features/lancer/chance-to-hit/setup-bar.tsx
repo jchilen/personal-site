@@ -1,11 +1,11 @@
 import { SectionTitle } from '@/components/section-title'
 import { glideClass } from '@/components/motion-styles'
-import { Choice } from './choice'
+import { Choice } from '@/components/choice'
 import { IconInfoCircle } from '@tabler/icons-react'
 import { LOCK_REASONS } from './lock-reasons'
 import { Note } from './note'
 import { currentRuleset, type SettingsProps } from './settings'
-import { TIER_OPTIONS, tierFromOption } from './tier-options'
+import { TIER_OPTIONS, tierFromOption } from '../tier-options'
 
 export function SetupBar({ settings, dispatch }: SettingsProps) {
     // Each ruleset remembers its own tier, so this shows and changes only the showing one's

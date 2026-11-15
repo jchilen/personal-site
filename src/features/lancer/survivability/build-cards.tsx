@@ -1,0 +1,172 @@
+import { useRef, useState } from 'react'
+import { IconPlus } from '@tabler/icons-react'
+import { cn } from 'cn'
+import { lockedClass } from '@/components/field-styles'
+import { glideClass } from '@/components/motion-styles'
+import { SectionTitle } from '@/components/section-title'
+import { Button } from '@/components/ui/button'
+import { Hint } from '@/components/hint'
+import { useFocusAfterRender } from '@/hooks/use-focus-after-render'
+import { neighborAfterRemoval } from '@/lib/focus'
+import { BuildCard } from './build-card'
+import { LOCK_REASONS } from './lock-reasons'
+import { MAX_CARDS, type StateProps } from './settings'
+import type { Frame, SurvivabilityData } from './survivability-types'
+
+type Control = 'name' | 'up' | 'down' | 'remove'
+
+type BuildCardsProps = StateProps & {
+    data: SurvivabilityData
+    standard: Frame
+}
+
+/** Section 01: the build cards, featured card first */
+export function BuildCards({
+    state,
+    dispatch,
+    data,
+    standard,
+}: BuildCardsProps) {
+    const { cards } = state
+    const full = cards.length >= MAX_CARDS
+    const focusAfterRender = useFocusAfterRender()
+    const titleRef = useRef<HTMLElement | null>(null)
+    // Each card's controls, by card id, so focus can be put back after cards move or go
+    const controls = useRef(
+        new Map<string, Partial<Record<Control, HTMLElement>>>(),
+    )
+    // Temporary: a plain list for adding a card, until the frame picker replaces it in step 4
+    const [frameToAdd, setFrameToAdd] = useState(data.frames[0]?.name ?? '')
+
+    const controlRef =
+        (id: string) => (control: Control) => (node: HTMLElement | null) => {
+            const saved = controls.current.get(id) ?? {}
+            if (node) saved[control] = node
+            else delete saved[control]
+            controls.current.set(id, saved)
+        }
+    const control = (id: string, ...wanted: Control[]) => {
+        const saved = controls.current.get(id)
+        for (const name of wanted) if (saved?.[name]) return saved[name]
+        return undefined
+    }
+
+    // The removed card takes its Remove button with it, so focus moves to the next card's Remove
+    // button, or the previous card's if it was last. With no cards left, it goes to the title
+    function remove(id: string) {
+        const index = cards.findIndex((card) => card.id === id)
+        const next = neighborAfterRemoval(cards, index)
+        focusAfterRender(() =>
+            next ? control(next.id, 'remove') : titleRef.current,
+        )
+        dispatch({ type: 'removeCard', id })
+    }
+
+    // A moved card keeps focus on the same arrow. At the top or bottom that arrow is hidden, so
+    // focus goes to the other one, or to the card's name when it's the only card
+    function move(id: string, direction: 'up' | 'down') {
+        const other = direction === 'up' ? 'down' : 'up'
+        focusAfterRender(() => control(id, direction, other, 'name'))
+        dispatch({ type: 'moveCard', id, direction })
+    }
+
+    // Make featured disappears once the card is on top, so focus goes to its Move down arrow
+    function feature(id: string) {
+        focusAfterRender(() => control(id, 'down', 'name'))
+        dispatch({ type: 'featureCard', id })
+    }
+
+    return (
+        <section className={cn('@container flex flex-col gap-4', glideClass)}>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <SectionTitle
+                    number={1}
+                    focusRef={(node) => {
+                        titleRef.current = node
+                    }}
+                >
+                    Builds
+                </SectionTitle>
+                <div className="flex flex-wrap items-center gap-2">
+                    <p
+                        aria-live="polite"
+                        className="text-xs text-muted-foreground"
+                    >
+                        {full && `${LOCK_REASONS.cardsFull}.`}
+                    </p>
+                    <select
+                        aria-label="Frame for the new card"
+                        value={frameToAdd}
+                        onChange={(event) => setFrameToAdd(event.target.value)}
+                        className="h-10 border bg-background px-2"
+                    >
+                        {data.frames.map((frame) => (
+                            <option key={frame.name}>{frame.name}</option>
+                        ))}
+                    </select>
+                    <Hint label={full ? LOCK_REASONS.cardsFull : null}>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            className={cn('h-10', full && lockedClass)}
+                            aria-disabled={full}
+                            onClick={() => {
+                                if (!full)
+                                    dispatch({
+                                        type: 'addCard',
+                                        frame: frameToAdd,
+                                    })
+                            }}
+                        >
+                            <IconPlus data-icon="inline-start" />
+                            New frame card
+                        </Button>
+                    </Hint>
+                </div>
+            </div>
+
+            {cards.length === 0 ? (
+                <p className="border bg-card p-4 text-muted-foreground">
+                    Add a frame card to see how many blasts it survives. You can
+                    have up to {MAX_CARDS}, and the top one is featured.
+                </p>
+            ) : (
+                cards.map((card, index) => {
+                    return (
+                        <BuildCard
+                            key={card.id}
+                            card={card}
+                            data={data}
+                            standard={standard}
+                            featured={index === 0}
+                            canMoveUp={index > 0}
+                            canMoveDown={index < cards.length - 1}
+                            full={full}
+                            onChange={(changes) =>
+                                dispatch({
+                                    type: 'changeCard',
+                                    id: card.id,
+                                    changes,
+                                })
+                            }
+                            onRename={(name) =>
+                                dispatch({
+                                    type: 'renameCard',
+                                    id: card.id,
+                                    name,
+                                })
+                            }
+                            onFeature={() => feature(card.id)}
+                            onMove={(direction) => move(card.id, direction)}
+                            onDuplicate={() =>
+                                dispatch({ type: 'duplicateCard', id: card.id })
+                            }
+                            onRemove={() => remove(card.id)}
+                            controlRef={controlRef(card.id)}
+                        />
+                    )
+                })
+            )}
+        </section>
+    )
+}
