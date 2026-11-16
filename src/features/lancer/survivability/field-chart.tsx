@@ -208,12 +208,12 @@ export function FieldChart({ card, results, comparedFrame }: FieldChartProps) {
                 <ul className="flex flex-wrap gap-x-5 gap-y-1 text-xs">
                     <li className="flex items-center gap-2">
                         <Swatch look="featured" />
-                        {card.frame} ({card.name}, featured)
+                        {card.frame}
                     </li>
                     {comparedFrame && comparedFrame !== card.frame && (
                         <li className="flex items-center gap-2">
                             <Swatch look="compared" />
-                            {comparedFrame} (compared)
+                            {comparedFrame}
                         </li>
                     )}
                     {matches.length > 0 && (
