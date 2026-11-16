@@ -114,10 +114,7 @@ function ExperienceCard({
                     {entry.title}
                     {/* The highlight is a gold border, so screen readers get it in words */}
                     {isHighlighted && (
-                        <span className="sr-only">
-                            {' '}
-                            (matches the selected stage)
-                        </span>
+                        <span className="sr-only"> (highlighted)</span>
                     )}
                 </CardTitle>
                 <p className="mt-3">{entry.summary}</p>

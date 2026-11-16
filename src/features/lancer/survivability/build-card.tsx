@@ -21,7 +21,7 @@ import { Hint } from '@/components/hint'
 import { COVER_DIFFICULTY } from '../rules'
 import { TIER_OPTIONS, tierFromOption } from '../tier-options'
 import type { CardResults } from './card-results'
-import { blasts, ordinal, rankColor, survivesComparedTo } from './format'
+import { blasts, rankColor, survivesComparedTo } from './format'
 import { LOCK_REASONS } from './lock-reasons'
 import {
     STAT_LIMITS,
@@ -396,7 +396,6 @@ export function BuildCard({
                             )}
                         </p>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            {ordinal(results.rank)} of {results.fieldSize} ·
                             Total HP {results.totalHp} ·{' '}
                             {results.blastDamage.toFixed(1)} damage per blast
                         </p>

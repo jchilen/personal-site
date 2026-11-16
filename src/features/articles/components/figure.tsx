@@ -13,11 +13,10 @@ import { reducedMotionClass } from '@/components/motion-styles'
 type FigureProps = {
     src: string
     alt: string
-    caption?: string
     float?: 'left' | 'right'
 }
 
-export function Figure({ src, alt, caption, float }: FigureProps) {
+export function Figure({ src, alt, float }: FigureProps) {
     const [isZoomed, setIsZoomed] = useState(false)
 
     function handleZoomClick(event: MouseEvent<HTMLButtonElement>) {
@@ -104,11 +103,6 @@ export function Figure({ src, alt, caption, float }: FigureProps) {
                     </div>
                 </DialogContent>
             </Dialog>
-            {caption && (
-                <figcaption className="mt-2 text-sm text-muted-foreground">
-                    {caption}
-                </figcaption>
-            )}
         </figure>
     )
 }

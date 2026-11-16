@@ -123,8 +123,8 @@ describe('results text', () => {
 
     test('the cycle goes to Borda, and the 5–5–5 cycle to a drawn ballot', () => {
         expect(shownText(rankByPlace(OPTIONS, CYCLE, FIRST_BALLOT))).toEqual([
-            'A and B could each have won, so a tiebreaker decided it.',
-            '1st place: A and B could each have taken it, so Borda scores decided (A 8 and B 9).',
+            'A and B were tied, so a tiebreaker decided it.',
+            'A and B tied for 1st place. B won it on Borda score (A 8, B 9).',
         ])
 
         // Every option scores 8, so Borda can't split them either
@@ -132,7 +132,23 @@ describe('results text', () => {
             shownText(rankByPlace(OPTIONS, EVEN_CYCLE, FIRST_BALLOT)),
         ).toEqual([
             'A, B, and C were tied all the way, so a drawn ballot decided it.',
-            '1st place: A, B, and C could each have taken it, and the top Borda scores tied (A 8, B 8, and C 8), so ballot 1 was drawn using the seed. It ranked A highest of A, B, and C.',
+            'A, B, and C tied for 1st place. They also tied for the top Borda score (A 8, B 8, C 8), so ballot 1 was drawn at random. It ranked A highest.',
         ])
+    })
+
+    // Built by hand: a Smith-set tie is hard to reach from small ballots
+    test('a Smith-set tie where only some options share the top Borda score names them', () => {
+        const place: Place = {
+            option: 'C',
+            decidedBy: 'random-ballot',
+            tied: ['A', 'B', 'C', 'D'],
+            tiedBy: 'smith-set',
+            bordaScores: { A: 5, B: 7, C: 9, D: 9 },
+            bordaTied: ['C', 'D'],
+            ballotIndex: 2,
+        }
+        expect(describeTiebreak(place, 2)).toBe(
+            'Too many wins were equally strong to put A, B, C, and D in order, so they tied for 2nd place. C and D also tied for the top Borda score (A 5, B 7, C 9, D 9), so ballot 3 was drawn at random. It ranked C highest.',
+        )
     })
 })

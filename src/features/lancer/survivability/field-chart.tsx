@@ -1,4 +1,4 @@
-import { useMemo, useState, type KeyboardEvent } from 'react'
+import { useId, useMemo, useState, type KeyboardEvent } from 'react'
 import { cn } from 'cn'
 import { underlineInputClass } from '@/components/field-styles'
 import { hintClass } from '@/components/hint-styles'
@@ -71,6 +71,9 @@ export function FieldChart({ card, results, comparedFrame }: FieldChartProps) {
     const [active, setActive] = useState<number | null>(null)
     const [focused, setFocused] = useState(false)
     const [chartRef, chartWidth] = useElementWidth()
+    // The chart's visible "Blasts to kill" label names both the chart and the table of its numbers
+    const axisLabelId = useId()
+    const keysHelpId = useId()
 
     const field = useMemo(() => chartOrder(results.field), [results.field])
     const ticks = axisTicks(
@@ -177,8 +180,8 @@ export function FieldChart({ card, results, comparedFrame }: FieldChartProps) {
                 <div className="flex max-w-prose flex-col gap-1">
                     <SectionTitle number={2}>Against the Field</SectionTitle>
                     <p className="text-sm text-muted-foreground">
-                        Every frame with {card.name}’s HULL, AGI, SYS, and
-                        core bonuses, against tier {card.tier}{' '}
+                        How all {field.length} frames hold up with your featured
+                        build against Tier {card.tier}{' '}
                         {RULESET_NAMES[card.ruleset]} NPCs
                         {COVER_PHRASES[card.cover]}.
                     </p>
@@ -210,7 +213,7 @@ export function FieldChart({ card, results, comparedFrame }: FieldChartProps) {
                     {comparedFrame && comparedFrame !== card.frame && (
                         <li className="flex items-center gap-2">
                             <Swatch look="compared" />
-                            {comparedFrame} (compared card’s frame)
+                            {comparedFrame} (compared)
                         </li>
                     )}
                     {matches.length > 0 && (
@@ -230,6 +233,7 @@ export function FieldChart({ card, results, comparedFrame }: FieldChartProps) {
 
                 <div className="grid grid-cols-[auto_1fr] gap-x-2">
                     <p
+                        id={axisLabelId}
                         className={cn(
                             eyebrowClass,
                             'col-span-2 mb-1 tracking-widest',
@@ -296,7 +300,8 @@ export function FieldChart({ card, results, comparedFrame }: FieldChartProps) {
                     <div
                         role="group"
                         tabIndex={0}
-                        aria-label="Blasts to kill for every frame, fewest to most. Use the left and right arrow keys to go through the frames. The same numbers are in the table after the chart."
+                        aria-labelledby={axisLabelId}
+                        aria-describedby={keysHelpId}
                         onKeyDown={onKeyDown}
                         onFocus={() => {
                             setFocused(true)
@@ -415,39 +420,40 @@ export function FieldChart({ card, results, comparedFrame }: FieldChartProps) {
                     </p>
                 </div>
 
+                <p id={keysHelpId} className="sr-only">
+                    Use the left and right arrow keys to move between frames.
+                </p>
                 <p aria-live="polite" className="sr-only">
                     {focused ? activeText : ''}
                 </p>
             </div>
 
-            {/* The chart's numbers for screen readers, in the chart's order */}
-            <table className="sr-only">
-                <caption>
-                    Blasts to kill for every frame with {card.name}’s build,
-                    fewest to most. The average frame survives{' '}
-                    {blasts(results.standard.blastsToKill)}.
-                </caption>
-                <thead>
-                    <tr>
-                        <th scope="col">Frame</th>
-                        <th scope="col">Blasts to kill</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {field.map((result) => (
-                        <tr key={result.frame.name}>
-                            <th scope="row">
-                                {result.frame.name}
-                                {result.frame.name === card.frame &&
-                                    ' (featured)'}
-                                {result.frame.name === comparedFrame &&
-                                    ' (compared card’s frame)'}
-                            </th>
-                            <td>{blasts(result.blastsToKill)}</td>
+            {/* The chart's numbers for screen readers, in the chart's order. sr-only goes on a wrapper,
+                not the table, so nothing inside it can show in any browser */}
+            <div className="sr-only">
+                <table aria-labelledby={axisLabelId}>
+                    <thead>
+                        <tr>
+                            <th scope="col">Frame</th>
+                            <th scope="col">Blasts to kill</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {field.map((result) => (
+                            <tr key={result.frame.name}>
+                                <th scope="row">
+                                    {result.frame.name}
+                                    {result.frame.name === card.frame &&
+                                        ' (featured)'}
+                                    {result.frame.name === comparedFrame &&
+                                        ' (compared)'}
+                                </th>
+                                <td>{blasts(result.blastsToKill)}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </section>
     )
 }

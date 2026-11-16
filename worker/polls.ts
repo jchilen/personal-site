@@ -218,7 +218,7 @@ export async function castBallot(
     if (result.meta.changes === 0) {
         return errorResponse(
             409,
-            'Your vote was not counted: you already voted, or the poll just closed',
+            "Your vote wasn't counted. You may have already voted, or the poll just closed.",
         )
     }
 

@@ -20,29 +20,35 @@ export function winnerSummary(first: Place): string {
         case 'ranked-pairs':
             return 'A clear winner, with no tiebreak needed.'
         case 'borda':
-            return `${formatList(first.tied)} could each have won, so a tiebreaker decided it.`
+            return `${formatList(first.tied)} were tied, so a tiebreaker decided it.`
         case 'random-ballot':
             return `${formatList(first.bordaTied)} were tied all the way, so a drawn ballot decided it.`
     }
 }
 
-/** One sentence on how a tiebreak decided a place, or null when Ranked Pairs alone decided it */
+/** One se/** How a tiebreak decided a place, or null when Ranked Pairs alone decided it */
 export function describeTiebreak(
     place: Place,
     position: number,
 ): string | null {
     if (place.decidedBy === 'ranked-pairs') return null
 
-    const contenders =
+    const tied = formatList(place.tied)
+    const tie =
         place.tiedBy === 'smith-set'
-            ? `there were too many equally strong results to check every order, so the contenders were ${formatList(place.tied)}`
-            : `${formatList(place.tied)} could each have taken it`
-    const scores = formatList(
-        place.tied.map((option) => `${option} ${place.bordaScores[option]}`),
-    )
+            ? `Too many wins were equally strong to put ${tied} in order, so they tied for ${ordinal(position)} place.`
+            : `${tied} tied for ${ordinal(position)} place.`
+    const scores = place.tied
+        .map((option) => `${option} ${place.bordaScores[option]}`)
+        .join(', ')
 
     if (place.decidedBy === 'borda') {
-        return `${ordinal(position)} place: ${contenders}, so Borda scores decided (${scores}).`
+        return `${tie} ${place.option} won it on Borda score (${scores}).`
     }
-    return `${ordinal(position)} place: ${contenders}, and the top Borda scores tied (${scores}), so ballot ${place.ballotIndex + 1} was drawn using the seed. It ranked ${place.option} highest of ${formatList(place.bordaTied)}.`
+    // Everyone in the tie, or only some of them, can share the top Borda score
+    const topScorers =
+        place.bordaTied.length === place.tied.length
+            ? 'They'
+            : formatList(place.bordaTied)
+    return `${tie} ${topScorers} also tied for the top Borda score (${scores}), so ballot ${place.ballotIndex + 1} was drawn at random. It ranked ${place.option} highest.`
 }

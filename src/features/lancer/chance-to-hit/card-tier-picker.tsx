@@ -29,7 +29,7 @@ export function CardTierPicker({ title, tier, onChange }: CardTierPickerProps) {
             {/* "T1" alone doesn't say it's a control, so the tooltip says what it does. It opens
                 above, clear of the role and defense line you read when picking a tier, and the
                 popover takes its place when clicked */}
-            <Hint label={`Change the tier for this ${title}`}>
+            <Hint label={`Change ${title}'s tier`}>
                 <PopoverTrigger asChild>
                     <Button
                         type="button"
@@ -37,7 +37,7 @@ export function CardTierPicker({ title, tier, onChange }: CardTierPickerProps) {
                         size="xs"
                         // Starts with the text people see, so voice control users can say it (WCAG
                         // 2.5.3), then the tooltip's words
-                        aria-label={`T${tier}, change the tier for this ${title}`}
+                        aria-label={`T${tier}, change ${title}'s tier`}
                     >
                         T{tier}
                         <IconChevronUp data-icon="inline-end" />

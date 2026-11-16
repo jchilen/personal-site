@@ -160,7 +160,7 @@ export function Ballot({ poll, onVoted }: BallotProps) {
                                     ref={buttonRef('unpick', option)}
                                     type="button"
                                     // Starts with the number and name it shows, for voice control (WCAG 2.5.3)
-                                    aria-label={`${index + 1} ${option}, remove from your ranking`}
+                                    aria-label={`${index + 1} ${option}, remove from ranking`}
                                     onClick={() => unrank(index)}
                                     className="flex min-w-0 flex-1 items-center gap-3 p-2.5 text-left"
                                 >
