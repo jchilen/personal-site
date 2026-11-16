@@ -124,7 +124,7 @@ function Chapters({ chapters, current, onChange }: ChaptersProps) {
                     off the screen */}
                 <Tabs.List
                     aria-label="Chapters"
-                    className="flex [scrollbar-width:none] gap-1.5 overflow-x-auto px-6 pt-5 sm:flex-col sm:gap-0 sm:overflow-visible sm:border-r sm:px-0 sm:py-5"
+                    className="flex [scrollbar-none] gap-1.5 overflow-x-auto px-6 pt-5 sm:flex-col sm:gap-0 sm:overflow-visible sm:border-r sm:px-0 sm:py-5"
                 >
                     {chapters.map((chapter, index) => (
                         <Tabs.Trigger

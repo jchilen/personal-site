@@ -3,7 +3,7 @@ import { animateLayout } from '@/lib/animate-layout'
 import { changesLayout } from './layout-actions'
 import { pageReducer, type PageAction } from './page-reducer'
 import { restoreState, toSaved } from './saved-settings'
-import { DEFAULT_STATE, type PageState } from './settings'
+import { STARTING_STATE, type PageState } from './settings'
 
 const STORAGE_KEY = 'frame-survivability-settings'
 
@@ -13,7 +13,7 @@ function loadState(): PageState {
         const saved = localStorage.getItem(STORAGE_KEY)
         return restoreState(saved === null ? null : JSON.parse(saved))
     } catch {
-        return DEFAULT_STATE
+        return STARTING_STATE
     }
 }
 

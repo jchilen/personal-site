@@ -3,7 +3,7 @@ import { COVERS, TIERS } from '../rules'
 import { RULESETS } from '../rulesets'
 import {
     DEFAULT_SETTINGS,
-    DEFAULT_STATE,
+    STARTING_STATE,
     MAX_CARDS,
     MAX_NAME_LENGTH,
     nextCardName,
@@ -84,7 +84,8 @@ function restoreCard(value: unknown, earlier: BuildCard[]): BuildCard | null {
  */
 export function restoreState(saved: unknown): PageState {
     const s = fields(saved)
-    if (!s || !Array.isArray(s.cards)) return DEFAULT_STATE
+    // Nothing usable saved, so this is treated like a first visit
+    if (!s || !Array.isArray(s.cards)) return STARTING_STATE
 
     const cards: BuildCard[] = []
     for (const item of s.cards) {

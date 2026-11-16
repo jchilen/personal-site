@@ -63,6 +63,22 @@ export const DEFAULT_SETTINGS: CardSettings = {
 
 export const DEFAULT_STATE: PageState = { cards: [], comparingId: null }
 
+/*
+ * What a first visit shows, so the page doesn't open empty: one Everest card with no build. Its id
+ * is fixed rather than random, since this is a single known card
+ */
+export const STARTING_STATE: PageState = {
+    cards: [
+        {
+            ...DEFAULT_SETTINGS,
+            id: 'starting-everest',
+            frame: 'Everest',
+            name: 'Everest-1',
+        },
+    ],
+    comparingId: null,
+}
+
 /**
  * The first free default name for a new card of this frame: Arminius-1, then Arminius-2, and so
  * on. A number freed up by removing or renaming a card gets used again
