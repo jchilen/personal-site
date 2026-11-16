@@ -175,10 +175,10 @@ export function FieldChart({ card, results, comparedFrame }: FieldChartProps) {
         <section className={cn('flex flex-col gap-4', glideClass)}>
             <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
                 <div className="flex max-w-prose flex-col gap-1">
-                    <SectionTitle number={2}>Field</SectionTitle>
+                    <SectionTitle number={2}>Against the Field</SectionTitle>
                     <p className="text-sm text-muted-foreground">
                         Every frame with {card.name}’s HULL, AGI, SYS, and
-                        talents, against tier {card.tier}{' '}
+                        core bonuses, against tier {card.tier}{' '}
                         {RULESET_NAMES[card.ruleset]} NPCs
                         {COVER_PHRASES[card.cover]}.
                     </p>

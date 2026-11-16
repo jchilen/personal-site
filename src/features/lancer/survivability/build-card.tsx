@@ -33,7 +33,10 @@ import {
 // Notes for frames whose numbers need explaining, shown on their cards
 const FRAME_NOTES: Record<string, string> = {
     'White Witch':
-        'The White Witch’s armor is too complex to map onto these rules, so it’s counted as 3 Armor, a fixed stand-in.',
+        'The White Witch’s armor is too complex to map onto these rules, so it’s counted as 3 Armor. See methodology for more info.',
+    Emperor:
+        'The Emperor’s shield trait makes it much tankier than these rules can account for, so it ranks lower here than it should.',
+    Lich: 'The Lich’s Soul Vessel trait makes it much tankier than these rules can account for, so it ranks lower here than it should.',
 }
 
 const STATS: [PilotStat, string][] = [
@@ -42,7 +45,7 @@ const STATS: [PilotStat, string][] = [
     ['systems', 'SYS'],
 ]
 
-const TALENTS: [keyof CardSettings, string, string][] = [
+const CORE_BONUSES: [keyof CardSettings, string, string][] = [
     ['reinforcedFrame', 'Reinforced Frame', '+5 HP'],
     ['fullSubjectivitySync', 'Full Subjectivity Sync', '+2 Evasion, up to 20'],
     ['slopedPlating', 'Sloped Plating', '+1 Armor'],
@@ -334,11 +337,9 @@ export function BuildCard({
                         ))}
                     </div>
                     <div className="flex flex-col gap-1.5">
-                        <span className={eyebrowClass}>
-                            Talents and core bonuses
-                        </span>
+                        <span className={eyebrowClass}>Core bonuses</span>
                         <div className="grid gap-2 @lg:grid-cols-2">
-                            {TALENTS.map(([key, label, detail]) => (
+                            {CORE_BONUSES.map(([key, label, detail]) => (
                                 <EffectToggle
                                     key={key}
                                     label={label}
