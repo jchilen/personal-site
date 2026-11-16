@@ -414,9 +414,9 @@ export function FieldChart({ card, results, comparedFrame }: FieldChartProps) {
                         aria-hidden="true"
                         className="mt-2 flex justify-between gap-2 text-xs text-muted-foreground"
                     >
-                        <span>← Fewest blasts</span>
+                        <span>← Survives fewest blasts</span>
                         <span>{field.length} frames</span>
-                        <span>Most blasts →</span>
+                        <span>Survives most blasts →</span>
                     </p>
                 </div>
 
