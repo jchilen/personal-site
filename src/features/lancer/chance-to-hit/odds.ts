@@ -6,7 +6,7 @@ import {
 } from '../rules'
 import type { LancerNpc } from './npc-types'
 
-// Tiers, cover and the dice now live in lancer/rules.ts, shared with Frame Survivability. Passing
+// Tiers, cover, and the dice now live in lancer/rules.ts, shared with Frame Survivability. Passing
 // them on from here keeps this tool's imports working unchanged
 export {
     COVER_DIFFICULTY,

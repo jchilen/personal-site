@@ -14,7 +14,7 @@ export function standardFrame(frames: Frame[]): Frame {
         )
 
     return {
-        name: 'Standard frame',
+        name: 'Average frame',
         source: 'Average of every frame',
         roles: [],
         mounts: { worst: null, mid: null, best: null },

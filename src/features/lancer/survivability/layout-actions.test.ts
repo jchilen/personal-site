@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest'
 import { changesLayout } from './layout-actions'
 
-test('adding, removing, reordering and comparing cards glide into place', () => {
+test('adding, removing, reordering, and comparing cards glide into place', () => {
     expect(changesLayout({ type: 'addCard', frame: 'Arminius' })).toBe(true)
     expect(changesLayout({ type: 'duplicateCard', id: 'a' })).toBe(true)
     expect(changesLayout({ type: 'removeCard', id: 'a' })).toBe(true)

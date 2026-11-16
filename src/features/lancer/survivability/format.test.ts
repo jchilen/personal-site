@@ -8,8 +8,8 @@ test('blasts to kill shows 2 decimal places', () => {
 
 describe('survivesComparedTo', () => {
     test('says how many more or fewer blasts, from the rounded numbers', () => {
-        expect(survivesComparedTo(1.08, 0.96, 'the standard frame')).toBe(
-            'Survives 0.12 more blasts than the standard frame',
+        expect(survivesComparedTo(1.08, 0.96, 'the average frame')).toBe(
+            'Survives 0.12 more blasts than the average frame',
         )
         expect(survivesComparedTo(0.712, 0.955, 'Arminius-1')).toBe(
             'Survives 0.24 fewer blasts than Arminius-1',
@@ -23,8 +23,8 @@ describe('survivesComparedTo', () => {
     })
 
     test('numbers that look the same on screen survive as many blasts', () => {
-        expect(survivesComparedTo(0.9541, 0.9549, 'the standard frame')).toBe(
-            'Survives as many blasts as the standard frame',
+        expect(survivesComparedTo(0.9541, 0.9549, 'the average frame')).toBe(
+            'Survives as many blasts as the average frame',
         )
     })
 })

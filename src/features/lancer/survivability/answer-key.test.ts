@@ -45,7 +45,7 @@ test('the answer key has all six tabs and all 63 frames on each', () => {
 })
 
 describe.each(answerKey.tabs)('$tab', (tab) => {
-    test('every frame’s Total HP, blast damage and blasts to kill match the sheet', () => {
+    test('every frame’s Total HP, blast damage, and blasts to kill match the sheet', () => {
         const blast = answerKey.data.attacks[tab.ruleset][tab.tier - 1]
         const { bonuses } = tab
         for (const row of tab.results) {

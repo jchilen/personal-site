@@ -177,7 +177,7 @@ export function FieldChart({ card, results, comparedFrame }: FieldChartProps) {
                 <div className="flex max-w-prose flex-col gap-1">
                     <SectionTitle number={2}>Field</SectionTitle>
                     <p className="text-sm text-muted-foreground">
-                        Every frame with {card.name}’s HULL, AGI, SYS and
+                        Every frame with {card.name}’s HULL, AGI, SYS, and
                         talents, against tier {card.tier}{' '}
                         {RULESET_NAMES[card.ruleset]} NPCs
                         {COVER_PHRASES[card.cover]}.
@@ -224,7 +224,7 @@ export function FieldChart({ card, results, comparedFrame }: FieldChartProps) {
                             aria-hidden="true"
                             className="w-4 border-t-2 border-dashed border-foreground/70"
                         />
-                        Standard frame: {blasts(results.standard.blastsToKill)}
+                        Average frame: {blasts(results.standard.blastsToKill)}
                     </li>
                 </ul>
 
@@ -424,7 +424,7 @@ export function FieldChart({ card, results, comparedFrame }: FieldChartProps) {
             <table className="sr-only">
                 <caption>
                     Blasts to kill for every frame with {card.name}’s build,
-                    fewest to most. The standard frame survives{' '}
+                    fewest to most. The average frame survives{' '}
                     {blasts(results.standard.blastsToKill)}.
                 </caption>
                 <thead>

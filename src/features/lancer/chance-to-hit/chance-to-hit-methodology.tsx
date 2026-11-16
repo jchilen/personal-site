@@ -1,21 +1,12 @@
-import { IconAlertTriangle } from '@tabler/icons-react'
+import { Disclaimer } from '@/components/disclaimer'
 
 export function ChanceToHitMethodology() {
     return (
         <>
-            <div role="note" className="border border-cat-tools">
-                <p className="flex items-center gap-1.5 bg-cat-tools bg-[repeating-linear-gradient(135deg,transparent_0_8px,rgb(0_0_0/0.15)_8px_16px)] px-3 py-1 font-heading text-xs font-semibold tracking-eyebrow text-background uppercase">
-                    <IconAlertTriangle
-                        aria-hidden="true"
-                        className="size-3.5"
-                    />
-                    Disclaimer
-                </p>
-                <p className="px-3 py-2.5">
-                    This explanation assumes you already understand the basics
-                    of Lancer combat math, such as how accuracy works.
-                </p>
-            </div>
+            <Disclaimer>
+                This explanation assumes you already understand the basics of
+                Lancer combat math, such as how accuracy works.
+            </Disclaimer>
             <p>
                 When talking dice, we would normally treat each point of
                 Accuracy as +3.5, the average roll of a d6. That works most of

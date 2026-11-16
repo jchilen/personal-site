@@ -391,7 +391,7 @@ export function BuildCard({
                             {survivesComparedTo(
                                 results.blastsToKill,
                                 results.standard.blastsToKill,
-                                'the standard frame',
+                                'the average frame',
                             )}
                         </p>
                         <p className="mt-1 text-sm text-muted-foreground">

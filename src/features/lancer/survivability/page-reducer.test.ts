@@ -323,7 +323,7 @@ describe('changeCard', () => {
         expect(state.cards[0]).toBe(start.cards[0])
     })
 
-    test('keeps HULL, AGI and SYS between 0 and 6, in whole numbers', () => {
+    test('keeps HULL, AGI, and SYS between 0 and 6, in whole numbers', () => {
         const state = pageReducer(start, {
             type: 'changeCard',
             id: start.cards[0].id,
