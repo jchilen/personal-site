@@ -52,6 +52,8 @@ export type CardResults = FrameResult & {
     rank: number
     fieldSize: number
     standard: FrameResult
+    /** Every frame with this card's build, the card's own frame included, for the chart */
+    field: FrameResult[]
 }
 
 /** A card's results, or null if its frame isn't in the data */
@@ -73,6 +75,7 @@ export function cardResults(
                 .length,
         fieldSize: field.length,
         standard: frameResult(standard, card, blast),
+        field,
     }
 }
 

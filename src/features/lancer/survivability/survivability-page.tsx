@@ -3,6 +3,8 @@ import { MethodologyDialog } from '@/components/methodology-dialog'
 import { ToolLayout } from '@/components/tool-layout'
 import { useApi, type ApiState } from '@/hooks/use-api'
 import { BuildCards } from './build-cards'
+import { cachedCardResults } from './card-results'
+import { FieldChart } from './field-chart'
 import type { StateProps } from './settings'
 import { standardFrame } from './standard-frame'
 import { SurvivabilityMethodology } from './survivability-methodology'
@@ -48,13 +50,28 @@ function Builds({ survivability, state, dispatch }: BuildsProps) {
         )
     }
 
+    const featured = state.cards.at(0)
+    const compared = state.cards.find((card) => card.id === state.comparingId)
+    // Already worked out for the featured card's own results, so this just reads them back
+    const featuredResults =
+        featured && cachedCardResults(featured, survivability.data, standard)
+
     return (
-        <BuildCards
-            state={state}
-            dispatch={dispatch}
-            data={survivability.data}
-            standard={standard}
-        />
+        <div className="flex flex-col gap-12">
+            <BuildCards
+                state={state}
+                dispatch={dispatch}
+                data={survivability.data}
+                standard={standard}
+            />
+            {featured && featuredResults && (
+                <FieldChart
+                    card={featured}
+                    results={featuredResults}
+                    comparedFrame={compared?.frame}
+                />
+            )}
+        </div>
     )
 }
 

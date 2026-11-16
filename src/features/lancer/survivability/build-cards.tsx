@@ -30,7 +30,6 @@ export function BuildCards({
     const full = cards.length >= MAX_CARDS
     const focusAfterRender = useFocusAfterRender()
     const titleRef = useRef<HTMLElement | null>(null)
-    // Each card's controls, by card id, so focus can be put back after cards move or go
     // Every card's numbers, by card id. Each is worked out once and reused until that card changes
     const results = useMemo(
         () =>
@@ -47,6 +46,7 @@ export function BuildCards({
     const featuredResults = featured && results.get(featured.id)
     const comparedResults = compared && results.get(compared.id)
 
+    // Each card's controls, by card id, so focus can be put back after cards move or go
     const controls = useRef(
         new Map<string, Partial<Record<Control, HTMLElement>>>(),
     )

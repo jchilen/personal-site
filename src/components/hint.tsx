@@ -5,22 +5,12 @@ import {
     type ReactElement,
 } from 'react'
 import { Slot } from 'radix-ui'
-import { cn } from 'cn'
+import { hintClass } from '@/components/hint-styles'
 import {
     Tooltip,
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { reducedMotionClass } from '@/components/motion-styles'
-
-// The site's tooltip look: shadcn's chip and arrow, recolored to a card with a border, in the
-// uppercase heading font used for labels. The arrow (the only svg inside) gets the card color and a
-// border on its two outer edges, so it reads as part of the box
-const hintClass = cn(
-    'border bg-popover font-heading font-semibold tracking-wider text-foreground uppercase shadow-md',
-    '[&_svg]:border-r [&_svg]:border-b [&_svg]:bg-popover [&_svg]:fill-popover',
-    reducedMotionClass,
-)
 
 // Keeps tooltips near the top of the screen from opening under the sticky dock (16px down, 48px
 // tall). Without room above, they flip below the control instead
