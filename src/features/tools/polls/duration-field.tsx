@@ -14,6 +14,7 @@ import {
     type Duration,
 } from './use-duration'
 import { Stepper } from '@/components/stepper'
+import { lowerLimitReason, upperLimitReason } from '@/lib/limit-reasons'
 
 // The next value up or down. Snaps to the step first, so a typed 7 goes to 10 or 5, not 12 or 2
 function stepFrom(value: number, step: number, direction: 1 | -1) {
@@ -43,15 +44,23 @@ function StepperRow({
 }: StepperRowProps) {
     const up = stepFrom(field.number, step, 1)
     const down = stepFrom(field.number, step, -1)
-    // A button works only if this field stays in range and the whole length stays within the limits
-    const canAdd =
-        up <= max &&
-        total + (up - field.number) * minutesEach <=
-            POLL_LIMITS.maxDurationMinutes
-    const canSubtract =
-        down >= 0 &&
-        total + (down - field.number) * minutesEach >=
-            POLL_LIMITS.minDurationMinutes
+    // A button works only if this field stays in range and the whole length stays within the
+    // limits. Otherwise it's locked, with whichever limit it hit as the reason
+    const totalUp = total + (up - field.number) * minutesEach
+    const totalDown = total + (down - field.number) * minutesEach
+    const lengthReason = `Polls can stay open ${DURATION_RANGE_TEXT}`
+    const addReason =
+        up > max
+            ? upperLimitReason(max)
+            : totalUp > POLL_LIMITS.maxDurationMinutes
+              ? lengthReason
+              : undefined
+    const subtractReason =
+        down < 0
+            ? lowerLimitReason(0)
+            : totalDown < POLL_LIMITS.minDurationMinutes
+              ? lengthReason
+              : undefined
     const unit = label.toLowerCase()
 
     return (
@@ -60,8 +69,8 @@ function StepperRow({
             labelFor={id}
             decreaseLabel={`Fewer ${unit}`}
             increaseLabel={`More ${unit}`}
-            canDecrease={canSubtract}
-            canIncrease={canAdd}
+            decreaseLockedReason={subtractReason}
+            increaseLockedReason={addReason}
             onDecrease={() => field.setNumber(down)}
             onIncrease={() => field.setNumber(up)}
         >

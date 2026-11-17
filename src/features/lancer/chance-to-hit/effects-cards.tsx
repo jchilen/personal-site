@@ -3,6 +3,7 @@ import { cn } from 'cn'
 import { SectionTitle } from '@/components/section-title'
 import { glideClass } from '@/components/motion-styles'
 import { Stepper } from '@/components/stepper'
+import { lowerLimitReason, upperLimitReason } from '@/lib/limit-reasons'
 import { EffectToggle } from '@/components/effect-toggle'
 import { signed } from './format'
 import { LOCK_REASONS } from './lock-reasons'
@@ -40,8 +41,12 @@ function NumberStepper({
             label={label}
             decreaseLabel={`Lower ${name}`}
             increaseLabel={`Raise ${name}`}
-            canDecrease={value > limits.min}
-            canIncrease={value < limits.max}
+            decreaseLockedReason={
+                value > limits.min ? undefined : lowerLimitReason(limits.min)
+            }
+            increaseLockedReason={
+                value < limits.max ? undefined : upperLimitReason(limits.max)
+            }
             onDecrease={() => onChange(value - 1)}
             onIncrease={() => onChange(value + 1)}
             after={after}

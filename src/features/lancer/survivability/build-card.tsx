@@ -15,6 +15,7 @@ import { EffectToggle } from '@/components/effect-toggle'
 import { lockedClass } from '@/components/field-styles'
 import { glideClass } from '@/components/motion-styles'
 import { Stepper } from '@/components/stepper'
+import { lowerLimitReason, upperLimitReason } from '@/lib/limit-reasons'
 import { eyebrowClass } from '@/components/text-styles'
 import { Button } from '@/components/ui/button'
 import { Hint } from '@/components/hint'
@@ -318,8 +319,20 @@ export function BuildCard({
                                 label={label}
                                 decreaseLabel={`Lower ${label}`}
                                 increaseLabel={`Raise ${label}`}
-                                canDecrease={card[stat] > STAT_LIMITS[stat].min}
-                                canIncrease={card[stat] < STAT_LIMITS[stat].max}
+                                decreaseLockedReason={
+                                    card[stat] > STAT_LIMITS[stat].min
+                                        ? undefined
+                                        : lowerLimitReason(
+                                              STAT_LIMITS[stat].min,
+                                          )
+                                }
+                                increaseLockedReason={
+                                    card[stat] < STAT_LIMITS[stat].max
+                                        ? undefined
+                                        : upperLimitReason(
+                                              STAT_LIMITS[stat].max,
+                                          )
+                                }
                                 onDecrease={() =>
                                     onChange({ [stat]: card[stat] - 1 })
                                 }

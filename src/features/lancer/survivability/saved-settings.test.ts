@@ -2,7 +2,7 @@ import { expect, test } from 'vitest'
 import { restoreState, SAVE_VERSION, toSaved } from './saved-settings'
 import {
     DEFAULT_SETTINGS,
-    DEFAULT_STATE,
+    STARTING_STATE,
     newCard,
     type PageState,
 } from './settings'
@@ -27,10 +27,15 @@ test('a saved state comes back exactly as it was', () => {
     expect(toSaved(state).version).toBe(SAVE_VERSION)
 })
 
-test('nothing saved, or something that isn’t a save, gives an empty page', () => {
-    expect(restoreState(null)).toEqual(DEFAULT_STATE)
-    expect(restoreState('hello')).toEqual(DEFAULT_STATE)
-    expect(restoreState({ cards: 'not a list' })).toEqual(DEFAULT_STATE)
+test('nothing saved, or something that isn’t a save, starts like a first visit, with one Everest', () => {
+    expect(restoreState(null)).toEqual(STARTING_STATE)
+    expect(restoreState('hello')).toEqual(STARTING_STATE)
+    expect(restoreState({ cards: 'not a list' })).toEqual(STARTING_STATE)
+    expect(STARTING_STATE.cards.map((card) => card.name)).toEqual(['Everest-1'])
+})
+
+test('a save with every card removed stays empty, rather than bringing the Everest back', () => {
+    expect(restoreState({ cards: [], comparingId: null }).cards).toEqual([])
 })
 
 test('a card without a frame is dropped, without losing the others', () => {

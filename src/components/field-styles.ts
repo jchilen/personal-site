@@ -20,3 +20,7 @@ export const lockedClass =
 // still say it's unavailable
 export const ariaDisabledClass =
     'aria-disabled:pointer-events-none aria-disabled:opacity-50'
+
+// The locked look for a button rather than a choice: an outline button also fills in on hover,
+// which a locked one shouldn't. It takes both hover classes, since dark mode has its own hover fill
+export const lockedButtonClass = `${lockedClass} hover:bg-transparent dark:hover:bg-transparent`

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { cn } from 'cn'
 import { IconMinus, IconPlus } from '@tabler/icons-react'
 import { ToolLayout } from '@/components/tool-layout'
-import { Button } from '@/components/ui/button'
+import { StepButton } from '@/components/stepper'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { underlineInputClass } from '@/components/field-styles'
@@ -18,6 +18,7 @@ import { MethodologyLayout } from '@/components/methodology-layout'
 import { SafeLeadMethodology } from './safe-lead-methodology'
 import { InlineLink } from '@/components/inline-link'
 import { eyebrowClass } from '@/components/text-styles'
+import { lowerLimitReason, upperLimitReason } from '@/lib/limit-reasons'
 
 // The shared underline input, centered and larger, for the lead and seconds. Named apart from the
 // shared numberInputClass, which is right-aligned and smaller
@@ -27,14 +28,15 @@ const largeNumberInputClass = `${underlineInputClass} text-center font-heading t
 // enough for "Remaining", the longest word; "Seconds Remaining" wraps onto two lines
 const rowClass = 'grid grid-cols-[6.5rem_minmax(0,1fr)] items-center gap-3'
 
-// The longest game is 40 minutes; overtime isn't covered
+// The longest game is 40 minutes; The lead stops at two digits
 const MAX_SECONDS = 40 * 60
+const MAX_LEAD = 99
 
 const possessionItemClass =
     'corner-brackets h-10 border text-muted-foreground hover:bg-transparent hover:text-cat-tools data-[state=on]:bg-transparent data-[state=on]:text-cat-tools'
 
 export function SafeLeadPage() {
-    const lead = useNumberField({ max: 99 })
+    const lead = useNumberField({ max: MAX_LEAD })
     // Starts at the last two minutes, when the question usually comes up
     const seconds = useNumberField({ max: MAX_SECONDS, initial: 120 })
     const [possession, setPossession] = useState<Possession>('leading')
@@ -67,6 +69,7 @@ export function SafeLeadPage() {
                                 decreaseLabel="Decrease lead"
                                 increaseLabel="Increase lead"
                                 field={lead}
+                                max={MAX_LEAD}
                             />
 
                             <div className={rowClass}>
@@ -107,6 +110,8 @@ export function SafeLeadPage() {
                                 decreaseLabel="Decrease seconds remaining"
                                 increaseLabel="Increase seconds remaining"
                                 field={seconds}
+                                max={MAX_SECONDS}
+                                maxReason="A full game is 40 minutes (2,400 seconds)"
                             />
                         </CardContent>
                     </Card>
@@ -143,6 +148,9 @@ type LargeNumberStepperProps = {
     decreaseLabel: string
     increaseLabel: string
     field: NumberField
+    // The field's highest value, and why it can't go higher if "Can't go higher than…" won't do
+    max: number
+    maxReason?: string
 }
 
 // A row of − / input / + in the page's label column. The shared Stepper isn't used because its
@@ -153,6 +161,8 @@ function LargeNumberStepper({
     decreaseLabel,
     increaseLabel,
     field,
+    max,
+    maxReason = upperLimitReason(max),
 }: LargeNumberStepperProps) {
     return (
         <div className={rowClass}>
@@ -160,30 +170,30 @@ function LargeNumberStepper({
                 {label}
             </label>
             <div className="flex items-center gap-2">
-                <Button
-                    variant="outline"
-                    size="icon-sm"
-                    aria-label={decreaseLabel}
-                    className="text-cat-tools"
+                <StepButton
+                    label={decreaseLabel}
+                    lockedReason={
+                        field.number > 0 ? undefined : lowerLimitReason(0)
+                    }
                     onClick={() => field.setNumber(field.number - 1)}
+                    className="text-cat-tools"
                 >
                     <IconMinus />
-                </Button>
+                </StepButton>
                 <Input
                     id={id}
                     inputMode="numeric"
                     {...field.inputProps}
                     className={largeNumberInputClass}
                 />
-                <Button
-                    variant="outline"
-                    size="icon-sm"
-                    aria-label={increaseLabel}
-                    className="text-cat-tools"
+                <StepButton
+                    label={increaseLabel}
+                    lockedReason={field.number < max ? undefined : maxReason}
                     onClick={() => field.setNumber(field.number + 1)}
+                    className="text-cat-tools"
                 >
                     <IconPlus />
-                </Button>
+                </StepButton>
             </div>
         </div>
     )
