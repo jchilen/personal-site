@@ -1,4 +1,3 @@
-import { cn } from 'cn'
 import { useState } from 'react'
 import { useLocation } from 'react-router'
 import { MethodologyLayout } from '@/components/methodology-layout'
@@ -17,7 +16,7 @@ import { CreatePollForm } from './create-poll-form'
 import { PollCreated } from './poll-created'
 import { PollsMethodology } from './polls-methodology'
 
-// Your polls: open ones go to their admin page, closed ones to their results
+// Polls you made: open ones go to their admin page, closed ones to their results
 function fromMyPoll(poll: MyPoll): PollListItem {
     return {
         id: poll.id,
@@ -44,11 +43,11 @@ function fromVotedPoll(poll: VotedPoll): PollListItem {
 type PollsHomeProps = {
     mine: ApiState<MyPollsResponse>
     voted: ApiState<VotedPollsResponse>
-    // Called after a poll is created, so Your polls can include it
+    // Called after a poll is created, so Polls you made can include it
     onCreated: () => void
 }
 
-// The create form (or the new poll's links), with the two lists beside it when there are any
+// The create form (or the new poll's links), with the two lists beside it, even when they're empty
 function PollsHome({ mine, voted, onCreated }: PollsHomeProps) {
     const [created, setCreated] = useState<CreatedPoll | null>(null)
     // Set once "Create another" brings the form back, so its question takes focus from that button
@@ -59,17 +58,9 @@ function PollsHome({ mine, voted, onCreated }: PollsHomeProps) {
 
     const myPolls = mine.status === 'success' ? mine.data.polls : []
     const votedPolls = voted.status === 'success' ? voted.data.polls : []
-    const hasLists = myPolls.length > 0 || votedPolls.length > 0
 
     return (
-        <div
-            className={cn(
-                'grid items-start gap-6',
-                hasLists
-                    ? '@2xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]'
-                    : 'mx-auto max-w-md',
-            )}
-        >
+        <div className="grid items-start gap-6 @2xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
             {created ? (
                 <PollCreated
                     poll={created}
@@ -88,22 +79,16 @@ function PollsHome({ mine, voted, onCreated }: PollsHomeProps) {
                     }}
                 />
             )}
-            {hasLists && (
-                <div className="flex flex-col gap-6">
-                    {myPolls.length > 0 && (
-                        <PollList
-                            title="Your polls"
-                            items={myPolls.map(fromMyPoll)}
-                        />
-                    )}
-                    {votedPolls.length > 0 && (
-                        <PollList
-                            title="Polls you voted in"
-                            items={votedPolls.map(fromVotedPoll)}
-                        />
-                    )}
-                </div>
-            )}
+            <div className="flex flex-col gap-6">
+                <PollList
+                    title="Polls you made"
+                    items={myPolls.map(fromMyPoll)}
+                />
+                <PollList
+                    title="Polls you voted in"
+                    items={votedPolls.map(fromVotedPoll)}
+                />
+            </div>
         </div>
     )
 }

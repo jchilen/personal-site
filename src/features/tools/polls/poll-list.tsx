@@ -21,30 +21,36 @@ export function PollList({
     return (
         <section className={`border bg-card p-4 ${glideClass}`}>
             <SectionTitle>{title}</SectionTitle>
-            <ul className="mt-3 divide-y">
-                {items.map((item) => (
-                    <li key={item.id}>
-                        <Link
-                            to={item.to}
-                            className="flex items-center gap-3 py-2.5 transition-colors hover:text-cat-tools"
-                        >
-                            <span className="min-w-0 flex-1 truncate">
-                                {item.title}
-                            </span>
-                            <span
-                                className={cn(
-                                    'shrink-0 border px-1.5 py-0.5 font-heading text-xs tracking-eyebrow uppercase',
-                                    item.open
-                                        ? 'border-cat-tools/40 text-cat-tools'
-                                        : 'text-muted-foreground',
-                                )}
+            {items.length === 0 ? (
+                <p className="mt-3 text-sm text-muted-foreground">
+                    No current polls
+                </p>
+            ) : (
+                <ul className="mt-3 divide-y">
+                    {items.map((item) => (
+                        <li key={item.id}>
+                            <Link
+                                to={item.to}
+                                className="flex items-center gap-3 py-2.5 transition-colors hover:text-cat-tools"
                             >
-                                {item.badge}
-                            </span>
-                        </Link>
-                    </li>
-                ))}
-            </ul>
+                                <span className="min-w-0 flex-1 truncate">
+                                    {item.title}
+                                </span>
+                                <span
+                                    className={cn(
+                                        'shrink-0 border px-1.5 py-0.5 font-heading text-xs tracking-eyebrow uppercase',
+                                        item.open
+                                            ? 'border-cat-tools/40 text-cat-tools'
+                                            : 'text-muted-foreground',
+                                    )}
+                                >
+                                    {item.badge}
+                                </span>
+                            </Link>
+                        </li>
+                    ))}
+                </ul>
+            )}
         </section>
     )
 }

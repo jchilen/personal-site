@@ -1,3 +1,4 @@
+import { moveItem } from '@/lib/move-item'
 import {
     cardSettings,
     clampStat,
@@ -104,13 +105,12 @@ export function pageReducer(state: PageState, action: PageAction): PageState {
             )
         }
         case 'moveCard': {
-            const index = indexOf(cards, action.id)
-            const other = action.direction === 'up' ? index - 1 : index + 1
-            if (index === -1 || other < 0 || other >= cards.length) return state
-            const moved = [...cards]
-            moved[index] = cards[other]
-            moved[other] = cards[index]
-            return withCards(state, moved)
+            const moved = moveItem(
+                cards,
+                indexOf(cards, action.id),
+                action.direction,
+            )
+            return moved === cards ? state : withCards(state, moved)
         }
         case 'featureCard': {
             const index = indexOf(cards, action.id)

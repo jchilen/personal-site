@@ -1,8 +1,6 @@
 import { useState, type ReactNode, type RefCallback } from 'react'
 import {
-    IconArrowDown,
     IconArrowsLeftRight,
-    IconArrowUp,
     IconChevronDown,
     IconCopy,
     IconPencil,
@@ -19,6 +17,7 @@ import {
     glideClass,
     reducedMotionClass,
 } from '@/components/motion-styles'
+import { MoveButton } from '@/components/move-button'
 import { Stepper } from '@/components/stepper'
 import { lowerLimitReason, upperLimitReason } from '@/lib/limit-reasons'
 import { eyebrowClass } from '@/components/text-styles'
@@ -156,44 +155,6 @@ function Explained({
             >
                 {children}
             </span>
-        </Hint>
-    )
-}
-// Move up or Move down. Locked at the top or bottom, with the reason after its name in the tooltip
-function MoveButton({
-    cardName,
-    direction,
-    lockedReason,
-    buttonRef,
-    onMove,
-}: {
-    cardName: string
-    direction: 'up' | 'down'
-    lockedReason?: string
-    buttonRef: RefCallback<HTMLElement>
-    onMove: () => void
-}) {
-    const label = `Move ${cardName} ${direction}`
-    const locked = lockedReason !== undefined
-    return (
-        <Hint
-            label={locked ? `${label} (${lockedReason})` : label}
-            side="bottom"
-        >
-            <Button
-                ref={buttonRef}
-                type="button"
-                variant="outline"
-                size="icon-sm"
-                aria-label={label}
-                aria-disabled={locked}
-                onClick={() => {
-                    if (!locked) onMove()
-                }}
-                className={cn(locked && lockedButtonClass)}
-            >
-                {direction === 'up' ? <IconArrowUp /> : <IconArrowDown />}
-            </Button>
         </Hint>
     )
 }
@@ -345,25 +306,21 @@ export function BuildCard({
                                 </Button>
                             </>
                         )}
-                        {/* At the top or bottom, a move is locked rather than hidden, so the row of
-                        buttons keeps its shape and focus has somewhere to stay */}
                         <MoveButton
-                            cardName={card.name}
+                            itemName={card.name}
                             direction="up"
-                            lockedReason={
-                                canMoveUp ? undefined : LOCK_REASONS.atTop
-                            }
+                            atEnd={!canMoveUp}
                             buttonRef={controlRef('up')}
                             onMove={() => onMove('up')}
+                            side="bottom"
                         />
                         <MoveButton
-                            cardName={card.name}
+                            itemName={card.name}
                             direction="down"
-                            lockedReason={
-                                canMoveDown ? undefined : LOCK_REASONS.atBottom
-                            }
+                            atEnd={!canMoveDown}
                             buttonRef={controlRef('down')}
                             onMove={() => onMove('down')}
+                            side="bottom"
                         />
                         <Hint
                             label={

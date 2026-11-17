@@ -6,6 +6,4 @@ import { MAX_CARDS } from './settings'
  */
 export const LOCK_REASONS = {
     cardsFull: `${MAX_CARDS} cards: remove one to add another`,
-    atTop: 'Already at the top',
-    atBottom: 'Already at the bottom',
 } as const

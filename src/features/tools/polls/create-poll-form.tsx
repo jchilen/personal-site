@@ -10,11 +10,13 @@ import { glideClass } from '@/components/motion-styles'
 import { Button } from '@/components/ui/button'
 import { Hint } from '@/components/hint'
 import { Input } from '@/components/ui/input'
+import { MoveButton } from '@/components/move-button'
 import { useFocusAfterRender } from '@/hooks/use-focus-after-render'
 import { useNumberField } from '@/hooks/use-number-field'
 import { animateLayout } from '@/lib/animate-layout'
 import { errorMessage, postJson } from '@/lib/api'
 import { neighborAfterRemoval } from '@/lib/focus'
+import { moveItem } from '@/lib/move-item'
 import type { CreatedPoll } from './api-types'
 import { DurationField } from './duration-field'
 import { FormError } from './form-error'
@@ -41,8 +43,8 @@ type CreatePollFormProps = {
     autoFocus?: boolean
 }
 
-// Each option row's input and Remove button, which take focus when a row is added or removed
-type RowControl = 'input' | 'remove'
+// Each option row's input and buttons, which take focus when a row is added, moved or removed
+type RowControl = 'input' | 'remove' | 'up' | 'down'
 
 export function CreatePollForm({
     onCreated,
@@ -102,6 +104,22 @@ export function CreatePollForm({
 
         animateLayout(() =>
             setOptions((rows) => rows.filter((row) => row.id !== rowId)),
+        )
+    }
+
+    // The row glides to its new place, and focus stays on the arrow pressed, even when the move
+    // takes it to the top or bottom and that arrow locks. React moves the row's elements on the page,
+    // which can drop focus, so it's put back
+    function moveOption(rowId: string, direction: 'up' | 'down') {
+        focusRowControl(direction, rowId)
+        animateLayout(() =>
+            setOptions((rows) =>
+                moveItem(
+                    rows,
+                    rows.findIndex((row) => row.id === rowId),
+                    direction,
+                ),
+            ),
         )
     }
 
@@ -190,24 +208,45 @@ export function CreatePollForm({
                                 }
                                 className={textInputClass}
                             />
-                            {options.length > POLL_LIMITS.minOptions && (
-                                // To the right, into the margin, instead of over the other rows
-                                <Hint
-                                    label={`Remove option ${index + 1}`}
-                                    side="right"
-                                >
-                                    <Button
-                                        ref={rowControlRef('remove', row.id)}
-                                        type="button"
-                                        variant="ghost"
-                                        size="icon-sm"
-                                        aria-label={`Remove option ${index + 1}`}
-                                        onClick={() => removeOption(row.id)}
+                            <div className="flex shrink-0">
+                                <MoveButton
+                                    itemName={`option ${index + 1}`}
+                                    direction="up"
+                                    atEnd={index === 0}
+                                    buttonRef={rowControlRef('up', row.id)}
+                                    onMove={() => moveOption(row.id, 'up')}
+                                    variant="ghost"
+                                />
+                                <MoveButton
+                                    itemName={`option ${index + 1}`}
+                                    direction="down"
+                                    atEnd={index === options.length - 1}
+                                    buttonRef={rowControlRef('down', row.id)}
+                                    onMove={() => moveOption(row.id, 'down')}
+                                    variant="ghost"
+                                />
+                                {options.length > POLL_LIMITS.minOptions && (
+                                    // To the right, into the margin, instead of over the other rows
+                                    <Hint
+                                        label={`Remove option ${index + 1}`}
+                                        side="right"
                                     >
-                                        <IconX />
-                                    </Button>
-                                </Hint>
-                            )}
+                                        <Button
+                                            ref={rowControlRef(
+                                                'remove',
+                                                row.id,
+                                            )}
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon-sm"
+                                            aria-label={`Remove option ${index + 1}`}
+                                            onClick={() => removeOption(row.id)}
+                                        >
+                                            <IconX />
+                                        </Button>
+                                    </Hint>
+                                )}
+                            </div>
                         </li>
                     ))}
                 </ol>
@@ -238,12 +277,17 @@ export function CreatePollForm({
                     <Input
                         id={`${id}-voters`}
                         inputMode="numeric"
+                        aria-describedby={`${id}-voters-note`}
                         {...voters.inputProps}
                         className={numberInputClass}
                     />
                 </div>
-                <p className="text-sm text-muted-foreground">
-                    Used to show progress, like “3 of 5 voted.”
+                <p
+                    id={`${id}-voters-note`}
+                    className="text-sm text-muted-foreground"
+                >
+                    Used to show progress, like “3 of 5 voted.” This isn't a
+                    hard limit, so more than 5 votes could be cast.
                 </p>
                 <FormError message={error} />
                 {/* aria-disabled, not disabled, while the poll is sent: if it fails, focus stays here
