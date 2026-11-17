@@ -22,7 +22,7 @@ export function PortfolioPage() {
                         index={index}
                         isLeaving={false}
                         header={
-                            <HexMosaic seed={item.title} tall={item.featured} />
+                            <HexMosaic seed={item.title} wide={item.featured} />
                         }
                         className={
                             item.featured

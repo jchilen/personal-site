@@ -16,6 +16,8 @@ import {
     matchingFrames,
     placeLabels,
     type ChartLabel,
+    tallestUnderTooltip,
+    tooltipAlign,
 } from './field-chart-layout'
 import { blasts } from './format'
 import type { BuildCard } from './settings'
@@ -42,8 +44,6 @@ const BAR_LOOKS = {
     active: 'bg-muted-foreground',
     featured: 'bg-primary',
     match: 'bg-foreground',
-    // Outlined only, so it reads differently from the featured bar by shape as well as color
-    compared: 'bg-primary/15 ring-2 ring-primary ring-inset',
 }
 
 // The small square before a label or legend entry, drawn like the bar it stands for
@@ -60,17 +60,16 @@ type FieldChartProps = {
     /** The featured card: its build, NPC type, tier and cover are given to every frame */
     card: BuildCard
     results: CardResults
-    /** The frame of the card being compared, if any */
-    comparedFrame?: string
 }
 
 /** Section 02: every frame's blasts to kill with the featured card's build, fewest to most */
-export function FieldChart({ card, results, comparedFrame }: FieldChartProps) {
+export function FieldChart({ card, results }: FieldChartProps) {
     const [query, setQuery] = useState('')
     // The bar under the mouse, tapped, or stepped to with the arrow keys, by its place in the chart
     const [active, setActive] = useState<number | null>(null)
     const [focused, setFocused] = useState(false)
     const [chartRef, chartWidth] = useElementWidth()
+    const [tooltipRef, tooltipWidth] = useElementWidth()
     // The chart's visible "Blasts to kill" label names both the chart and the table of its numbers
     const axisLabelId = useId()
     const keysHelpId = useId()
@@ -93,25 +92,15 @@ export function FieldChart({ card, results, comparedFrame }: FieldChartProps) {
     const featuredIndex = field.findIndex(
         (result) => result.frame.name === card.frame,
     )
-    const comparedIndex = field.findIndex(
-        (result) => result.frame.name === comparedFrame,
-    )
 
     function lookOf(result: FrameResult, index: number) {
         const name = result.frame.name
         if (name === card.frame) return BAR_LOOKS.featured
-        // A match that's also the compared frame keeps the compared outline on top of its fill
-        if (matched.has(name)) {
-            return cn(
-                BAR_LOOKS.match,
-                name === comparedFrame && 'ring-2 ring-primary ring-inset',
-            )
-        }
-        if (name === comparedFrame) return BAR_LOOKS.compared
+        if (matched.has(name)) return BAR_LOOKS.match
         return index === active ? BAR_LOOKS.active : BAR_LOOKS.plain
     }
 
-    // Names above the featured bar, the compared bar, and a few search matches
+    // Names above the featured bar and a few search matches
     const wanted: ChartLabel[] = []
     const values = new Map<string, number>()
     const addLabel = (index: number) => {
@@ -122,7 +111,6 @@ export function FieldChart({ card, results, comparedFrame }: FieldChartProps) {
         }
     }
     addLabel(featuredIndex)
-    addLabel(comparedIndex)
     if (matches.length <= MAX_MATCH_LABELS) {
         for (const result of matches) addLabel(field.indexOf(result))
     }
@@ -136,11 +124,7 @@ export function FieldChart({ card, results, comparedFrame }: FieldChartProps) {
         ...labels.map((label) => label.row + 1),
     )
     const lookOfLabel = (key: string) =>
-        key === card.frame
-            ? 'featured'
-            : matched.has(key)
-              ? 'match'
-              : 'compared'
+        key === card.frame ? 'featured' : 'match'
 
     // The arrow keys step through the bars, Home and End jump to either end. Each move shows that
     // bar's tooltip, and screen readers hear the same words through the live region below
@@ -159,6 +143,20 @@ export function FieldChart({ card, results, comparedFrame }: FieldChartProps) {
     }
 
     const activeResult = active === null ? undefined : field[active]
+    // The tooltip sits just above the tallest bar it covers, so it never hides the bars beside
+    // the one it's for. Its own width is measured once it's showing
+    const tooltipSide =
+        active === null ? 'center' : tooltipAlign(center(active))
+    const tooltipFloor =
+        active === null
+            ? 0
+            : tallestUnderTooltip(
+                  field.map((result) => result.blastsToKill),
+                  active,
+                  tooltipSide,
+                  chartWidth,
+                  tooltipWidth,
+              )
     const activeText =
         activeResult &&
         `${activeResult.frame.name}: ${blasts(activeResult.blastsToKill)} blasts to kill`
@@ -210,12 +208,6 @@ export function FieldChart({ card, results, comparedFrame }: FieldChartProps) {
                         <Swatch look="featured" />
                         {card.frame}
                     </li>
-                    {comparedFrame && comparedFrame !== card.frame && (
-                        <li className="flex items-center gap-2">
-                            <Swatch look="compared" />
-                            {comparedFrame}
-                        </li>
-                    )}
                     {matches.length > 0 && (
                         <li className="flex items-center gap-2">
                             <Swatch look="match" />
@@ -384,19 +376,19 @@ export function FieldChart({ card, results, comparedFrame }: FieldChartProps) {
 
                         {activeResult && active !== null && (
                             <div
+                                ref={tooltipRef}
                                 aria-hidden="true"
                                 className={cn(
                                     hintClass,
                                     'pointer-events-none absolute z-10 flex flex-col px-3 py-1.5 text-xs whitespace-nowrap',
-                                    center(active) < 0.15
-                                        ? 'translate-x-0'
-                                        : center(active) > 0.85
-                                          ? '-translate-x-full'
-                                          : '-translate-x-1/2',
+                                    tooltipSide === 'center' &&
+                                        '-translate-x-1/2',
+                                    tooltipSide === 'end' &&
+                                        '-translate-x-full',
                                 )}
                                 style={{
                                     left: `${center(active) * 100}%`,
-                                    bottom: `calc(${height(activeResult.blastsToKill)} + 8px)`,
+                                    bottom: `calc(${height(tooltipFloor)} + 8px)`,
                                 }}
                             >
                                 <span>{activeResult.frame.name}</span>
@@ -445,8 +437,6 @@ export function FieldChart({ card, results, comparedFrame }: FieldChartProps) {
                                     {result.frame.name}
                                     {result.frame.name === card.frame &&
                                         ' (featured)'}
-                                    {result.frame.name === comparedFrame &&
-                                        ' (compared)'}
                                 </th>
                                 <td>{blasts(result.blastsToKill)}</td>
                             </tr>

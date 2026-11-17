@@ -177,13 +177,18 @@ function Chapters({ chapters, current, onChange }: ChaptersProps) {
                 </div>
             </div>
 
-            {/* Hidden rather than removed at either end, so the row never shifts */}
-            <div className="flex items-center justify-between gap-3 border-t px-6 py-4">
+            {/* Hidden rather than removed at either end, so the row never shifts. Three columns, with
+            the outer two always the same width, so the counter stays centered however long the
+            Next button's chapter name is */}
+            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 border-t px-6 py-4">
                 <Button
                     ref={backRef}
                     type="button"
                     variant="outline"
-                    className={cn(current === 0 && 'invisible')}
+                    className={cn(
+                        'justify-self-start',
+                        current === 0 && 'invisible',
+                    )}
                     onClick={() => goTo(current - 1)}
                 >
                     <IconArrowLeft data-icon="inline-start" />
@@ -196,7 +201,7 @@ function Chapters({ chapters, current, onChange }: ChaptersProps) {
                     ref={nextRef}
                     type="button"
                     variant="outline"
-                    className={cn(!next && 'invisible')}
+                    className={cn('justify-self-end', !next && 'invisible')}
                     onClick={() => goTo(current + 1)}
                 >
                     {/* One span, so the button's gap doesn't land between "Next" and the colon. The next

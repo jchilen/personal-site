@@ -53,17 +53,16 @@ export function ExperienceSection() {
                         {index < lastIndex && (
                             <span
                                 aria-hidden
-                                className={cn(
-                                    'h-px flex-1 bg-border max-sm:hidden',
-                                    index === lastIndex - 1 && 'bg-primary',
-                                )}
+                                className="h-px flex-1 bg-border max-sm:hidden"
                             />
                         )}
                     </Fragment>
                 ))}
             </ToggleGroup>
 
-            <div className="grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Cards in a row stretch to match the tallest, so a row lines up. Opening one card's
+                details stretches only its own row */}
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {EXPERIENCE.map((entry, index) => (
                     <ExperienceCard
                         key={entry.title}
@@ -128,9 +127,10 @@ function ExperienceCard({
                     </CollapsibleContent>
                 </Collapsible>
             </CardContent>
-            {/* flex-wrap: on narrow screens Details drops below the stack list instead of running
+            {/* mt-auto: keeps the footer at the bottom of a card stretched to its row's height.
+                flex-wrap: on narrow screens Details drops below the stack list instead of running
                 off the card's edge */}
-            <CardFooter className="flex-wrap items-end justify-between gap-4 border-t">
+            <CardFooter className="mt-auto flex-wrap items-end justify-between gap-4 border-t">
                 <ul className="grid grid-cols-[auto_auto] gap-x-4 gap-y-1 font-heading text-xs tracking-widest text-muted-foreground uppercase">
                     {entry.stack.map((item) => (
                         <li key={item}>{item}</li>

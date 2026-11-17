@@ -50,12 +50,14 @@ export type ChartLabel = {
     center: number
 }
 
+/** Where a label or tooltip sits against its bar: centered, or starting or ending at it near an edge */
+export type Align = 'start' | 'center' | 'end'
 /** A label with a spot that keeps it on the chart and off the other labels */
 export type PlacedLabel = ChartLabel & {
     /** 0 is the row nearest the bars; each row up is one more step away */
     row: number
     /** Centered over its bar, or lined up with it on one side when centering would run off the edge */
-    align: 'start' | 'center' | 'end'
+    align: Align
 }
 
 // About how wide each letter of a label is, and the room the swatch before it takes, in pixels.
@@ -103,4 +105,43 @@ export function placeLabels(
         align,
         row: rows.get(label) ?? 0,
     }))
+}
+
+
+/**
+ * The tooltip's alignment for a bar: centered, unless the bar is close enough to an edge that a
+ * centered tooltip could run off the chart
+ */
+export function tooltipAlign(center: number): Align {
+    if (center < 0.15) return 'start'
+    if (center > 0.85) return 'end'
+    return 'center'
+}
+
+/**
+ * The tallest bar under the tooltip, so it can sit above all of them instead of covering the
+ * neighbors of the bar it's for. Before the chart's width is known, it goes by its own bar alone
+ */
+export function tallestUnderTooltip(
+    values: number[],
+    index: number,
+    align: Align,
+    chartWidth: number,
+    tooltipWidth: number,
+): number {
+    if (!(chartWidth > 0)) return values[index] ?? 0
+    const barWidth = chartWidth / values.length
+    const middle = (index + 0.5) * barWidth
+    const left =
+        align === 'start'
+            ? middle
+            : align === 'end'
+              ? middle - tooltipWidth
+              : middle - tooltipWidth / 2
+    const first = Math.max(0, Math.floor(left / barWidth))
+    const last = Math.min(
+        values.length - 1,
+        Math.floor((left + tooltipWidth) / barWidth),
+    )
+    return Math.max(...values.slice(first, last + 1))
 }

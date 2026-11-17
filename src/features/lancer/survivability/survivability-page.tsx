@@ -50,7 +50,6 @@ function Builds({ survivability, state, dispatch }: BuildsProps) {
     }
 
     const featured = state.cards.at(0)
-    const compared = state.cards.find((card) => card.id === state.comparingId)
     // Already worked out for the featured card's own results, so this just reads them back
     const featuredResults =
         featured && cachedCardResults(featured, survivability.data, standard)
@@ -67,7 +66,6 @@ function Builds({ survivability, state, dispatch }: BuildsProps) {
                 <FieldChart
                     card={featured}
                     results={featuredResults}
-                    comparedFrame={compared?.frame}
                 />
             )}
         </div>

@@ -1,4 +1,3 @@
-import { cn } from 'cn'
 import { hexCorners, hexToPixel, hexWidth, rectangleGrid } from '@/lib/hex'
 import { hashString, seededRandom } from '@/lib/random'
 
@@ -6,12 +5,14 @@ const HEX_SIZE = 8
 
 type HexMosaicProps = {
     seed: string
-    tall?: boolean
+    // For a featured card two columns wide. Only the width changes, so its header stays the same
+    // height as the small cards' and the cards line up below it
+    wide?: boolean
 }
 
-export function HexMosaic({ seed, tall = false }: HexMosaicProps) {
-    const width = tall ? 480 : 240
-    const height = tall ? 64 : 48
+export function HexMosaic({ seed, wide = false }: HexMosaicProps) {
+    const width = wide ? 480 : 240
+    const height = 48
     const random = seededRandom(hashString(seed))
     const cols = Math.ceil(width / hexWidth(HEX_SIZE)) + 1
     const rows = Math.ceil(height / (HEX_SIZE * 1.5)) + 1
@@ -25,10 +26,7 @@ export function HexMosaic({ seed, tall = false }: HexMosaicProps) {
     })
 
     return (
-        <div
-            aria-hidden="true"
-            className={cn('overflow-hidden border-b', tall ? 'h-16' : 'h-12')}
-        >
+        <div aria-hidden="true" className="h-12 overflow-hidden border-b">
             <svg
                 viewBox={`0 0 ${width} ${height}`}
                 preserveAspectRatio="xMidYMid slice"
