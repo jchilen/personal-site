@@ -79,7 +79,11 @@ export function SurvivabilityPage() {
     const { state, dispatch } = usePageState()
 
     return (
-        <ToolLayout eyebrow="Lancer" title="Frame Survivability">
+        <ToolLayout
+            eyebrow="Lancer"
+            title="Frame Survivability"
+            intro="See how tanky your Lancer build is, and compare it to others frames or builds."
+        >
             {/* In a dialog rather than a side panel, so the page's margins stay free for the versus card */}
             <div className="mb-4 flex justify-end">
                 <SurvivabilityMethodology />
