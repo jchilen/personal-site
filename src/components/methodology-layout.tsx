@@ -38,6 +38,9 @@ type MethodologyLayoutProps = {
     defaultOpen?: boolean
     // Keeps the tool at the full page width, with the methodology opening beside it on big screens
     wide?: boolean
+    // Lines the Methodology button up with the tool's content, when that content is narrower than
+    // the tool, like 'mx-auto w-full max-w-md' for one card centered on the page
+    toggleRowClass?: string
     children: ReactNode
 }
 
@@ -46,6 +49,7 @@ export function MethodologyLayout({
     methodology,
     defaultOpen = false,
     wide = false,
+    toggleRowClass,
     children,
 }: MethodologyLayoutProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen)
@@ -56,6 +60,9 @@ export function MethodologyLayout({
         <Button
             variant="framed"
             size="sm"
+            // Its own glide, so it slides as one piece when its row changes width, rather than
+            // stretching along with the row
+            className={glideClass}
             aria-expanded={isOpen}
             // The tool's cards glide to their new places as the panel opens or closes
             onClick={() => animateLayout(() => setIsOpen(!isOpen))}
@@ -81,8 +88,8 @@ export function MethodologyLayout({
                 <div
                     className={cn(
                         'mb-4 flex justify-end',
-                        glideClass,
                         layout.topOnly,
+                        toggleRowClass,
                     )}
                 >
                     {toggle}

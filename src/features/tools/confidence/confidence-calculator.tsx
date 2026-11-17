@@ -1,7 +1,9 @@
 import { useId, useState } from 'react'
 import { IconX } from '@tabler/icons-react'
+import { cn } from 'cn'
 import { Button } from '@/components/ui/button'
 import { Hint } from '@/components/hint'
+import { InfoTip } from '@/components/info-tip'
 import { Input } from '@/components/ui/input'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { useNumberField, type NumberField } from '@/hooks/use-number-field'
@@ -42,21 +44,54 @@ type FieldRowProps = {
     suffix?: string
     inputMode: 'decimal' | 'numeric'
     field: NumberField
+    // A short explanation, behind an (i) button beside the label
+    info?: string
 }
 
-function FieldRow({ id, label, suffix, inputMode, field }: FieldRowProps) {
+function FieldRow({
+    id,
+    label,
+    suffix,
+    inputMode,
+    field,
+    info,
+}: FieldRowProps) {
+    const infoId = `${id}-info`
     return (
         <div className="grid grid-cols-[minmax(0,1fr)_7rem] items-center gap-3">
-            <label htmlFor={id} className={eyebrowClass}>
-                {label}
-            </label>
+            <div className="flex items-center gap-1">
+                {/* An all-caps label's line box keeps room for descenders it never uses, so its
+                    letters sit above the box's middle. Trimming the box to the capitals and the
+                    baseline lets items-center line them up with the (i) icon */}
+                <label
+                    htmlFor={id}
+                    className={cn(
+                        eyebrowClass,
+                        info && '[text-box:trim-both_cap_alphabetic]',
+                    )}
+                >
+                    {label}
+                </label>
+                {info && (
+                    <InfoTip label={`About ${label.toLowerCase()}`}>
+                        {info}
+                    </InfoTip>
+                )}
+            </div>
             <div className="flex items-baseline gap-1">
                 <Input
                     id={id}
                     inputMode={inputMode}
+                    // Screen readers hear the explanation with the field, without opening it
+                    aria-describedby={info ? infoId : undefined}
                     {...field.inputProps}
                     className={numberInputClass}
                 />
+                {info && (
+                    <span id={infoId} className="sr-only">
+                        {info}
+                    </span>
+                )}
                 {suffix && (
                     <span className="font-heading text-muted-foreground">
                         {suffix}
@@ -183,6 +218,7 @@ export function ConfidenceCalculator({
                         suffix="%"
                         inputMode="decimal"
                         field={confidence}
+                        info="How sure you want to be of at least one drop by then"
                     />
                 ) : (
                     <FieldRow

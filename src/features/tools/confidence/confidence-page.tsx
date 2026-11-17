@@ -18,6 +18,10 @@ const STARTING_VALUES: CalculatorStart[] = [
     { dropChance: 16, confidence: 95, kills: 24, killsSoFar: 24 },
 ]
 
+// One calculator sits centered at this width. The Methodology button uses it too, so its right edge
+// lines up with the calculator's
+const ONE_CARD_CLASS = 'mx-auto w-full max-w-md'
+
 export function ConfidencePage() {
     // Which starting values each calculator on screen uses; also its React key
     const [calculators, setCalculators] = useState([0])
@@ -54,13 +58,17 @@ export function ConfidencePage() {
             <MethodologyLayout
                 title="How the odds work"
                 methodology={<ConfidenceMethodology />}
+                // With two calculators the button lines up with the right one, at the tool's edge
+                toggleRowClass={
+                    calculators.length > 1 ? undefined : ONE_CARD_CLASS
+                }
             >
                 <div
                     className={cn(
                         'grid gap-4',
                         calculators.length > 1
                             ? '@xl:grid-cols-2'
-                            : 'mx-auto w-full max-w-md',
+                            : ONE_CARD_CLASS,
                     )}
                 >
                     {calculators.map((id) => (

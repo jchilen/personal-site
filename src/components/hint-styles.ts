@@ -10,3 +10,7 @@ export const hintClass = cn(
     '[&_svg]:border-r [&_svg]:border-b [&_svg]:bg-popover [&_svg]:fill-popover',
     reducedMotionClass,
 )
+
+// Keeps tooltips near the top of the screen from opening under the sticky dock (16px down, 48px
+// tall). Without room above, they flip below the control instead
+export const hintCollisionPadding = { top: 72, right: 8, bottom: 8, left: 8 }

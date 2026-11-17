@@ -5,16 +5,12 @@ import {
     type ReactElement,
 } from 'react'
 import { Slot } from 'radix-ui'
-import { hintClass } from '@/components/hint-styles'
+import { hintClass, hintCollisionPadding } from '@/components/hint-styles'
 import {
     Tooltip,
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip'
-
-// Keeps tooltips near the top of the screen from opening under the sticky dock (16px down, 48px
-// tall). Without room above, they flip below the control instead
-const collisionPadding = { top: 72, right: 8, bottom: 8, left: 8 }
 
 type PassThroughProps = ComponentProps<typeof Slot.Root> & {
     'data-state'?: string
@@ -66,7 +62,7 @@ export function Hint({ label, side = 'top', children }: HintProps) {
                 <TooltipContent
                     side={side}
                     sideOffset={6}
-                    collisionPadding={collisionPadding}
+                    collisionPadding={hintCollisionPadding}
                     className={hintClass}
                 >
                     {label}
