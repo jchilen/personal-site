@@ -10,7 +10,12 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { PanelHeader } from '@/components/panel-header'
 import { flatCardClass } from '@/components/card-styles'
 import { glideClass } from '@/components/motion-styles'
-import { calculateSafeLead, POSSESSIONS, type Possession } from './safe-lead'
+import {
+    calculateSafeLead,
+    gameClock,
+    POSSESSIONS,
+    type Possession,
+} from './safe-lead'
 import { isOneOf } from '@/lib/one-of'
 import { SafeLeadOutput } from './safe-lead-output'
 import { useNumberField, type NumberField } from '@/hooks/use-number-field'
@@ -112,6 +117,7 @@ export function SafeLeadPage() {
                                 field={seconds}
                                 max={MAX_SECONDS}
                                 maxReason="A full game is 40 minutes (2,400 seconds)"
+                                note={`${gameClock(secondsLeft)} on the clock`}
                             />
                         </CardContent>
                     </Card>
@@ -122,6 +128,7 @@ export function SafeLeadPage() {
                         pointsAhead={pointsAhead}
                         possession={possession}
                         secondsLeft={secondsLeft}
+                        gameSeconds={MAX_SECONDS}
                     />
                 </div>
 
@@ -151,6 +158,8 @@ type LargeNumberStepperProps = {
     // The field's highest value, and why it can't go higher if "Can't go higher than…" won't do
     max: number
     maxReason?: string
+    // A small line under the input, like the seconds written as a game clock
+    note?: string
 }
 
 // A row of − / input / + in the page's label column. The shared Stepper isn't used because its
@@ -163,7 +172,9 @@ function LargeNumberStepper({
     field,
     max,
     maxReason = upperLimitReason(max),
+    note,
 }: LargeNumberStepperProps) {
+    const noteId = `${id}-note`
     return (
         <div className={rowClass}>
             <label htmlFor={id} className={eyebrowClass}>
@@ -183,6 +194,7 @@ function LargeNumberStepper({
                 <Input
                     id={id}
                     inputMode="numeric"
+                    aria-describedby={note ? noteId : undefined}
                     {...field.inputProps}
                     className={largeNumberInputClass}
                 />
@@ -195,6 +207,14 @@ function LargeNumberStepper({
                     <IconPlus />
                 </StepButton>
             </div>
+            {note && (
+                <p
+                    id={noteId}
+                    className="col-start-2 -mt-2 text-center font-heading text-xs tracking-widest text-muted-foreground uppercase tabular-nums"
+                >
+                    {note}
+                </p>
+            )}
         </div>
     )
 }

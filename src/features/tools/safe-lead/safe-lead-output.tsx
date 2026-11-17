@@ -2,7 +2,7 @@ import { cn } from 'cn'
 import { Card, CardContent } from '@/components/ui/card'
 import { PanelHeader } from '@/components/panel-header'
 import { LabeledProgressBar } from '@/components/progress-bar'
-import type { Possession, SafeLeadResult } from './safe-lead'
+import { safeAtText, type Possession, type SafeLeadResult } from './safe-lead'
 import { flatCardClass } from '@/components/card-styles'
 import { glideClass } from '@/components/motion-styles'
 
@@ -14,6 +14,8 @@ type SafeLeadOutputProps = {
     pointsAhead: number
     possession: Possession
     secondsLeft: number
+    // A whole game, for saying when a lead is safe from the start
+    gameSeconds: number
 }
 
 const STATUS_TEXT = {
@@ -34,6 +36,7 @@ export function SafeLeadOutput({
     pointsAhead,
     possession,
     secondsLeft,
+    gameSeconds,
 }: SafeLeadOutputProps) {
     const longest = result ? Math.max(result.threshold, secondsLeft) : 0
     const holdsPercent =
@@ -71,6 +74,12 @@ export function SafeLeadOutput({
                         {readout}
                     </p>
                 </div>
+                {/* When in the game the lead is safe: the question "when can I relax?" */}
+                {result && (
+                    <p className="-mt-3 text-sm">
+                        {safeAtText(result.threshold, secondsLeft, gameSeconds)}
+                    </p>
+                )}
 
                 <div className="flex flex-col gap-3">
                     <LabeledProgressBar
