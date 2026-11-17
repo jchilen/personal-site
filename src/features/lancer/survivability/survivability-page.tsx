@@ -63,10 +63,7 @@ function Builds({ survivability, state, dispatch }: BuildsProps) {
                 standard={standard}
             />
             {featured && featuredResults && (
-                <FieldChart
-                    card={featured}
-                    results={featuredResults}
-                />
+                <FieldChart card={featured} results={featuredResults} />
             )}
         </div>
     )

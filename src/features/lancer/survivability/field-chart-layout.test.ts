@@ -5,6 +5,8 @@ import {
     chartOrder,
     matchingFrames,
     placeLabels,
+    tallestUnderTooltip,
+    tooltipAlign,
     type ChartLabel,
 } from './field-chart-layout'
 
@@ -129,5 +131,38 @@ describe('placeLabels', () => {
         )
         expect(placed.map((each) => each.key)).toEqual(['Sherman', 'Everest'])
         expect(placed.map((each) => each.row)).toEqual([1, 0])
+    })
+})
+
+describe('tooltipAlign', () => {
+    test('centered over most bars, and lined up with the bar near either edge', () => {
+        expect(tooltipAlign(0.5)).toBe('center')
+        expect(tooltipAlign(0.05)).toBe('start')
+        expect(tooltipAlign(0.95)).toBe('end')
+    })
+})
+
+describe('tallestUnderTooltip', () => {
+    // 10 bars, 10px each, growing taller to the right like the sorted chart
+    const values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+    test('a centered tooltip covers the bars on both sides of its own', () => {
+        // Bar 4's middle is at 45px, so a 30px tooltip covers 30–60px: bars 3 to 6
+        expect(tallestUnderTooltip(values, 4, 'center', 100, 30)).toBe(7)
+    })
+
+    test('a tooltip lined up with its bar only covers the bars on its open side', () => {
+        // Starting at bar 0's middle (5px), 30px reaches bar 3
+        expect(tallestUnderTooltip(values, 0, 'start', 100, 30)).toBe(4)
+        // Ending at bar 9's middle (95px), it reaches back to bar 6, which is shorter than bar 9
+        expect(tallestUnderTooltip(values, 9, 'end', 100, 30)).toBe(10)
+    })
+
+    test("it never reaches past the chart's ends", () => {
+        expect(tallestUnderTooltip(values, 1, 'center', 100, 200)).toBe(10)
+    })
+
+    test('before the chart has a width, it goes by its own bar alone', () => {
+        expect(tallestUnderTooltip(values, 4, 'center', 0, 30)).toBe(5)
     })
 })

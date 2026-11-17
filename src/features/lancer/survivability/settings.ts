@@ -29,10 +29,15 @@ export type BuildCard = PilotBuild & {
     name: string
     ruleset: Ruleset
     tier: Tier
+    /** Folded down to its top rows. The featured (first) card is never collapsed */
+    collapsed: boolean
 }
 
 /** Everything a card's controls can change */
-export type CardSettings = Omit<BuildCard, 'id' | 'frame' | 'name'>
+export type CardSettings = Omit<
+    BuildCard,
+    'id' | 'frame' | 'name' | 'collapsed'
+>
 
 /** Everything the page remembers between visits */
 export type PageState = {
@@ -74,6 +79,7 @@ export const STARTING_STATE: PageState = {
             id: 'starting-everest',
             frame: 'Everest',
             name: 'Everest-1',
+            collapsed: false,
         },
     ],
     comparingId: null,
@@ -117,6 +123,8 @@ export function newCard(
         id: crypto.randomUUID(),
         frame,
         name: nextCardName(frame, cards),
+        // New cards and copies start open
+        collapsed: false,
     }
 }
 

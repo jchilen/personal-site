@@ -25,6 +25,8 @@ export type PageAction =
     | { type: 'changeCard'; id: string; changes: Partial<CardSettings> }
     // Starts or stops comparing this card with the featured card
     | { type: 'toggleCompare'; id: string }
+    // Folds a lower card down to its top rows, or opens it again. The featured card always stays open
+    | { type: 'toggleCollapse'; id: string }
     // Removes cards for frames the data no longer has
     | { type: 'removeMissingFrames'; frames: string[] }
 
@@ -33,9 +35,14 @@ const indexOf = (cards: BuildCard[], id: string) =>
 
 /*
  * The new card order, with the comparison kept valid. It ends if its card is gone. If its card
- * became the featured one, the two swap roles: the old featured card becomes the compared one
+ * became the featured one, the two swap roles: the old featured card becomes the compared one.
+ * Whichever card ends up first is featured, and the featured card is always open
  */
-function withCards(state: PageState, cards: BuildCard[]): PageState {
+function withCards(state: PageState, newCards: BuildCard[]): PageState {
+    const [first] = newCards
+    const cards = first?.collapsed
+        ? newCards.with(0, { ...first, collapsed: false })
+        : newCards
     let { comparingId } = state
     if (comparingId !== null && indexOf(cards, comparingId) === -1) {
         comparingId = null
@@ -140,6 +147,18 @@ export function pageReducer(state: PageState, action: PageAction): PageState {
             return {
                 ...state,
                 comparingId: state.comparingId === action.id ? null : action.id,
+            }
+        }
+        case 'toggleCollapse': {
+            const index = indexOf(cards, action.id)
+            if (index <= 0) return state
+            const card = cards[index]
+            return {
+                ...state,
+                cards: cards.with(index, {
+                    ...card,
+                    collapsed: !card.collapsed,
+                }),
             }
         }
         case 'removeMissingFrames': {

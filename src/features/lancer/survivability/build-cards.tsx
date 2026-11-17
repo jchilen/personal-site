@@ -75,11 +75,10 @@ export function BuildCards({
         dispatch({ type: 'removeCard', id })
     }
 
-    // A moved card keeps focus on the same arrow. At the top or bottom that arrow is hidden, so
-    // focus goes to the other one, or to the card's name when it's the only card
+    // A moved card keeps focus on the same arrow, even when the move takes it to the top or bottom
+    // and that arrow locks. Moving rebuilds the card's place on the page, so focus is put back
     function move(id: string, direction: 'up' | 'down') {
-        const other = direction === 'up' ? 'down' : 'up'
-        focusAfterRender(() => control(id, direction, other, 'name'))
+        focusAfterRender(() => control(id, direction))
         dispatch({ type: 'moveCard', id, direction })
     }
 
@@ -167,6 +166,12 @@ export function BuildCards({
                                     })
                                 }
                                 onRemove={() => remove(card.id)}
+                                onToggleCollapse={() =>
+                                    dispatch({
+                                        type: 'toggleCollapse',
+                                        id: card.id,
+                                    })
+                                }
                                 controlRef={controlRef(card.id)}
                             />
                             {index === 0 &&

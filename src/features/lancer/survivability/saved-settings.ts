@@ -74,6 +74,7 @@ function restoreCard(value: unknown, earlier: BuildCard[]): BuildCard | null {
         slopedPlating: c.slopedPlating === true,
         lessonOfDisbelief: c.lessonOfDisbelief === true,
         cover: oneOf(c.cover, COVERS, DEFAULT_SETTINGS.cover),
+        collapsed: c.collapsed === true,
     }
 }
 
@@ -93,6 +94,9 @@ export function restoreState(saved: unknown): PageState {
         const card = restoreCard(item, cards)
         if (card) cards.push(card)
     }
+
+    // The featured card is always open, whatever was saved
+    if (cards[0]?.collapsed) cards[0] = { ...cards[0], collapsed: false }
 
     const comparing = cards.findIndex((card) => card.id === s.comparingId)
     return {

@@ -337,6 +337,78 @@ describe('changeCard', () => {
     })
 })
 
+describe('toggleCollapse', () => {
+    // A page whose second card is already collapsed
+    function withCollapsedSecond(...frames: string[]): PageState {
+        const start = withFrames(...frames)
+        return pageReducer(start, {
+            type: 'toggleCollapse',
+            id: start.cards[1].id,
+        })
+    }
+
+    test('folds a lower card, and opens it again', () => {
+        const start = withFrames('Arminius', 'Everest')
+        const id = start.cards[1].id
+        const closed = pageReducer(start, { type: 'toggleCollapse', id })
+        expect(closed.cards[1].collapsed).toBe(true)
+        const open = pageReducer(closed, { type: 'toggleCollapse', id })
+        expect(open.cards[1].collapsed).toBe(false)
+    })
+
+    test('the featured card can’t be collapsed', () => {
+        const start = withFrames('Arminius', 'Everest')
+        expect(
+            pageReducer(start, {
+                type: 'toggleCollapse',
+                id: start.cards[0].id,
+            }),
+        ).toBe(start)
+    })
+
+    test('a collapsed card opens when it becomes featured, whichever way it gets there', () => {
+        const start = withCollapsedSecond('Arminius', 'Everest')
+        const id = start.cards[1].id
+        const featured = pageReducer(start, { type: 'featureCard', id })
+        const movedUp = pageReducer(start, {
+            type: 'moveCard',
+            id,
+            direction: 'up',
+        })
+        const aboveRemoved = pageReducer(start, {
+            type: 'removeCard',
+            id: start.cards[0].id,
+        })
+        for (const state of [featured, movedUp, aboveRemoved]) {
+            expect(state.cards[0].id).toBe(id)
+            expect(state.cards[0].collapsed).toBe(false)
+        }
+    })
+
+    test('a collapsed card stays collapsed as it moves around below the featured card', () => {
+        const start = withCollapsedSecond('Arminius', 'Everest', 'Atlas')
+        const moved = pageReducer(start, {
+            type: 'moveCard',
+            id: start.cards[1].id,
+            direction: 'down',
+        })
+        expect(moved.cards[2].collapsed).toBe(true)
+    })
+
+    test('new cards and copies start open', () => {
+        const start = withCollapsedSecond('Arminius', 'Everest')
+        const copied = pageReducer(start, {
+            type: 'duplicateCard',
+            id: start.cards[1].id,
+        })
+        expect(copied.cards.map((card) => card.collapsed)).toEqual([
+            false,
+            true,
+            false,
+        ])
+    })
+})
+
 test('removeMissingFrames drops cards for frames the data no longer has', () => {
     const start = withFrames('Arminius', 'Old Frame', 'Everest')
     const state = pageReducer(start, {

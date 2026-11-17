@@ -14,8 +14,11 @@ export function changesLayout(action: PageAction): boolean {
         case 'featureCard':
         case 'toggleCompare':
             return true
-        // Runs as the page loads, where there's nothing on screen yet to glide from
+        // removeMissingFrames runs as the page loads, where there's nothing on screen yet to glide
+        // from. toggleCollapse animates on its own: the card slides open or shut, and the cards
+        // below follow it
         case 'removeMissingFrames':
+        case 'toggleCollapse':
         case 'renameCard':
         case 'changeCard':
             return false

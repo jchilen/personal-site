@@ -21,6 +21,7 @@ test('a saved state comes back exactly as it was', () => {
         ...newCard('Everest', [first]),
         name: 'Tank build',
         slopedPlating: true,
+        collapsed: true,
     }
     const state: PageState = { cards: [first, second], comparingId: second.id }
     expect(saved(toSaved(state))).toEqual(state)
@@ -63,6 +64,7 @@ test('broken settings fall back to their defaults, one at a time', () => {
         ],
     }).cards
     expect(card).toMatchObject({
+        collapsed: false,
         ruleset: 'original',
         tier: 1,
         hull: 0,
@@ -104,4 +106,22 @@ test('a comparison with the featured card itself, or with a card that’s gone, 
     expect(saved({ cards, comparingId: 'b' }).comparingId).toBe('b')
     expect(saved({ cards, comparingId: 'a' }).comparingId).toBeNull()
     expect(saved({ cards, comparingId: 'gone' }).comparingId).toBeNull()
+})
+
+test('collapsed is restored only when it was saved as exactly true', () => {
+    const cards = saved({
+        cards: [
+            { frame: 'Arminius' },
+            { frame: 'Everest', collapsed: true },
+            { frame: 'Atlas', collapsed: 'yes' },
+        ],
+    }).cards
+    expect(cards.map((card) => card.collapsed)).toEqual([false, true, false])
+})
+
+test('the featured card comes back open, even if it was saved collapsed', () => {
+    const [first] = saved({
+        cards: [{ frame: 'Arminius', collapsed: true }],
+    }).cards
+    expect(first.collapsed).toBe(false)
 })

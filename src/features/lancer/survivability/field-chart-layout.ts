@@ -107,7 +107,6 @@ export function placeLabels(
     }))
 }
 
-
 /**
  * The tooltip's alignment for a bar: centered, unless the bar is close enough to an edge that a
  * centered tooltip could run off the chart

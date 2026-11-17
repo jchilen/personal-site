@@ -12,7 +12,7 @@ test('adding, removing, reordering, and comparing cards glide into place', () =>
     expect(changesLayout({ type: 'toggleCompare', id: 'a' })).toBe(true)
 })
 
-test('renaming, changing a build, and clearing missing frames on load apply instantly', () => {
+test('renaming, changing a build, collapsing, and clearing missing frames on load apply instantly', () => {
     expect(changesLayout({ type: 'removeMissingFrames', frames: [] })).toBe(
         false,
     )
@@ -22,4 +22,6 @@ test('renaming, changing a build, and clearing missing frames on load apply inst
     expect(
         changesLayout({ type: 'changeCard', id: 'a', changes: { hull: 4 } }),
     ).toBe(false)
+    // The card's own slide moves the cards below it, so it needs no glide
+    expect(changesLayout({ type: 'toggleCollapse', id: 'a' })).toBe(false)
 })
