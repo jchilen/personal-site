@@ -1,4 +1,4 @@
-import { useState, type RefCallback } from 'react'
+import { useState, type ReactNode, type RefCallback } from 'react'
 import {
     IconArrowDown,
     IconArrowsLeftRight,
@@ -31,6 +31,14 @@ import {
 import { Hint } from '@/components/hint'
 import { COVER_DIFFICULTY } from '../rules'
 import { TIER_OPTIONS, tierFromOption } from '../tier-options'
+import {
+    blastsText,
+    CHANGES,
+    statParts,
+    sumText,
+    totalHpText,
+    type ResultKey,
+} from './breakdowns'
 import type { CardResults } from './card-results'
 import { blasts, rankColor, survivesComparedTo } from './format'
 import { LOCK_REASONS } from './lock-reasons'
@@ -56,7 +64,11 @@ const STATS: [PilotStat, string][] = [
     ['systems', 'SYS'],
 ]
 
-const CORE_BONUSES: [keyof CardSettings, string, string][] = [
+const CORE_BONUSES: [
+    Exclude<keyof typeof CHANGES, PilotStat>,
+    string,
+    string,
+][] = [
     ['reinforcedFrame', 'Reinforced Frame', '+5 HP'],
     ['fullSubjectivitySync', 'Full Subjectivity Sync', '+2 Evasion, up to 20'],
     ['slopedPlating', 'Sloped Plating', '+1 Armor'],
@@ -118,6 +130,35 @@ function CardName({
     )
 }
 
+// A number that shows how it's worked out, on hover or keyboard focus, with a question-mark cursor
+// on hover. It can be tabbed to, so the breakdown isn't mouse-only, and while it's shown, onShow
+// lights up the stats it came from
+function Explained({
+    text,
+    onShow,
+    onHide,
+    children,
+}: {
+    text: string
+    onShow?: () => void
+    onHide?: () => void
+    children: ReactNode
+}) {
+    return (
+        <Hint label={text}>
+            <span
+                tabIndex={0}
+                onPointerEnter={onShow}
+                onPointerLeave={onHide}
+                onFocus={onShow}
+                onBlur={onHide}
+                className="cursor-help outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            >
+                {children}
+            </span>
+        </Hint>
+    )
+}
 // Move up or Move down. Locked at the top or bottom, with the reason after its name in the tooltip
 function MoveButton({
     cardName,
@@ -203,6 +244,25 @@ export function BuildCard({
     const note = FRAME_NOTES[card.frame]
     // The reducer never leaves the featured card collapsed, but it's checked here too
     const collapsed = !featured && card.collapsed
+    const parts = statParts(frame, card)
+    // The results lit up by whatever is hovered or focused: a control lights up the stats it
+    // changes, and a worked-out number lights up the stats it's worked out from
+    const [lit, setLit] = useState<readonly ResultKey[]>([])
+    const lights = (keys: readonly ResultKey[]) => ({
+        onPointerEnter: () => setLit(keys),
+        onPointerLeave: () => setLit([]),
+        onFocus: () => setLit(keys),
+        onBlur: () => setLit([]),
+    })
+    // A lit result turns gold. In the stat list, the rows that aren't lit also fade back while
+    // anything is lit, so the eye goes straight to the gold ones
+    const litClass = (key: ResultKey) =>
+        cn(
+            'transition-[color,opacity] motion-reduce:transition-none',
+            lit.includes(key) && 'text-primary',
+        )
+    const rowClass = (key: ResultKey) =>
+        cn(litClass(key), lit.length > 0 && !lit.includes(key) && 'opacity-35')
     const blastsColor = rankColor(results.rank, results.fieldSize)
 
     return (
@@ -409,40 +469,48 @@ export function BuildCard({
                             </div>
                             <div className="flex flex-wrap gap-x-8 gap-y-4">
                                 {STATS.map(([stat, label]) => (
-                                    <Stepper
-                                        key={stat}
-                                        stacked
-                                        label={label}
-                                        decreaseLabel={`Lower ${label}`}
-                                        increaseLabel={`Raise ${label}`}
-                                        decreaseLockedReason={
-                                            card[stat] > STAT_LIMITS[stat].min
-                                                ? undefined
-                                                : lowerLimitReason(
-                                                      STAT_LIMITS[stat].min,
-                                                  )
-                                        }
-                                        increaseLockedReason={
-                                            card[stat] < STAT_LIMITS[stat].max
-                                                ? undefined
-                                                : upperLimitReason(
-                                                      STAT_LIMITS[stat].max,
-                                                  )
-                                        }
-                                        onDecrease={() =>
-                                            onChange({ [stat]: card[stat] - 1 })
-                                        }
-                                        onIncrease={() =>
-                                            onChange({ [stat]: card[stat] + 1 })
-                                        }
-                                    >
-                                        <span
-                                            aria-live="polite"
-                                            className="w-6 text-center font-heading text-xl font-semibold tabular-nums"
+                                    // Hovering or focusing a stepper lights up the stats it changes
+                                    <div key={stat} {...lights(CHANGES[stat])}>
+                                        <Stepper
+                                            stacked
+                                            label={label}
+                                            decreaseLabel={`Lower ${label}`}
+                                            increaseLabel={`Raise ${label}`}
+                                            decreaseLockedReason={
+                                                card[stat] >
+                                                STAT_LIMITS[stat].min
+                                                    ? undefined
+                                                    : lowerLimitReason(
+                                                          STAT_LIMITS[stat].min,
+                                                      )
+                                            }
+                                            increaseLockedReason={
+                                                card[stat] <
+                                                STAT_LIMITS[stat].max
+                                                    ? undefined
+                                                    : upperLimitReason(
+                                                          STAT_LIMITS[stat].max,
+                                                      )
+                                            }
+                                            onDecrease={() =>
+                                                onChange({
+                                                    [stat]: card[stat] - 1,
+                                                })
+                                            }
+                                            onIncrease={() =>
+                                                onChange({
+                                                    [stat]: card[stat] + 1,
+                                                })
+                                            }
                                         >
-                                            {card[stat]}
-                                        </span>
-                                    </Stepper>
+                                            <span
+                                                aria-live="polite"
+                                                className="w-6 text-center font-heading text-xl font-semibold tabular-nums"
+                                            >
+                                                {card[stat]}
+                                            </span>
+                                        </Stepper>
+                                    </div>
                                 ))}
                             </div>
                             <div className="flex flex-col gap-1.5">
@@ -452,15 +520,23 @@ export function BuildCard({
                                 <div className="grid gap-2 @lg:grid-cols-2">
                                     {CORE_BONUSES.map(
                                         ([key, label, detail]) => (
-                                            <EffectToggle
+                                            // grid: so the toggle still fills its cell inside the wrapper
+                                            <div
                                                 key={key}
-                                                label={label}
-                                                detail={detail}
-                                                pressed={card[key] === true}
-                                                onChange={(pressed) =>
-                                                    onChange({ [key]: pressed })
-                                                }
-                                            />
+                                                className="grid"
+                                                {...lights(CHANGES[key])}
+                                            >
+                                                <EffectToggle
+                                                    label={label}
+                                                    detail={detail}
+                                                    pressed={card[key] === true}
+                                                    onChange={(pressed) =>
+                                                        onChange({
+                                                            [key]: pressed,
+                                                        })
+                                                    }
+                                                />
+                                            </div>
                                         ),
                                     )}
                                 </div>
@@ -468,22 +544,40 @@ export function BuildCard({
                         </div>
 
                         <div className="flex flex-col gap-3 @3xl:border-l @3xl:pl-6">
-                            <dl className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-1 text-sm">
+                            <dl className="grid grid-cols-[1fr_auto] gap-y-1 text-sm">
                                 {(
                                     [
-                                        ['Evasion', stats.evasion],
-                                        ['E-Defense', stats.eDefense],
-                                        ['Armor', stats.armor],
-                                        ['HP', stats.hp],
-                                        ['Repairs', stats.repairCap],
+                                        ['evasion', 'Evasion'],
+                                        ['eDefense', 'E-Defense'],
+                                        ['armor', 'Armor'],
+                                        ['hp', 'HP'],
+                                        ['repairCap', 'Repairs'],
                                     ] as const
-                                ).map(([label, value]) => (
-                                    <div key={label} className="contents">
-                                        <dt className="text-muted-foreground">
+                                ).map(([key, label]) => (
+                                    // Each row spans both columns (subgrid), so the label and number light up
+                                    // and fade together
+                                    <div
+                                        key={key}
+                                        className={cn(
+                                            'col-span-2 grid grid-cols-subgrid gap-x-4',
+                                            rowClass(key),
+                                        )}
+                                    >
+                                        <dt
+                                            className={
+                                                lit.includes(key)
+                                                    ? undefined
+                                                    : 'text-muted-foreground'
+                                            }
+                                        >
                                             {label}
                                         </dt>
                                         <dd className="text-right font-heading font-semibold tabular-nums">
-                                            {value}
+                                            <Explained
+                                                text={sumText(parts[key])}
+                                            >
+                                                {stats[key]}
+                                            </Explained>
                                         </dd>
                                     </div>
                                 ))}
@@ -494,7 +588,19 @@ export function BuildCard({
                                     className="font-heading text-5xl font-semibold tabular-nums"
                                     style={{ color: blastsColor }}
                                 >
-                                    {blasts(results.blastsToKill)}
+                                    <Explained
+                                        text={blastsText(
+                                            results.totalHp,
+                                            results.blastDamage,
+                                            results.blastsToKill,
+                                        )}
+                                        onShow={() =>
+                                            setLit(['totalHp', 'blastDamage'])
+                                        }
+                                        onHide={() => setLit([])}
+                                    >
+                                        {blasts(results.blastsToKill)}
+                                    </Explained>
                                 </p>
                                 <p className="mt-1 text-sm">
                                     {survivesComparedTo(
@@ -504,9 +610,27 @@ export function BuildCard({
                                     )}
                                 </p>
                                 <p className="mt-1 text-sm text-muted-foreground">
-                                    Total HP {results.totalHp} ·{' '}
-                                    {results.blastDamage.toFixed(1)} damage per
-                                    blast
+                                    <span className={litClass('totalHp')}>
+                                        <Explained
+                                            text={totalHpText(
+                                                stats.hp,
+                                                stats.repairCap,
+                                                frame.structureRepairCost,
+                                                results.totalHp,
+                                            )}
+                                            onShow={() =>
+                                                setLit(['hp', 'repairCap'])
+                                            }
+                                            onHide={() => setLit([])}
+                                        >
+                                            Total HP {results.totalHp}
+                                        </Explained>
+                                    </span>{' '}
+                                    ·{' '}
+                                    <span className={litClass('blastDamage')}>
+                                        {results.blastDamage.toFixed(1)} damage
+                                        per blast
+                                    </span>
                                 </p>
                             </div>
                             {note && (
