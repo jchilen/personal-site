@@ -10,6 +10,9 @@ type NameFieldProps = {
     // The field's name for screen readers, like "Card name"
     label: string
     onRename: (name: string) => void
+    // Called with each change to the draft as you type, and null once editing ends, for anything
+    // beside the field that should show the name it's about to have
+    onDraftChange?: (draft: string | null) => void
     inputRef?: RefCallback<HTMLTextAreaElement>
     // The text size, like text-lg on a card
     className?: string
@@ -29,11 +32,17 @@ export function NameField({
     name,
     label,
     onRename,
+    onDraftChange,
     inputRef,
     className,
 }: NameFieldProps) {
-    const [draft, setDraft] = useState<string | null>(null)
+    const [draft, setDraftState] = useState<string | null>(null)
     const [input, setInput] = useState<HTMLTextAreaElement | null>(null)
+
+    function setDraft(next: string | null) {
+        setDraftState(next)
+        onDraftChange?.(next)
+    }
 
     return (
         <div className="flex min-w-0 items-center gap-1">

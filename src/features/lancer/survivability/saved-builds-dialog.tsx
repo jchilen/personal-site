@@ -157,11 +157,7 @@ export function SavedBuildsDialog({
                         Manage saved builds
                     </DialogTitle>
                     <p className="mt-2 text-sm text-muted-foreground">
-                        {saves.length} of {MAX_SAVED_BUILDS} saved, oldest
-                        first.
-                        {full &&
-                            saves.length > 0 &&
-                            ' Remove a card from the page to load one.'}
+                        {saves.length} of {MAX_SAVED_BUILDS} saved.
                     </p>
                     <p
                         aria-live="polite"

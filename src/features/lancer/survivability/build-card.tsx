@@ -76,11 +76,15 @@ const CORE_BONUSES: [
     ['lessonOfDisbelief', 'Lesson of Disbelief', '+2 E-Defense'],
 ]
 
-/** What the card's save button needs: its name, a reason if it's locked, and what saving does */
+/**
+ * What the card's save button needs. The first two take a name rather than using the card's, so
+ * the button can follow a rename while it's still being typed
+ */
 export type SaveControl = {
-    // Like "Save Everest-1", or "Update saved Everest-1" when a save already has the card's name
-    label: string
-    lockedReason?: string
+    // Whether a save already has this name, so saving would update it rather than add one
+    exists: (name: string) => boolean
+    // Why a card with this name can't be saved right now, if it can't
+    lockedReason: (name: string) => string | undefined
     // Saves the card, and says whether that made a new save or updated one
     onSave: () => 'Saved' | 'Updated'
 }
@@ -99,18 +103,20 @@ function SaveButton({ name, save }: { name: string; save: SaveControl }) {
         return () => window.clearTimeout(timer)
     }, [done])
 
-    const locked = save.lockedReason !== undefined
+    const label = save.exists(name) ? `Update saved ${name}` : `Save ${name}`
+    const lockedReason = save.lockedReason(name)
+    const locked = lockedReason !== undefined
     return (
         <>
             <Hint
-                label={done ?? save.label}
-                reason={done ? undefined : save.lockedReason}
+                label={done ?? label}
+                reason={done ? undefined : lockedReason}
             >
                 <Button
                     type="button"
                     variant="ghost"
                     size="icon-sm"
-                    aria-label={save.label}
+                    aria-label={label}
                     aria-disabled={locked}
                     onClick={() => {
                         if (!locked) setDone(save.onSave())
@@ -127,8 +133,9 @@ function SaveButton({ name, save }: { name: string; save: SaveControl }) {
     )
 }
 
-// The card's name, edited in place, then the button that saves the card. A blank name is refused
-// by the reducer, so the old one stays
+// The card's name, edited in place, then the button that saves the card. A rename only happens
+// when you leave the field, but the save button follows the draft as you type, so its tooltip
+// names what will be saved: leaving the field to click it renames the card first
 function CardName({
     name,
     onRename,
@@ -140,16 +147,22 @@ function CardName({
     inputRef: RefCallback<HTMLTextAreaElement>
     save: SaveControl
 }) {
+    const [draft, setDraft] = useState<string | null>(null)
+    // The name the card will have once editing ends. A blank name is refused by the reducer, so
+    // the old one stays
+    const nextName = draft !== null && draft.trim() !== '' ? draft.trim() : name
+
     return (
         <div className="flex min-w-0 items-center gap-1">
             <NameField
                 name={name}
                 label="Card name"
                 onRename={onRename}
+                onDraftChange={setDraft}
                 inputRef={inputRef}
                 className="text-lg"
             />
-            <SaveButton name={name} save={save} />
+            <SaveButton name={nextName} save={save} />
         </div>
     )
 }

@@ -191,12 +191,12 @@ export function BuildCards({
                                     })
                                 }
                                 save={{
-                                    label: findSave(saves, card.name)
-                                        ? `Update saved ${card.name}`
-                                        : `Save ${card.name}`,
-                                    lockedReason: canSave(saves, card.name)
-                                        ? undefined
-                                        : LOCK_REASONS.savesFull,
+                                    exists: (name) =>
+                                        findSave(saves, name) !== undefined,
+                                    lockedReason: (name) =>
+                                        canSave(saves, name)
+                                            ? undefined
+                                            : LOCK_REASONS.savesFull,
                                     onSave: () => {
                                         const existing = findSave(
                                             saves,
