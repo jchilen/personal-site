@@ -178,7 +178,7 @@ export function FieldChart({ card, results }: FieldChartProps) {
                 <div className="flex max-w-prose flex-col gap-1">
                     <SectionTitle number={2}>Against the Field</SectionTitle>
                     <p className="text-sm text-muted-foreground">
-                        How all {field.length} frames hold up with your featured
+                        How every frame holds up with your featured
                         build against Tier {card.tier}{' '}
                         {RULESET_NAMES[card.ruleset]} NPCs
                         {COVER_PHRASES[card.cover]}.

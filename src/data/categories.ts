@@ -82,18 +82,18 @@ export const categories: Category[] = [
         actionLabel: 'Open analytics',
         items: [
             {
-                title: 'Frame Survivability',
-                description:
-                    'Which Lancer frames can take the most punishment.',
-                href: '/lancer/survivability',
-                icon: IconHeartPlus,
-            },
-            {
                 title: 'Chance-to-Hit Calculator',
                 description:
                     'Find out your likelihood of hitting a given Lancer enemy.',
                 href: '/lancer/chance-to-hit',
                 icon: IconTargetArrow,
+            },
+            {
+                title: 'Frame Survivability',
+                description:
+                    'Which Lancer frames can take the most punishment.',
+                href: '/lancer/survivability',
+                icon: IconHeartPlus,
             },
             {
                 title: 'Foundry Modules, Content, & More',
