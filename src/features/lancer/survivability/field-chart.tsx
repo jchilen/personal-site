@@ -1,10 +1,12 @@
-import { useId, useMemo, useState, type KeyboardEvent } from 'react'
+import { useId, useMemo, useRef, useState, type KeyboardEvent } from 'react'
+import { IconPinnedOff } from '@tabler/icons-react'
 import { cn } from 'cn'
 import { underlineInputClass } from '@/components/field-styles'
 import { hintClass } from '@/components/hint-styles'
 import { glideClass } from '@/components/motion-styles'
 import { SectionTitle } from '@/components/section-title'
 import { eyebrowClass } from '@/components/text-styles'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useElementWidth } from '@/hooks/use-element-width'
 import type { Cover } from '../rules'
@@ -19,6 +21,14 @@ import {
     tallestUnderTooltip,
     tooltipAlign,
 } from './field-chart-layout'
+import {
+    defaultFilters,
+    filtersOn,
+    meetsFilters,
+    statRanges,
+    type Filters,
+} from './field-filters'
+import { FieldFiltersPanel } from './field-filters-panel'
 import { blasts } from './format'
 import type { BuildCard } from './settings'
 
@@ -32,8 +42,13 @@ const COVER_PHRASES: Record<Cover, string> = {
     hard: ', in hard cover',
 }
 
-// Search matches get labels too, but only this many: past that they'd bury the chart in names
+// Search matches get labels too, but only this many: past that they'd bury the chart in names.
+// Filters allow a few more, since they're set on purpose to narrow the field down
 const MAX_MATCH_LABELS = 3
+const MAX_FILTER_MATCH_LABELS = 5
+// Clicked bars stay highlighted, up to this many
+const MAX_PINS = 5
+const PINS_FULL = `${MAX_PINS} frames pinned. Unpin one first`
 // Each row of labels above the bars, in pixels
 const LABEL_ROW = 20
 const MIN_LABEL_ROWS = 2
@@ -65,6 +80,15 @@ type FieldChartProps = {
 /** Section 02: every frame's blasts to kill with the featured card's build, fewest to most */
 export function FieldChart({ card, results }: FieldChartProps) {
     const [query, setQuery] = useState('')
+    // Every filter starts off ("Any"), waiting at the average frame's value
+    const [filters, setFilters] = useState<Filters>(() =>
+        defaultFilters(results.standard.frame),
+    )
+    // Pinned frames, by name, so a pin follows its frame when the bars re-sort
+    const [pins, setPins] = useState<string[]>([])
+    // What the last pin or unpin did, for screen readers
+    const [pinStatus, setPinStatus] = useState('')
+    const groupRef = useRef<HTMLDivElement>(null)
     // The bar under the mouse, tapped, or stepped to with the arrow keys, by its place in the chart
     const [active, setActive] = useState<number | null>(null)
     const [focused, setFocused] = useState(false)
@@ -87,8 +111,23 @@ export function FieldChart({ card, results }: FieldChartProps) {
     // The middle of a bar, from 0 at the left edge to 1 at the right
     const center = (index: number) => (index + 0.5) / field.length
 
-    const matches = matchingFrames(field, query)
+    const ranges = useMemo(
+        () => statRanges(field.map((result) => result.frame)),
+        [field],
+    )
+    const filtering = filtersOn(filters) > 0
+    const searching = query.trim() !== ''
+    // A frame is highlighted if it matches the search or meets every filter that's on
+    const searchMatches = new Set(
+        matchingFrames(field, query).map((result) => result.frame.name),
+    )
+    const matches = field.filter(
+        (result) =>
+            searchMatches.has(result.frame.name) ||
+            (filtering && meetsFilters(result.frame, filters)),
+    )
     const matched = new Set(matches.map((result) => result.frame.name))
+    const pinned = new Set(pins)
     const featuredIndex = field.findIndex(
         (result) => result.frame.name === card.frame,
     )
@@ -97,21 +136,33 @@ export function FieldChart({ card, results }: FieldChartProps) {
         const name = result.frame.name
         if (name === card.frame) return BAR_LOOKS.featured
         if (matched.has(name)) return BAR_LOOKS.match
-        return index === active ? BAR_LOOKS.active : BAR_LOOKS.plain
+        // A pinned bar stays lit like a hovered one
+        return index === active || pinned.has(name)
+            ? BAR_LOOKS.active
+            : BAR_LOOKS.plain
     }
 
-    // Names above the featured bar and a few search matches
+    // Names above the featured bar, every pinned bar (with its number, like the tooltip), and a
+    // few matches
     const wanted: ChartLabel[] = []
     const values = new Map<string, number>()
     const addLabel = (index: number) => {
-        const name = field[index]?.frame.name
-        if (name && !wanted.some((label) => label.key === name)) {
-            wanted.push({ key: name, text: name, center: center(index) })
-            values.set(name, field[index].blastsToKill)
-        }
+        const result = field[index]
+        if (!result || values.has(result.frame.name)) return
+        const name = result.frame.name
+        // The text only sizes the label, so a pin's number counts toward its width
+        const text = pinned.has(name)
+            ? `${name} ${blasts(result.blastsToKill)}`
+            : name
+        wanted.push({ key: name, text, center: center(index) })
+        values.set(name, result.blastsToKill)
     }
     addLabel(featuredIndex)
-    if (matches.length <= MAX_MATCH_LABELS) {
+    for (const name of pins) {
+        addLabel(field.findIndex((result) => result.frame.name === name))
+    }
+    const matchLabels = filtering ? MAX_FILTER_MATCH_LABELS : MAX_MATCH_LABELS
+    if (matches.length <= matchLabels) {
         for (const result of matches) addLabel(field.indexOf(result))
     }
     const labels = placeLabels(wanted, chartWidth).map((label) => ({
@@ -123,14 +174,47 @@ export function FieldChart({ card, results }: FieldChartProps) {
         MIN_LABEL_ROWS,
         ...labels.map((label) => label.row + 1),
     )
-    const lookOfLabel = (key: string) =>
-        key === card.frame ? 'featured' : 'match'
+    const lookOfLabel = (key: string) => {
+        if (key === card.frame) return 'featured'
+        return matched.has(key) ? 'match' : 'active'
+    }
+
+    // Pins or unpins a bar. Past the limit nothing changes, and the reason is read out (and shown
+    // in the bar's tooltip)
+    function togglePin(index: number) {
+        const name = field[index]?.frame.name
+        if (!name) return
+        if (pinned.has(name)) {
+            setPins(pins.filter((pin) => pin !== name))
+            setPinStatus(`Unpinned ${name}`)
+        } else if (pins.length >= MAX_PINS) {
+            setPinStatus(`${PINS_FULL}.`)
+        } else {
+            setPins([...pins, name])
+            setPinStatus(`Pinned ${name}`)
+        }
+    }
+
+    function clearPins() {
+        setPins([])
+        setPinStatus('Cleared the pins')
+    }
 
     // The arrow keys step through the bars, Home and End jump to either end. Each move shows that
     // bar's tooltip, and screen readers hear the same words through the live region below
     function onKeyDown(event: KeyboardEvent<HTMLDivElement>) {
         const from = active ?? featuredIndex
         const last = field.length - 1
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault()
+            togglePin(from)
+            return
+        }
+        if (event.key === 'Escape' && pins.length > 0) {
+            event.preventDefault()
+            clearPins()
+            return
+        }
         const to = {
             ArrowLeft: Math.max(0, from - 1),
             ArrowRight: Math.min(last, from + 1),
@@ -157,14 +241,27 @@ export function FieldChart({ card, results }: FieldChartProps) {
                   chartWidth,
                   tooltipWidth,
               )
+    const activePinned =
+        activeResult !== undefined && pinned.has(activeResult.frame.name)
+    // The tooltip's last line says what a click does, or why it can't
+    const pinHint = activePinned
+        ? 'Click to unpin'
+        : pins.length >= MAX_PINS
+          ? PINS_FULL
+          : 'Click to pin'
     const activeText =
         activeResult &&
-        `${activeResult.frame.name}: ${blasts(activeResult.blastsToKill)} blasts to kill`
+        `${activeResult.frame.name}: ${blasts(activeResult.blastsToKill)} blasts to kill${activePinned ? ', pinned' : ''}`
+
+    // Shown with the filters, and read out as they change
+    const filterStatus = filtering
+        ? `${matches.length} of ${field.length} frames match the ${searching ? 'search or filters' : 'filters'}`
+        : ''
 
     // Read out as the search changes, and it also gives the number itself for a single match, so
     // nobody needs the tooltip to get it
     let searchStatus = ''
-    if (query.trim() !== '') {
+    if (searching) {
         const [first] = matches
         if (!first) searchStatus = 'No frame matches.'
         else if (matches.length === 1)
@@ -178,9 +275,9 @@ export function FieldChart({ card, results }: FieldChartProps) {
                 <div className="flex max-w-prose flex-col gap-1">
                     <SectionTitle number={2}>Against the Field</SectionTitle>
                     <p className="text-sm text-muted-foreground">
-                        How every frame holds up with your featured
-                        build against Tier {card.tier}{' '}
-                        {RULESET_NAMES[card.ruleset]} NPCs
+                        How every frame stacks up with your featured build
+                        against Tier {card.tier} {RULESET_NAMES[card.ruleset]}{' '}
+                        NPCs
                         {COVER_PHRASES[card.cover]}.
                     </p>
                 </div>
@@ -211,7 +308,13 @@ export function FieldChart({ card, results }: FieldChartProps) {
                     {matches.length > 0 && (
                         <li className="flex items-center gap-2">
                             <Swatch look="match" />
-                            Search {matches.length === 1 ? 'match' : 'matches'}
+                            {filtering ? 'Matches' : 'Search matches'}
+                        </li>
+                    )}
+                    {pins.length > 0 && (
+                        <li className="flex items-center gap-2">
+                            <Swatch look="active" />
+                            Pinned
                         </li>
                     )}
                     <li className="flex items-center gap-2">
@@ -259,7 +362,12 @@ export function FieldChart({ card, results }: FieldChartProps) {
                                     }}
                                 >
                                     <Swatch look={lookOfLabel(label.key)} />
-                                    {label.text}
+                                    {label.key}
+                                    {pinned.has(label.key) && (
+                                        <span className="font-sans font-normal tracking-normal text-muted-foreground normal-case tabular-nums">
+                                            {blasts(label.value)}
+                                        </span>
+                                    )}
                                 </span>
                                 {/* A leader line from the label down to the bars' area */}
                                 <span
@@ -290,6 +398,7 @@ export function FieldChart({ card, results }: FieldChartProps) {
                     </div>
                     {/* One stop in the Tab order for the whole chart; the arrow keys move between bars */}
                     <div
+                        ref={groupRef}
                         role="group"
                         tabIndex={0}
                         aria-labelledby={axisLabelId}
@@ -335,6 +444,7 @@ export function FieldChart({ card, results }: FieldChartProps) {
                                     key={index}
                                     onPointerEnter={() => setActive(index)}
                                     onPointerDown={() => setActive(index)}
+                                    onClick={() => togglePin(index)}
                                     className={cn(
                                         'flex h-full flex-1 items-end px-px',
                                         index === active && 'bg-foreground/10',
@@ -396,6 +506,9 @@ export function FieldChart({ card, results }: FieldChartProps) {
                                     {blasts(activeResult.blastsToKill)} blasts
                                     to kill
                                 </span>
+                                <span className="font-sans font-normal tracking-normal text-muted-foreground normal-case">
+                                    {pinHint}
+                                </span>
                             </div>
                         )}
                     </div>
@@ -413,12 +526,48 @@ export function FieldChart({ card, results }: FieldChartProps) {
                 </div>
 
                 <p id={keysHelpId} className="sr-only">
-                    Use the left and right arrow keys to move between frames.
+                    Use the left and right arrow keys to move between frames,
+                    Enter to pin or unpin one, and Escape to clear the pins.
                 </p>
                 <p aria-live="polite" className="sr-only">
                     {focused ? activeText : ''}
                 </p>
+                <p aria-live="polite" className="sr-only">
+                    {pinStatus}
+                </p>
             </div>
+
+            {/* Under the chart's right edge, only while something is pinned */}
+            {pins.length > 0 && (
+                <div className="-mt-2 flex justify-end">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                            clearPins()
+                            // The button hides once the pins are gone, so focus goes back to the
+                            // chart instead of getting lost
+                            groupRef.current?.focus()
+                        }}
+                    >
+                        <IconPinnedOff data-icon="inline-start" />
+                        Clear pins
+                    </Button>
+                </div>
+            )}
+
+            <FieldFiltersPanel
+                filters={filters}
+                ranges={ranges}
+                onChange={(stat, filter) =>
+                    setFilters((current) => ({ ...current, [stat]: filter }))
+                }
+                onClear={() =>
+                    setFilters(defaultFilters(results.standard.frame))
+                }
+                status={filterStatus}
+            />
 
             {/* The chart's numbers for screen readers, in the chart's order. sr-only goes on a wrapper,
                 not the table, so nothing inside it can show in any browser */}

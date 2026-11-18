@@ -169,30 +169,37 @@ function CardName({
 
 // A number that shows how it's worked out, on hover or keyboard focus, with a question-mark cursor
 // on hover. It can be tabbed to, so the breakdown isn't mouse-only, and while it's shown, onShow
-// lights up the stats it came from
+// lights up the stats it came from. `as="div"` makes a whole row the target, label and all
 function Explained({
     text,
     onShow,
     onHide,
+    as: Element = 'span',
+    className,
     children,
 }: {
     text: string
     onShow?: () => void
     onHide?: () => void
+    as?: 'span' | 'div'
+    className?: string
     children: ReactNode
 }) {
     return (
         <Hint label={text}>
-            <span
+            <Element
                 tabIndex={0}
                 onPointerEnter={onShow}
                 onPointerLeave={onHide}
                 onFocus={onShow}
                 onBlur={onHide}
-                className="cursor-help outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                className={cn(
+                    'cursor-help outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50',
+                    className,
+                )}
             >
                 {children}
-            </span>
+            </Element>
         </Hint>
     )
 }
@@ -550,9 +557,11 @@ export function BuildCard({
                                     ] as const
                                 ).map(([key, label]) => (
                                     // Each row spans both columns (subgrid), so the label and number light up
-                                    // and fade together
-                                    <div
+                                    // and fade together. The whole row shows how its number is worked out
+                                    <Explained
                                         key={key}
+                                        as="div"
+                                        text={sumText(parts[key])}
                                         className={cn(
                                             'col-span-2 grid grid-cols-subgrid gap-x-4',
                                             rowClass(key),
@@ -568,13 +577,9 @@ export function BuildCard({
                                             {label}
                                         </dt>
                                         <dd className="text-right font-heading font-semibold tabular-nums">
-                                            <Explained
-                                                text={sumText(parts[key])}
-                                            >
-                                                {stats[key]}
-                                            </Explained>
+                                            {stats[key]}
                                         </dd>
-                                    </div>
+                                    </Explained>
                                 ))}
                             </dl>
                             <div aria-live="polite" className="border-t pt-3">
