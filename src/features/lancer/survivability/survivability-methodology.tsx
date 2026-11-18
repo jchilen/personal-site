@@ -200,7 +200,7 @@ const CHAPTERS: Chapter[] = [
                         <dd>4</dd>
                     </dl>
                     <p className="mt-3 text-sm text-muted-foreground">
-                        Before your stats come into play, that's 8 × (4 + 2) =
+                        Before your HASE/CB's come into play, that's 8 × (4 + 2) =
                         48 Total HP.
                     </p>
                 </figure>
