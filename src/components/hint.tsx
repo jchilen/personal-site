@@ -39,6 +39,9 @@ type HintProps = {
     // The tooltip's text. For an icon-only button, use the same words as its aria-label. null means
     // no tooltip for now, like a reason that only applies while a control is locked
     label: string | null
+    // Why the control is locked right now, shown in parentheses on its own line below the label,
+    // so a long tooltip breaks between the two rather than partway through the label
+    reason?: string
     side?: 'top' | 'right' | 'bottom' | 'left'
     // One focusable control that passes its props through and forwards its ref, like Button
     children: ReactElement
@@ -48,7 +51,7 @@ type HintProps = {
  * A tooltip for one control, shown on hover and on keyboard focus. Tooltips only add to what's on
  * the page: touch screens never show them, so anything a person needs must be available another way
  */
-export function Hint({ label, side = 'top', children }: HintProps) {
+export function Hint({ label, reason, side = 'top', children }: HintProps) {
     // Controlled, so a label coming and going never changes the elements rendered. A different
     // tree would remount the control, and a focused control would lose focus
     const [open, setOpen] = useState(false)
@@ -65,7 +68,18 @@ export function Hint({ label, side = 'top', children }: HintProps) {
                     collisionPadding={hintCollisionPadding}
                     className={hintClass}
                 >
-                    {label}
+                    {/* One wrapper, since the tooltip is a flex row and would put the reason beside
+                        the label. The space stays in the text, so screen readers don't run the two
+                        together, but it's dropped where the line breaks */}
+                    <span>
+                        {label}
+                        {reason !== undefined && (
+                            <>
+                                {' '}
+                                <span className="block">({reason})</span>
+                            </>
+                        )}
+                    </span>
                 </TooltipContent>
             )}
         </Tooltip>

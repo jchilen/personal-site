@@ -115,11 +115,8 @@ function EnemyCard({
                 {/* Tooltips open below: above, they'd cover the Results row, where the limit warning flashes */}
                 <div className="flex shrink-0 gap-1">
                     <Hint
-                        label={
-                            full
-                                ? `Duplicate ${title} (${LOCK_REASONS.cardsFull})`
-                                : `Duplicate ${title}`
-                        }
+                        label={`Duplicate ${title}`}
+                        reason={full ? LOCK_REASONS.cardsFull : undefined}
                         side="bottom"
                     >
                         <Button

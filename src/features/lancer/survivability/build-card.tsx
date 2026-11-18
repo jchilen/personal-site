@@ -1,9 +1,10 @@
-import { useState, type ReactNode, type RefCallback } from 'react'
+import { useEffect, useState, type ReactNode, type RefCallback } from 'react'
 import {
     IconArrowsLeftRight,
+    IconCheck,
     IconChevronDown,
     IconCopy,
-    IconPencil,
+    IconDeviceFloppy,
     IconStar,
     IconStarFilled,
     IconX,
@@ -41,6 +42,7 @@ import {
 import type { CardResults } from './card-results'
 import { blasts, rankColor, survivesComparedTo } from './format'
 import { LOCK_REASONS } from './lock-reasons'
+import { NameField } from './name-field'
 import {
     STAT_LIMITS,
     type BuildCard as BuildCardData,
@@ -74,57 +76,80 @@ const CORE_BONUSES: [
     ['lessonOfDisbelief', 'Lesson of Disbelief', '+2 E-Defense'],
 ]
 
-// The card's name, edited in place. While typing it's a draft; leaving the field (or Enter) saves
-// it, and Escape puts the old name back. A blank name is refused by the reducer, so the old one stays
-function CardName({
-    name,
-    onRename,
-    inputRef,
-}: {
-    name: string
-    onRename: (name: string) => void
-    inputRef: RefCallback<HTMLInputElement>
-}) {
-    const [draft, setDraft] = useState<string | null>(null)
-    const [input, setInput] = useState<HTMLInputElement | null>(null)
+/** What the card's save button needs: its name, a reason if it's locked, and what saving does */
+export type SaveControl = {
+    // Like "Save Everest-1", or "Update saved Everest-1" when a save already has the card's name
+    label: string
+    lockedReason?: string
+    // Saves the card, and says whether that made a new save or updated one
+    onSave: () => 'Saved' | 'Updated'
+}
 
+// How long the save button shows its check after saving
+const SAVED_FOR = 2000
+
+// The floppy disk that saves the card. It turns into a check for a moment after saving, and the
+// card's status line tells screen readers what happened
+function SaveButton({ name, save }: { name: string; save: SaveControl }) {
+    const [done, setDone] = useState<'Saved' | 'Updated' | null>(null)
+
+    useEffect(() => {
+        if (done === null) return
+        const timer = window.setTimeout(() => setDone(null), SAVED_FOR)
+        return () => window.clearTimeout(timer)
+    }, [done])
+
+    const locked = save.lockedReason !== undefined
     return (
-        <div className="flex min-w-0 items-center gap-1">
-            <input
-                ref={(node) => {
-                    setInput(node)
-                    inputRef(node)
-                }}
-                aria-label="Card name"
-                value={draft ?? name}
-                maxLength={40}
-                onFocus={() => setDraft(name)}
-                onChange={(event) => setDraft(event.target.value)}
-                onBlur={() => {
-                    if (draft !== null) onRename(draft)
-                    setDraft(null)
-                }}
-                onKeyDown={(event) => {
-                    if (event.key === 'Enter') event.currentTarget.blur()
-                    if (event.key === 'Escape') {
-                        setDraft(null)
-                        // Blurring after clearing the draft saves nothing
-                        requestAnimationFrame(() => input?.blur())
-                    }
-                }}
-                className="field-sizing-content max-w-full min-w-16 border-b border-dashed border-muted-foreground bg-transparent font-heading text-lg font-semibold tracking-widest uppercase outline-none focus-visible:border-solid focus-visible:border-cat-lancer"
-            />
-            <Hint label="Rename">
+        <>
+            <Hint
+                label={done ?? save.label}
+                reason={done ? undefined : save.lockedReason}
+            >
                 <Button
                     type="button"
                     variant="ghost"
                     size="icon-sm"
-                    aria-label={`Rename ${name}`}
-                    onClick={() => input?.focus()}
+                    aria-label={save.label}
+                    aria-disabled={locked}
+                    onClick={() => {
+                        if (!locked) setDone(save.onSave())
+                    }}
+                    className={cn(locked && lockedButtonClass)}
                 >
-                    <IconPencil />
+                    {done ? <IconCheck /> : <IconDeviceFloppy />}
                 </Button>
             </Hint>
+            <span role="status" className="sr-only">
+                {done && `${done} ${name}`}
+            </span>
+        </>
+    )
+}
+
+// The card's name, edited in place, then the button that saves the card. A blank name is refused
+// by the reducer, so the old one stays
+function CardName({
+    name,
+    onRename,
+    inputRef,
+    save,
+}: {
+    name: string
+    onRename: (name: string) => void
+    inputRef: RefCallback<HTMLTextAreaElement>
+    save: SaveControl
+}) {
+    return (
+        <div className="flex min-w-0 items-center gap-1">
+            <NameField
+                name={name}
+                label="Card name"
+                onRename={onRename}
+                inputRef={inputRef}
+                className="text-lg"
+            />
+            <SaveButton name={name} save={save} />
         </div>
     )
 }
@@ -170,6 +195,7 @@ type BuildCardProps = {
     full: boolean
     onChange: (changes: Partial<CardSettings>) => void
     onRename: (name: string) => void
+    save: SaveControl
     onFeature: () => void
     onCompare: () => void
     onMove: (direction: 'up' | 'down') => void
@@ -193,6 +219,7 @@ export function BuildCard({
     full,
     onChange,
     onRename,
+    save,
     onFeature,
     onCompare,
     onMove,
@@ -248,6 +275,7 @@ export function BuildCard({
                             name={card.name}
                             onRename={onRename}
                             inputRef={controlRef('name')}
+                            save={save}
                         />
                         <p className="mt-1 flex flex-wrap items-baseline gap-x-3 text-sm text-muted-foreground">
                             <span>
@@ -323,11 +351,8 @@ export function BuildCard({
                             side="bottom"
                         />
                         <Hint
-                            label={
-                                full
-                                    ? `Duplicate ${card.name} (${LOCK_REASONS.cardsFull})`
-                                    : `Duplicate ${card.name}`
-                            }
+                            label={`Duplicate ${card.name}`}
+                            reason={full ? LOCK_REASONS.cardsFull : undefined}
                             side="bottom"
                         >
                             <Button

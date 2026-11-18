@@ -9,6 +9,7 @@ import {
     nextCardName,
     STAT_LIMITS,
     type BuildCard,
+    type CardSettings,
     type PageState,
     type PilotStat,
 } from './settings'
@@ -24,21 +25,21 @@ export function toSaved(state: PageState): PageState & { version: number } {
     return { version: SAVE_VERSION, ...state }
 }
 
-type Fields = Record<string, unknown>
+/** A saved object's fields, to check one at a time */
+export type Fields = Record<string, unknown>
 
-// A saved object's fields, to check one at a time, or null if it isn't an object
-function fields(value: unknown): Fields | null {
+/** A saved object's fields, or null if it isn't an object */
+export function fields(value: unknown): Fields | null {
     return typeof value === 'object' && value !== null
         ? (value as Fields)
         : null
 }
 
-// One saved card, or null without a frame. Anything else missing or broken falls back to its
-// default; a missing name gets the next free default name
-function restoreCard(value: unknown, earlier: BuildCard[]): BuildCard | null {
-    const c = fields(value)
-    if (!c || typeof c.frame !== 'string' || c.frame === '') return null
-
+/**
+ * A saved card's settings, each checked on its own. Anything missing or broken falls back to its
+ * default. Shared by the cards on the page and the saved builds
+ */
+export function restoreSettings(c: Fields): CardSettings {
     const stat = (key: PilotStat): number => {
         const v = c[key]
         const { min, max } = STAT_LIMITS[key]
@@ -49,10 +50,34 @@ function restoreCard(value: unknown, earlier: BuildCard[]): BuildCard | null {
             ? v
             : DEFAULT_SETTINGS[key]
     }
-    const name =
-        typeof c.name === 'string'
-            ? c.name.trim().slice(0, MAX_NAME_LENGTH)
-            : ''
+    return {
+        ruleset: oneOf(c.ruleset, RULESETS, DEFAULT_SETTINGS.ruleset),
+        tier: oneOf(c.tier, TIERS, DEFAULT_SETTINGS.tier),
+        hull: stat('hull'),
+        agility: stat('agility'),
+        systems: stat('systems'),
+        reinforcedFrame: c.reinforcedFrame === true,
+        fullSubjectivitySync: c.fullSubjectivitySync === true,
+        slopedPlating: c.slopedPlating === true,
+        lessonOfDisbelief: c.lessonOfDisbelief === true,
+        cover: oneOf(c.cover, COVERS, DEFAULT_SETTINGS.cover),
+    }
+}
+
+/** A saved name trimmed and cut to the longest allowed, or '' if there isn't one */
+export function restoreName(value: unknown): string {
+    return typeof value === 'string'
+        ? value.trim().slice(0, MAX_NAME_LENGTH)
+        : ''
+}
+
+// One saved card, or null without a frame. Anything else missing or broken falls back to its
+// default; a missing name gets the next free default name
+function restoreCard(value: unknown, earlier: BuildCard[]): BuildCard | null {
+    const c = fields(value)
+    if (!c || typeof c.frame !== 'string' || c.frame === '') return null
+
+    const name = restoreName(c.name)
     const id = typeof c.id === 'string' && c.id !== '' ? c.id : ''
 
     return {
@@ -64,16 +89,7 @@ function restoreCard(value: unknown, earlier: BuildCard[]): BuildCard | null {
                 : crypto.randomUUID(),
         frame: c.frame,
         name: name !== '' ? name : nextCardName(c.frame, earlier),
-        ruleset: oneOf(c.ruleset, RULESETS, DEFAULT_SETTINGS.ruleset),
-        tier: oneOf(c.tier, TIERS, DEFAULT_SETTINGS.tier),
-        hull: stat('hull'),
-        agility: stat('agility'),
-        systems: stat('systems'),
-        reinforcedFrame: c.reinforcedFrame === true,
-        fullSubjectivitySync: c.fullSubjectivitySync === true,
-        slopedPlating: c.slopedPlating === true,
-        lessonOfDisbelief: c.lessonOfDisbelief === true,
-        cover: oneOf(c.cover, COVERS, DEFAULT_SETTINGS.cover),
+        ...restoreSettings(c),
         collapsed: c.collapsed === true,
     }
 }

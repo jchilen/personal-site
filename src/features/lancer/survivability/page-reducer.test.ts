@@ -3,6 +3,7 @@ import { pageReducer, type PageAction } from './page-reducer'
 import {
     DEFAULT_SETTINGS,
     DEFAULT_STATE,
+    MAX_NAME_LENGTH,
     newCard,
     type BuildCard,
     type PageState,
@@ -273,7 +274,7 @@ describe('renameCard', () => {
     const start = withFrames('Arminius')
     const id = start.cards[0].id
 
-    test('renames the card, trimming spaces and capping the length at 40', () => {
+    test('renames the card, trimming spaces and capping the length at the limit', () => {
         expect(
             names(
                 pageReducer(start, {
@@ -286,7 +287,7 @@ describe('renameCard', () => {
         expect(
             pageReducer(start, { type: 'renameCard', id, name: 'x'.repeat(60) })
                 .cards[0].name,
-        ).toHaveLength(40)
+        ).toHaveLength(MAX_NAME_LENGTH)
     })
 
     test('a blank name keeps the old one', () => {

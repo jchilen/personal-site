@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { cn } from 'cn'
 import { glideClass } from '@/components/motion-styles'
 import { SectionTitle } from '@/components/section-title'
@@ -8,8 +8,19 @@ import { BuildCard } from './build-card'
 import { cachedCardResults } from './card-results'
 import { FramePicker } from './frame-picker'
 import { LOCK_REASONS } from './lock-reasons'
+import {
+    canSave,
+    deleteSave,
+    findSave,
+    nameTaken,
+    renameSave,
+    saveCard,
+} from './saved-builds'
+import { SavedBuildsDialog } from './saved-builds-dialog'
 import { MAX_CARDS, type StateProps } from './settings'
 import type { Frame, SurvivabilityData } from './survivability-types'
+import { SurvivabilityMethodology } from './survivability-methodology'
+import { useSavedBuilds } from './use-saved-builds'
 import { VersusCard } from './versus-card'
 
 type Control = 'name' | 'up' | 'down' | 'remove'
@@ -41,6 +52,9 @@ export function BuildCards({
             ),
         [cards, data, standard],
     )
+    const [saves, setSaves] = useSavedBuilds()
+    // Tells screen readers about a loaded build, which arrives at the bottom of the page
+    const [announcement, setAnnouncement] = useState('')
     const featured = cards.at(0)
     const compared = cards.find((card) => card.id === state.comparingId)
     const featuredResults = featured && results.get(featured.id)
@@ -99,6 +113,28 @@ export function BuildCards({
                 >
                     Builds
                 </SectionTitle>
+                {/* In a dialog rather than a side panel, so the page's margins stay free for the versus card */}
+                <SurvivabilityMethodology />
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <SavedBuildsDialog
+                    saves={saves}
+                    data={data}
+                    standard={standard}
+                    full={full}
+                    onLoad={(build) => {
+                        setAnnouncement(`Loaded ${build.name} as a new card`)
+                        dispatch({ type: 'loadBuild', build })
+                    }}
+                    onRename={(id, newName) => {
+                        if (nameTaken(saves, id, newName)) return false
+                        setSaves(renameSave(saves, id, newName))
+                        return true
+                    }}
+                    onDelete={(id) =>
+                        setSaves((current) => deleteSave(current, id))
+                    }
+                />
                 <div className="flex flex-wrap items-center gap-2">
                     <p
                         aria-live="polite"
@@ -113,6 +149,9 @@ export function BuildCards({
                     />
                 </div>
             </div>
+            <p role="status" className="sr-only">
+                {announcement}
+            </p>
 
             {cards.length === 0 ? (
                 <p className="border bg-card p-4 text-muted-foreground">
@@ -151,6 +190,24 @@ export function BuildCards({
                                         name,
                                     })
                                 }
+                                save={{
+                                    label: findSave(saves, card.name)
+                                        ? `Update saved ${card.name}`
+                                        : `Save ${card.name}`,
+                                    lockedReason: canSave(saves, card.name)
+                                        ? undefined
+                                        : LOCK_REASONS.savesFull,
+                                    onSave: () => {
+                                        const existing = findSave(
+                                            saves,
+                                            card.name,
+                                        )
+                                        setSaves(
+                                            saveCard(saves, card, Date.now()),
+                                        )
+                                        return existing ? 'Updated' : 'Saved'
+                                    },
+                                }}
                                 onFeature={() => feature(card.id)}
                                 onCompare={() =>
                                     dispatch({

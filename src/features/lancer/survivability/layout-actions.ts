@@ -9,6 +9,7 @@ export function changesLayout(action: PageAction): boolean {
     switch (action.type) {
         case 'addCard':
         case 'duplicateCard':
+        case 'loadBuild':
         case 'removeCard':
         case 'moveCard':
         case 'featureCard':

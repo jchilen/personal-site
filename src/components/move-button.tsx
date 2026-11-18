@@ -36,7 +36,8 @@ export function MoveButton({
     const label = `Move ${itemName} ${direction}`
     return (
         <Hint
-            label={atEnd ? `${label} (${LOCKED_REASONS[direction]})` : label}
+            label={label}
+            reason={atEnd ? LOCKED_REASONS[direction] : undefined}
             side={side}
         >
             <Button

@@ -6,7 +6,6 @@ import { cachedCardResults } from './card-results'
 import { FieldChart } from './field-chart'
 import type { StateProps } from './settings'
 import { standardFrame } from './standard-frame'
-import { SurvivabilityMethodology } from './survivability-methodology'
 import type { SurvivabilityData } from './survivability-types'
 import { usePageState } from './use-page-state'
 
@@ -79,10 +78,6 @@ export function SurvivabilityPage() {
             title="Frame Survivability"
             intro="See how tanky your Lancer build is, and compare it to others frames or builds."
         >
-            {/* In a dialog rather than a side panel, so the page's margins stay free for the versus card */}
-            <div className="mb-4 flex justify-end">
-                <SurvivabilityMethodology />
-            </div>
             <Builds
                 survivability={survivability.state}
                 state={state}

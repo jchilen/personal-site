@@ -1,4 +1,5 @@
 import { moveItem } from '@/lib/move-item'
+import type { SavedBuild } from './saved-builds'
 import {
     cardSettings,
     clampStat,
@@ -30,6 +31,8 @@ export type PageAction =
     | { type: 'toggleCollapse'; id: string }
     // Removes cards for frames the data no longer has
     | { type: 'removeMissingFrames'; frames: string[] }
+    // Adds a card at the bottom from a saved build, with its frame, name, and settings
+    | { type: 'loadBuild'; build: SavedBuild }
 
 const indexOf = (cards: BuildCard[], id: string) =>
     cards.findIndex((card) => card.id === id)
@@ -160,6 +163,15 @@ export function pageReducer(state: PageState, action: PageAction): PageState {
                     collapsed: !card.collapsed,
                 }),
             }
+        }
+        case 'loadBuild': {
+            if (full) return state
+            const { build } = action
+            const card = {
+                ...newCard(build.frame, cards, cardSettings(build)),
+                name: build.name,
+            }
+            return withCards(state, [...cards, card])
         }
         case 'removeMissingFrames': {
             const frames = new Set(action.frames)

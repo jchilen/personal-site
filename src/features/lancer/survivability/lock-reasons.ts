@@ -1,3 +1,4 @@
+import { MAX_SAVED_BUILDS } from './saved-builds'
 import { MAX_CARDS } from './settings'
 
 /**
@@ -6,4 +7,7 @@ import { MAX_CARDS } from './settings'
  */
 export const LOCK_REASONS = {
     cardsFull: `${MAX_CARDS} cards: remove one to add another`,
+    loadFull: 'Remove a card first',
+    savesFull: `${MAX_SAVED_BUILDS} builds saved. Delete one first`,
+    frameMissing: 'This frame is no longer in the data',
 } as const

@@ -1,8 +1,21 @@
 import { expect, test } from 'vitest'
 import { changesLayout } from './layout-actions'
+import { DEFAULT_SETTINGS } from './settings'
 
-test('adding, removing, reordering, and comparing cards glide into place', () => {
+test('adding, loading, removing, reordering, and comparing cards glide into place', () => {
     expect(changesLayout({ type: 'addCard', frame: 'Arminius' })).toBe(true)
+    expect(
+        changesLayout({
+            type: 'loadBuild',
+            build: {
+                ...DEFAULT_SETTINGS,
+                id: 'a',
+                name: 'Tank',
+                frame: 'Everest',
+                savedAt: 0,
+            },
+        }),
+    ).toBe(true)
     expect(changesLayout({ type: 'duplicateCard', id: 'a' })).toBe(true)
     expect(changesLayout({ type: 'removeCard', id: 'a' })).toBe(true)
     expect(changesLayout({ type: 'moveCard', id: 'a', direction: 'up' })).toBe(

@@ -6,8 +6,11 @@ import type { PilotBuild } from './pilot-build'
 
 export const MAX_CARDS = 3
 
-/** The longest name a card can be given */
-export const MAX_NAME_LENGTH = 40
+/**
+ * The longest name a card can be given. Short enough that a name of wide capitals (all Ws) still
+ * fits beside the card's buttons on a desktop screen, rather than pushing them onto their own row
+ */
+export const MAX_NAME_LENGTH = 24
 
 /** The range of each pilot stat's stepper, shared by the controls, the reducer and restoreState */
 export const STAT_LIMITS = {
@@ -96,8 +99,8 @@ export function nextCardName(frame: string, cards: BuildCard[]): string {
     return `${frame}-${number}`
 }
 
-/** A card's settings on their own, for copying onto another card */
-export function cardSettings(card: BuildCard): CardSettings {
+/** A card's (or saved build's) settings on their own, for copying onto another card */
+export function cardSettings(card: CardSettings): CardSettings {
     return {
         ruleset: card.ruleset,
         tier: card.tier,
