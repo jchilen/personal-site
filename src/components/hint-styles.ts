@@ -11,6 +11,6 @@ export const hintClass = cn(
     reducedMotionClass,
 )
 
-// Keeps tooltips near the top of the screen from opening under the sticky dock (16px down, 48px
-// tall). Without room above, they flip below the control instead
-export const hintCollisionPadding = { top: 72, right: 8, bottom: 8, left: 8 }
+// Keeps tooltips at least 8px from the edges of the screen. Without room on their side, they flip
+// to the other side of the control instead
+export const hintCollisionPadding = 8

@@ -19,7 +19,7 @@ export function HomeSection({
     children,
 }: HomeSectionProps) {
     return (
-        <section id={id} className="scroll-mt-28 py-32">
+        <section id={id} className="scroll-mt-8 py-32">
             <header className="flex flex-col items-center text-center">
                 <Eyebrow>{number}</Eyebrow>
                 <h2 className="mt-2 font-heading text-3xl font-semibold tracking-eyebrow uppercase sm:text-4xl">

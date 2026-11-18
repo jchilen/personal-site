@@ -218,7 +218,7 @@ export function ConfidenceCalculator({
                         suffix="%"
                         inputMode="decimal"
                         field={confidence}
-                        info="How sure you want to be of at least one drop by then"
+                        info="How sure you want to be of at least one drop"
                     />
                 ) : (
                     <FieldRow

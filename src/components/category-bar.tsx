@@ -17,11 +17,6 @@ import { toggleVariants } from '@/components/ui/toggle'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { ProjectCard } from '@/components/project-card'
 import { floatingShadowClass } from '@/components/shadow-styles'
-import {
-    headerMotionClass,
-    hiddenHeaderClass,
-} from '@/components/header-styles'
-import { useHideOnScroll } from '@/hooks/use-hide-on-scroll'
 import { prefersReducedMotion, scrollBehavior } from '@/lib/motion'
 
 type CategoryBarProps = {
@@ -47,10 +42,12 @@ const hexItemClass = 'isolate flex-none p-0'
 // Home page: full-size hexes with the label always showing
 const fullHexClass = 'h-30 w-26'
 
-// Other pages: icon-only mini hexes that grow to full size on hover, keyboard focus, or while open.
-// With reduced motion they snap to size instead of growing
+// Other pages: icon-only mini hexes that grow, with their label, on hover, keyboard focus, or while
+// open. They grow out from their center, partway over the dashes beside them rather than pushing
+// the other hexes along: a negative margin of half the extra width (18.5 - 10.5 = 8, so 4 a side)
+// keeps the space they take up the same. With reduced motion they snap to size instead of growing
 const miniHexClass =
-    'group h-12 w-10.5 gap-0 transition-[color,width,height,margin] hex-open:mx-1.5 hex-open:h-30 hex-open:w-26 motion-reduce:transition-none'
+    'group h-12 w-10.5 gap-0 transition-[color,width,height,margin] hex-open:-mx-4 hex-open:z-10 hex-open:h-21 hex-open:w-18.5 motion-reduce:transition-none'
 
 type HexContentProps = {
     icon: ComponentType<{ className?: string }>
@@ -66,14 +63,16 @@ function HexContent({ icon: Icon, label, mini }: HexContentProps) {
                 className={cn(
                     'stroke-[1.25]',
                     mini
-                        ? 'size-5 transition-[width,height] group-hex-open:size-7 motion-reduce:transition-none'
+                        ? 'size-5 transition-[width,height] group-hex-open:size-6 motion-reduce:transition-none'
                         : 'size-7',
                 )}
             />
             {mini ? (
                 <span className="grid grid-rows-[0fr] opacity-0 transition-[grid-template-rows,opacity] group-hex-open:grid-rows-[1fr] group-hex-open:opacity-100 motion-reduce:transition-none">
                     <span className="overflow-hidden">
-                        <span className="block pt-1.5">{label}</span>
+                        <span className="block pt-1 text-[10px] tracking-wider">
+                            {label}
+                        </span>
                     </span>
                 </span>
             ) : (
@@ -99,12 +98,23 @@ function HexShape() {
     )
 }
 
-// A line with a dot on each end, joining two hexes (desktop only)
+// A dash joining two full-size hexes (desktop only)
 function Connector() {
     return (
         <span
             aria-hidden="true"
             className="mx-1.5 h-1 w-8 shrink-0 bg-muted-foreground max-sm:hidden"
+        />
+    )
+}
+
+// A dash joining two mini hexes. Its margin plus half its width add up to 4, the same as how far a
+// hex grows on each side, so a grown hex ends halfway along the dash
+function MiniConnector() {
+    return (
+        <span
+            aria-hidden="true"
+            className="mx-1.5 h-0.5 w-5 shrink-0 self-center bg-muted-foreground"
         />
     )
 }
@@ -161,8 +171,8 @@ type CategoryTogglesProps = {
     onSelect: (id: string | null) => void
 }
 
-// One toggle per section. The home page's full-size hexes are joined by connectors, and shift into
-// place on phones
+// One toggle per section, joined by dashes. The home page's full-size hexes shift into place on
+// phones
 function CategoryToggles({ mini, selectedId, onSelect }: CategoryTogglesProps) {
     return (
         <ToggleGroup
@@ -179,7 +189,7 @@ function CategoryToggles({ mini, selectedId, onSelect }: CategoryTogglesProps) {
         >
             {sectionCategories.map((category, index) => (
                 <Fragment key={category.id}>
-                    {!mini && index > 0 && <Connector />}
+                    {index > 0 && (mini ? <MiniConnector /> : <Connector />)}
                     <ToggleGroupItem
                         value={category.id}
                         className={cn(
@@ -263,8 +273,6 @@ function useCategorySelection(barRef: RefObject<HTMLElement | null>) {
     const [selectedId, setSelectedId] = useState<string | null>(null)
     const [displayedId, setDisplayedId] = useState<string | null>(null)
     const [isLeaving, setIsLeaving] = useState(false)
-    // Slides away while scrolling down, unless a category's cards are open
-    const scrolledAway = useHideOnScroll()
 
     const displayedCategory = categories.find(
         (category) => category.id === displayedId,
@@ -323,50 +331,26 @@ function useCategorySelection(barRef: RefObject<HTMLElement | null>) {
         selectedId,
         displayedCategory,
         isLeaving,
-        hidden: scrolledAway && selectedId === null,
         selectCategory,
         finishLeaving,
     }
 }
 
-// The home page: full-size hexes that stick to the top while scrolling, with the open category's
-// cards in the space below them, or `idle` while none is open
+// The home page: full-size hexes at the top of the page, with the open category's cards in the
+// space below them, or `idle` while none is open
 function HomeCategoryBar({ idle }: { idle?: ReactNode }) {
     const barRef = useRef<HTMLDivElement>(null)
     const {
         selectedId,
         displayedCategory,
         isLeaving,
-        hidden,
         selectCategory,
         finishLeaving,
     } = useCategorySelection(barRef)
-    const cardAreaRef = useRef<HTMLDivElement>(null)
-
-    // Brings the cards back into view if their area has scrolled up under the bar
-    function scrollToCards() {
-        const cardArea = cardAreaRef.current
-        if (!cardArea) return
-
-        if (cardArea.getBoundingClientRect().top < 136) {
-            cardArea.scrollIntoView({
-                behavior: scrollBehavior(),
-                block: 'start',
-            })
-        }
-    }
 
     return (
         <div className="pointer-events-none contents">
-            <div
-                ref={barRef}
-                className={cn(
-                    // On phones the home hexes don't stick, so they never slide away either
-                    'sticky top-4 z-10 mx-auto mt-10 w-fit max-sm:static max-sm:translate-y-0',
-                    headerMotionClass,
-                    hidden && hiddenHeaderClass,
-                )}
-            >
+            <div ref={barRef} className="relative z-10 mx-auto mt-10 w-fit">
                 <nav
                     aria-label="Site sections"
                     className="flex items-center max-sm:grid max-sm:grid-cols-2 max-sm:gap-x-2 max-sm:pr-14"
@@ -385,18 +369,12 @@ function HomeCategoryBar({ idle }: { idle?: ReactNode }) {
                     <CategoryToggles
                         mini={false}
                         selectedId={selectedId}
-                        onSelect={(id) => {
-                            selectCategory(id)
-                            if (id) scrollToCards()
-                        }}
+                        onSelect={selectCategory}
                     />
                 </nav>
             </div>
 
-            <div
-                ref={cardAreaRef}
-                className="pointer-events-none flex min-h-72 scroll-mt-36 items-start justify-center pt-8"
-            >
+            <div className="pointer-events-none flex min-h-72 items-start justify-center pt-8">
                 {idle}
                 {displayedCategory && (
                     <CategoryCards
@@ -412,15 +390,14 @@ function HomeCategoryBar({ idle }: { idle?: ReactNode }) {
     )
 }
 
-// Every other page: a dock of mini hexes that slides away while scrolling down, with the open
-// category's cards in a panel below it. It opens below the bar, so the page never needs to scroll
+// Every other page: a row of mini hexes at the top of the page, with the open category's cards in a
+// panel below it
 function FloatingCategoryBar() {
     const dockRef = useRef<HTMLDivElement>(null)
     const {
         selectedId,
         displayedCategory,
         isLeaving,
-        hidden,
         selectCategory,
         finishLeaving,
     } = useCategorySelection(dockRef)
@@ -462,17 +439,12 @@ function FloatingCategoryBar() {
         <div
             ref={dockRef}
             onBlur={handleBlur}
-            className={cn(
-                'pointer-events-none sticky top-4 z-10 mx-auto mt-6 w-fit',
-                headerMotionClass,
-                hidden && hiddenHeaderClass,
-            )}
+            // Low enough that a hex growing out from the row's center still has 24px above it
+            className="pointer-events-none relative z-10 mx-auto mt-10.5 w-fit"
         >
-            <nav
-                aria-label="Site sections"
-                className="flex h-12 items-start gap-1"
-            >
+            <nav aria-label="Site sections" className="flex h-12 items-center">
                 <HomeHex mini to="/" />
+                {homeCategory && <MiniConnector />}
                 <CategoryToggles
                     mini
                     selectedId={selectedId}
@@ -480,7 +452,7 @@ function FloatingCategoryBar() {
                 />
             </nav>
 
-            <div className="pointer-events-none absolute top-full left-1/2 mt-21 flex w-max max-w-[calc(100vw-2rem)] -translate-x-1/2 items-start justify-center">
+            <div className="pointer-events-none absolute top-full left-1/2 mt-7.5 flex w-max max-w-[calc(100vw-2rem)] -translate-x-1/2 items-start justify-center">
                 {displayedCategory && (
                     <CategoryCards
                         key={displayedCategory.id}

@@ -55,7 +55,7 @@ export function ArticleLayout({
 
             <div className="mt-12 grid gap-10 pb-24 lg:grid-cols-[15rem_minmax(0,1fr)]">
                 <aside className="max-lg:hidden">
-                    <div className="sticky top-28 max-h-[calc(100svh-8rem)] overflow-y-auto">
+                    <div className="sticky top-8 max-h-[calc(100svh-4rem)] overflow-y-auto">
                         <Eyebrow className="mb-3 pl-3">Contents</Eyebrow>
                         <TableOfContents toc={toc} />
                     </div>
@@ -76,7 +76,7 @@ export function ArticleLayout({
 
                 <article
                     id={ARTICLE_START_ID}
-                    className="prose prose-lg prose-site scroll-mt-28 font-serif prose-headings:scroll-mt-28 prose-headings:font-heading prose-headings:font-semibold prose-headings:tracking-wide prose-headings:text-balance prose-headings:uppercase prose-h2:clear-both prose-h3:clear-both prose-a:decoration-primary prose-a:decoration-2 prose-a:underline-offset-4 dark:prose-a:text-primary"
+                    className="prose prose-lg prose-site scroll-mt-8 font-serif prose-headings:scroll-mt-8 prose-headings:font-heading prose-headings:font-semibold prose-headings:tracking-wide prose-headings:text-balance prose-headings:uppercase prose-h2:clear-both prose-h3:clear-both prose-a:decoration-primary prose-a:decoration-2 prose-a:underline-offset-4 dark:prose-a:text-primary"
                 >
                     {children}
                 </article>

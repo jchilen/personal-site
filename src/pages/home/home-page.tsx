@@ -5,6 +5,7 @@ import { HomeSection } from './home-section'
 import { ExperienceSection } from './experience-section'
 import { ContactSection } from './contact-section'
 import { HexField } from './hex-field'
+import { BackToTop } from '@/components/back-to-top'
 import { CategoryBar } from '@/components/category-bar'
 import { Button } from '@/components/ui/button'
 import { floatingShadowClass } from '@/components/shadow-styles'
@@ -61,6 +62,7 @@ export function HomePage() {
             <HomeSection id="contact" number="03" title="Contact">
                 <ContactSection />
             </HomeSection>
+            <BackToTop />
         </>
     )
 }

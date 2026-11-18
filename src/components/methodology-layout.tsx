@@ -81,7 +81,7 @@ export function MethodologyLayout({
             <div
                 ref={toolRef}
                 className={cn(
-                    '@container mx-auto w-full scroll-mt-28',
+                    '@container mx-auto w-full scroll-mt-8',
                     layout.tool,
                 )}
             >

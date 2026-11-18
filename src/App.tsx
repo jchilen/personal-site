@@ -14,12 +14,6 @@ import { AdminPage } from '@/features/tools/polls/admin-page'
 import { ResultsPage } from '@/features/tools/polls/results-page'
 import { ChanceToHitPage } from '@/features/lancer/chance-to-hit/chance-to-hit-page'
 import { SurvivabilityPage } from '@/features/lancer/survivability/survivability-page'
-import { cn } from 'cn'
-import {
-    headerMotionClass,
-    hiddenHeaderClass,
-} from '@/components/header-styles'
-import { useHideOnScroll } from '@/hooks/use-hide-on-scroll'
 
 function App() {
     const { pathname } = useLocation()
@@ -40,18 +34,10 @@ function App() {
             ?.focus({ preventScroll: true })
     }, [pathname])
 
-    // The theme toggle slides away with the hex bar
-    const headerHidden = useHideOnScroll()
-
     return (
         <div className="flex min-h-svh flex-col overflow-x-clip">
-            <ModeToggle
-                className={cn(
-                    'fixed top-4 right-4 z-20 max-sm:hidden',
-                    headerMotionClass,
-                    headerHidden && hiddenHeaderClass,
-                )}
-            />
+            {/* At the top of the page, like the hex bar, rather than following the scroll */}
+            <ModeToggle className="absolute top-4 right-4 z-20 max-sm:hidden" />
             <main
                 key={pathname}
                 className="mx-auto w-full max-w-280 flex-1 px-6"
