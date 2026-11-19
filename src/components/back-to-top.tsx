@@ -39,14 +39,16 @@ export function BackToTop() {
                 size="icon"
                 aria-label="Back to top"
                 onClick={backToTop}
+                // size-15: one and a half times the usual icon button, so it's easy to find and hit.
+                // It replaces size="icon"'s size-10, since the last class wins.
                 // invisible, not just see-through, while hidden, so Tab and screen readers skip it.
                 // visibility is in the transition so it waits for the fade out before switching off
                 className={cn(
-                    'fixed right-4 bottom-4 z-20 transition-[opacity,visibility] duration-300 motion-reduce:transition-none',
+                    'fixed right-4 bottom-4 z-20 size-15 transition-[opacity,visibility] duration-300 motion-reduce:transition-none',
                     !scrolled && 'invisible opacity-0',
                 )}
             >
-                <IconChevronUp className="size-5" />
+                <IconChevronUp className="size-7.5" />
             </Button>
         </Hint>
     )
