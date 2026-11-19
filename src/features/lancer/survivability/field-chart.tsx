@@ -299,7 +299,8 @@ export function FieldChart({ card, results }: FieldChartProps) {
                 </div>
             </div>
 
-            <div className="flex flex-col gap-4 border bg-background p-4">
+            {/* The featured card's gold border, so the chart reads as built from that card */}
+            <div className="flex flex-col gap-4 border-2 border-primary bg-background p-4">
                 <ul className="flex flex-wrap gap-x-5 gap-y-1 text-xs">
                     <li className="flex items-center gap-2">
                         <Swatch look="featured" />
