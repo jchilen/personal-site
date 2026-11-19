@@ -43,11 +43,24 @@ const hexItemClass = 'isolate flex-none p-0'
 const fullHexClass = 'h-30 w-26'
 
 // Other pages: icon-only mini hexes that grow, with their label, on hover, keyboard focus, or while
-// open. They grow out from their center, partway over the dashes beside them rather than pushing
-// the other hexes along: a negative margin of half the extra width (18.5 - 10.5 = 8, so 4 a side)
-// keeps the space they take up the same. With reduced motion they snap to size instead of growing
+// open. Each sits in a HexSlot, and grows out from its center, partway over the dashes beside it.
+// With reduced motion they snap to size instead of growing
 const miniHexClass =
-    'group h-12 w-10.5 gap-0 transition-[color,width,height,margin] hex-open:-mx-4 hex-open:z-10 hex-open:h-21 hex-open:w-18.5 motion-reduce:transition-none'
+    'group h-12 w-10.5 gap-0 transition-[color,width,height] hex-open:z-10 hex-open:h-21 hex-open:w-18.5 motion-reduce:transition-none'
+
+// A fixed-size spot in the row for one mini hex. The hex grows past its edges, centered, without
+// changing the slot's size, so nothing else in the row ever moves, not even by a fraction of a
+// pixel. Growing the hex in the row itself, with negative margins canceling out the growth, left
+// the row's width off by tiny rounding errors mid-animation, and the whole bar shook as it
+// re-centered. A full-size hex doesn't grow, so it stands on its own
+function HexSlot({ mini, children }: { mini: boolean; children: ReactNode }) {
+    if (!mini) return children
+    return (
+        <span className="flex h-12 w-10.5 shrink-0 items-center justify-center">
+            {children}
+        </span>
+    )
+}
 
 type HexContentProps = {
     icon: ComponentType<{ className?: string }>
@@ -109,7 +122,7 @@ function Connector() {
 }
 
 // A dash joining two mini hexes. Its margin plus half its width add up to 4, the same as how far a
-// hex grows on each side, so a grown hex ends halfway along the dash
+// hex grows past its slot on each side, so a grown hex ends halfway along the dash
 function MiniConnector() {
     return (
         <span
@@ -149,7 +162,7 @@ function HomeHex({ mini, to, onClick }: HomeHexProps) {
         />
     )
 
-    return to ? (
+    const hex = to ? (
         <Link to={to} className={className} style={style}>
             {content}
         </Link>
@@ -163,6 +176,7 @@ function HomeHex({ mini, to, onClick }: HomeHexProps) {
             {content}
         </button>
     )
+    return <HexSlot mini={mini}>{hex}</HexSlot>
 }
 
 type CategoryTogglesProps = {
@@ -190,24 +204,26 @@ function CategoryToggles({ mini, selectedId, onSelect }: CategoryTogglesProps) {
             {sectionCategories.map((category, index) => (
                 <Fragment key={category.id}>
                     {index > 0 && (mini ? <MiniConnector /> : <Connector />)}
-                    <ToggleGroupItem
-                        value={category.id}
-                        className={cn(
-                            itemClass,
-                            hexItemClass,
-                            mini ? miniHexClass : fullHexClass,
-                            !mini &&
-                                index > 0 &&
-                                'max-sm:-mt-6 max-sm:translate-x-[calc(50%+0.25rem)]',
-                        )}
-                        style={categoryColorStyle(category.color)}
-                    >
-                        <HexContent
-                            icon={category.icon}
-                            label={category.label}
-                            mini={mini}
-                        />
-                    </ToggleGroupItem>
+                    <HexSlot mini={mini}>
+                        <ToggleGroupItem
+                            value={category.id}
+                            className={cn(
+                                itemClass,
+                                hexItemClass,
+                                mini ? miniHexClass : fullHexClass,
+                                !mini &&
+                                    index > 0 &&
+                                    'max-sm:-mt-6 max-sm:translate-x-[calc(50%+0.25rem)]',
+                            )}
+                            style={categoryColorStyle(category.color)}
+                        >
+                            <HexContent
+                                icon={category.icon}
+                                label={category.label}
+                                mini={mini}
+                            />
+                        </ToggleGroupItem>
+                    </HexSlot>
                 </Fragment>
             ))}
         </ToggleGroup>
